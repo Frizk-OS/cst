@@ -33,7 +33,7 @@ TaskInput::~TaskInput()
 
 }
 
-bool TaskInput::parseAttribute(const android::String8& name, const android::String8& value)
+bool TaskInput::parseAttribute(const std::string& name, const std::string& value)
 {
     if (strcmp(name, "time") == 0) {
         mRecordingTimeInMs = atoi(value);
@@ -49,7 +49,7 @@ bool TaskInput::parseAttribute(const android::String8& name, const android::Stri
 TaskGeneric::ExecutionResult TaskInput::start()
 {
     bool localDevice = (mDeviceType == TaskAsync::EDeviceHost);
-    android::sp<AudioHardware> hw = AudioHardware::createAudioHw(localDevice, false,
+    std::shared_ptr<AudioHardware> hw = AudioHardware::createAudioHw(localDevice, false,
             getTestCase());
     if (hw.get() == NULL) {
         LOGE("createAudioHw failed");
@@ -61,7 +61,7 @@ TaskGeneric::ExecutionResult TaskInput::start()
     // local : stereo only, remote : mono only
     size_t bufferSize = mRecordingTimeInMs * AudioHardware::ESampleRate_44100 / 1000 *
             (localDevice ? 4 : 2);
-    android::sp<Buffer> buffer(new Buffer(bufferSize, bufferSize, localDevice));
+    std::shared_ptr<Buffer> buffer(new Buffer(bufferSize, bufferSize, localDevice));
     if (buffer.get() == NULL) {
         LOGE("buffer alloc failed");
         return TaskGeneric::EResultError;
@@ -96,7 +96,7 @@ TaskGeneric::ExecutionResult TaskInput::complete()
     }
     if (!getTestCase()->registerBuffer(mId, mBuffer)) {
         if (!getTestCase()->updateBuffer(mId, mBuffer)) {
-            LOGE("cannot register/update buffer %s", mId.string());
+            LOGE("cannot register/update buffer %s", mId.c_str());
             return TaskGeneric::EResultError;
         }
     }

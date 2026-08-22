@@ -17,8 +17,8 @@
 
 #ifndef CTSAUDIO_TASKDOWNLOAD_H
 #define CTSAUDIO_TASKDOWNLOAD_H
-#include <utils/String8.h>
-#include <utils/StrongPointer.h>
+#include <string>
+#include <memory>
 #include "audio/Buffer.h"
 #include "TaskGeneric.h"
 

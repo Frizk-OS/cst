@@ -33,23 +33,23 @@ int AudioHardware::mHwId = -1;
 
 int AudioHardware::detectAudioHw()
 {
-    android::String8 script("test_description/conf/detect_usb_audio.py");
+    std::string script("test_description/conf/detect_usb_audio.py");
     /* This is the list of supported devices.
        MobilePre: M-Audio MobilePre
        Track: M-Audio FastTrack
      */
-    android::String8 param("MobilePre Track");
-    android::String8 resultStr;
+    std::string param("MobilePre Track");
+    std::string resultStr;
     if (!SimpleScriptExec::runScript(script, param, resultStr)) {
         LOGE("cannot run script");
         return -1;
     }
 
-    android::String8 match("[ \t]+([A-Za-z0-9_]+)[ \t]+([0-9]+)");
+    std::string match("[ \t]+([A-Za-z0-9_]+)[ \t]+([0-9]+)");
     const int nmatch = 3;
     regmatch_t pmatch[nmatch];
     if (!SimpleScriptExec::checkIfPassed(resultStr, match, nmatch, pmatch)) {
-        LOGE("result not correct %s", resultStr.string());
+        LOGE("result not correct %s", resultStr.c_str());
         return -1;
     }
     LOGV("pmatch 0: %d, %d  1:%d, %d  2:%d, %d",
@@ -63,20 +63,20 @@ int AudioHardware::detectAudioHw()
     if (pmatch[2].rm_so == -1) {
         return -1;
     }
-    android::String8 product = StringUtil::substr(resultStr, pmatch[1].rm_so,
+    std::string product = StringUtil::substr(resultStr, pmatch[1].rm_so,
             pmatch[1].rm_eo - pmatch[1].rm_so);
-    LOGI("Audio device %s found", product.string());
-    android::String8 cardNumber = StringUtil::substr(resultStr, pmatch[2].rm_so,
+    LOGI("Audio device %s found", product.c_str());
+    std::string cardNumber = StringUtil::substr(resultStr, pmatch[2].rm_so,
             pmatch[2].rm_eo - pmatch[2].rm_so);
-    int cardN = atoi(cardNumber.string());
+    int cardN = atoi(cardNumber.c_str());
     LOGI("Card number : %d", cardN);
     return cardN;
 }
 
-android::sp<AudioHardware> AudioHardware::createAudioHw(bool local, bool playback,
+std::shared_ptr<AudioHardware> AudioHardware::createAudioHw(bool local, bool playback,
         TaskCase* testCase)
 {
-    android::sp<AudioHardware> hw;
+    std::shared_ptr<AudioHardware> hw;
     if (local) {
         if (mHwId < 0) {
             mHwId = detectAudioHw();
@@ -106,12 +106,12 @@ AudioHardware::~AudioHardware()
 
 }
 
-bool AudioHardware::startPlaybackOrRecordById(const android::String8& id, TaskCase* testCase)
+bool AudioHardware::startPlaybackOrRecordById(const std::string& id, TaskCase* testCase)
 {
     if (testCase == NULL) { // default implementation only handles local buffer.
         return false;
     }
-    android::sp<Buffer> buffer = testCase->findBuffer(id);
+    std::shared_ptr<Buffer> buffer = testCase->findBuffer(id);
     if (buffer.get() == NULL) {
         return false;
     }

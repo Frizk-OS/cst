@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <utils/threads.h>
-#include <utils/StrongPointer.h>
+#include <memory>
 
 #include <audio/AudioHardware.h>
 #include <GenericFactory.h>
@@ -32,7 +32,7 @@ public:
     virtual ~AudioPlaybackLocalTest() {};
 protected:
 
-    android::sp<AudioHardware> createAudioHw() {
+    std::shared_ptr<AudioHardware> createAudioHw() {
         return AudioHardware::createAudioHw(true, true);
     }
 };

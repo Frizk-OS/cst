@@ -20,10 +20,12 @@
 
 #include <stdarg.h>
 
-#include <utils/String8.h>
-#include <utils/threads.h>
+#include <string>
 #include <iostream>
 #include <fstream>
+#include <cstdarg>
+
+#include "utils/threads.h"
 
 /**
  * Class to write to file and stdout at the same time.
@@ -35,7 +37,7 @@ public:
      * create log / report dir
      * @param dirPath returns path of created dir
      */
-    static bool prepare(android::String8& dirPath);
+    static bool prepare(std::string& dirPath);
 
 protected:
     FileUtil();
@@ -53,7 +55,7 @@ protected:
 
 private:
     // store dirPath to prevent creating multiple times
-    static android::String8 mDirPath;
+    static std::string mDirPath;
     std::ofstream mFile;
     static const int DEFAULT_BUFFER_SIZE = 1024;
     // buffer for printf. one line longer than this will be truncated.

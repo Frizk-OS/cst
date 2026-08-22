@@ -92,7 +92,7 @@ bool TaskProcess::prepareParams(std::vector<TaskProcess::Param>& list,
         }
         switch(list[i].getType()) {
         case EId: {
-            UniquePtr<android::sp<Buffer> > buffer(new android::sp<Buffer>());
+            UniquePtr<std::shared_ptr<Buffer> > buffer(new std::shared_ptr<Buffer>());
             if (buffer.get() == NULL) {
                 LOGE("alloc failed");
                 return false;
@@ -114,7 +114,7 @@ bool TaskProcess::prepareParams(std::vector<TaskProcess::Param>& list,
             valuesPtr[i].reset(new TaskCase::Value());
             if (isInput) {
                 if (!getTestCase()->findValue(list[i].getParamString(), *(valuesPtr[i].get()))) {
-                    LOGE("find %s failed", list[i].getParamString().string());
+                    LOGE("find %s failed", list[i].getParamString().c_str());
                     return false;
                 }
             }
@@ -153,7 +153,7 @@ TaskGeneric::ExecutionResult TaskProcess::doRun(bool builtIn)
             }
         }
         if (info == NULL) {
-            LOGE("TaskProcess::runBuiltin no match for %s", mName.string());
+            LOGE("TaskProcess::runBuiltin no match for %s", mName.c_str());
             return TaskGeneric::EResultError;
         }
         if (mInput.size() != info->mNInput) {
@@ -169,7 +169,7 @@ TaskGeneric::ExecutionResult TaskProcess::doRun(bool builtIn)
     UniquePtr<void_ptr, DefaultDelete<void_ptr[]> > inputs;
     // This is for holding Value instances. Will be destroyed in exit
     UniquePtr<UniqueValue, DefaultDelete<UniqueValue[]> > inputValues;
-    // This is for holding android::sp<Buffer>. Buffer itself is from the global map.
+    // This is for holding std::shared_ptr<Buffer>. Buffer itself is from the global map.
     UniquePtr<UniqueBuffer, DefaultDelete<UniqueBuffer[]> > inputBuffers;
 
     UniquePtr<void_ptr, DefaultDelete<void_ptr[]> > outputs;
@@ -210,13 +210,13 @@ TaskGeneric::ExecutionResult TaskProcess::doRun(bool builtIn)
         bool saveResultFailed = false;
         for (size_t i = 0; i < mOutput.size(); i++) {
             if (mOutput[i].isIdType()) { // Buffer
-                android::sp<Buffer>* bufferp =
-                        reinterpret_cast<android::sp<Buffer>*>((outputs.get())[i]);
+                std::shared_ptr<Buffer>* bufferp =
+                        reinterpret_cast<std::shared_ptr<Buffer>*>((outputs.get())[i]);
                 if (!getTestCase()->registerBuffer(mOutput[i].getParamString(), *bufferp)) {
                     // maybe already there, try update
                     if (!getTestCase()->updateBuffer(mOutput[i].getParamString(), *bufferp)) {
                         LOGE("cannot register / update %d-th output Buffer for builtin fn %s",
-                                i, mName.string());
+                                i, mName.c_str());
                         saveResultFailed = true; // mark failure, but continue
                     }
                 }
@@ -226,7 +226,7 @@ TaskGeneric::ExecutionResult TaskProcess::doRun(bool builtIn)
                 if (!getTestCase()->registerValue(mOutput[i].getParamString(), *valuep)) {
                     if (!getTestCase()->updateValue(mOutput[i].getParamString(), *valuep)) {
                         LOGE("cannot register / update %d-th output Value for builtin fn %s",
-                                i, mName.string());
+                                i, mName.c_str());
                         saveResultFailed = true; // mark failure, but continue
                     }
                 }
@@ -244,15 +244,15 @@ TaskGeneric::ExecutionResult TaskProcess::doRun(bool builtIn)
 bool TaskProcess::parseParams(std::vector<TaskProcess::Param>& list, const char* str, bool isInput)
 {
     LOGV("TaskProcess::parseParams will parse %s", str);
-    android::String8 paramStr(str);
-    UniquePtr<std::vector<android::String8> > paramTokens(StringUtil::split(paramStr, ','));
+    std::string paramStr(str);
+    UniquePtr<std::vector<std::string> > paramTokens(StringUtil::split(paramStr, ','));
     if (paramTokens.get() == NULL) {
         LOGE("split failed");
         return false;
     }
-    std::vector<android::String8>& tokens = *(paramTokens.get());
+    std::vector<std::string>& tokens = *(paramTokens.get());
     for (size_t i = 0; i < tokens.size(); i++) {
-        UniquePtr<std::vector<android::String8> > itemTokens(StringUtil::split(tokens[i], ':'));
+        UniquePtr<std::vector<std::string> > itemTokens(StringUtil::split(tokens[i], ':'));
         if (itemTokens.get() == NULL) {
             LOGE("split failed");
             return false;
@@ -261,29 +261,29 @@ bool TaskProcess::parseParams(std::vector<TaskProcess::Param>& list, const char*
             LOGE("size mismatch %d", itemTokens->size());
             return false;
         }
-        std::vector<android::String8>& item = *(itemTokens.get());
+        std::vector<std::string>& item = *(itemTokens.get());
         if (StringUtil::compare(item[0], "id") == 0) {
             Param param(EId, item[1]);
             list.push_back(param);
-            LOGD(" id %s", param.getParamString().string());
+            LOGD(" id %s", param.getParamString().c_str());
         } else if (StringUtil::compare(item[0], "val") == 0) {
             Param param(EVal, item[1]);
             list.push_back(param);
-            LOGD(" val %s", param.getParamString().string());
+            LOGD(" val %s", param.getParamString().c_str());
         } else if (isInput && (StringUtil::compare(item[0], "consti") == 0)) {
-            long long value = atoll(item[1].string());
+            long long value = atoll(item[1].c_str());
             TaskCase::Value v(value);
             Param param(v);
             list.push_back(param);
             LOGD("consti %lld", value);
         } else if (isInput && (StringUtil::compare(item[0], "constf") == 0)) {
-            double value = atof(item[1].string());
+            double value = atof(item[1].c_str());
             TaskCase::Value v(value);
             Param param(v);
             list.push_back(param);
             LOGD("constf %f", value);
         } else {
-            LOGE("unrecognized word %s", item[0].string());
+            LOGE("unrecognized word %s", item[0].c_str());
             return false;
         }
         LOGV("TaskProcess::parseParams %d-th type %d", i, list[i].getType());
@@ -291,17 +291,17 @@ bool TaskProcess::parseParams(std::vector<TaskProcess::Param>& list, const char*
    return true;
 }
 
-bool TaskProcess::parseAttribute(const android::String8& name, const android::String8& value)
+bool TaskProcess::parseAttribute(const std::string& name, const std::string& value)
 {
     if (StringUtil::compare(name, "method") == 0) {
-        UniquePtr<std::vector<android::String8> > tokenPtr(StringUtil::split(value, ':'));
-        std::vector<android::String8>* tokens = tokenPtr.get();
+        UniquePtr<std::vector<std::string> > tokenPtr(StringUtil::split(value, ':'));
+        std::vector<std::string>* tokens = tokenPtr.get();
         if (tokens == NULL) {
             LOGE("split failed");
             return false;
         }
         if (tokens->size() != 2) {
-            LOGE("cannot parse attr %s %s", name.string(), value.string());
+            LOGE("cannot parse attr %s %s", name.c_str(), value.c_str());
             return false;
         }
         if (StringUtil::compare(tokens->at(0), "builtin") == 0) {
@@ -309,7 +309,7 @@ bool TaskProcess::parseAttribute(const android::String8& name, const android::St
         } else if (StringUtil::compare(tokens->at(0), "script") == 0) {
             mType = EScript;
         } else {
-            LOGE("cannot parse attr %s %s", name.string(), value.string());
+            LOGE("cannot parse attr %s %s", name.c_str(), value.c_str());
             return false;
         }
         mName.append(tokens->at(1));
@@ -319,12 +319,12 @@ bool TaskProcess::parseAttribute(const android::String8& name, const android::St
     } else if (StringUtil::compare(name, "output") == 0) {
         return parseParams(mOutput, value, false);
     } else {
-        LOGE("cannot parse attr %s %s", name.string(), value.string());
+        LOGE("cannot parse attr %s %s", name.c_str(), value.c_str());
         return false;
     }
 }
 
-TaskProcess::Param::Param(TaskProcess::ParamType type, android::String8& string)
+TaskProcess::Param::Param(TaskProcess::ParamType type, std::string& string)
     : mType(type),
       mString(string)
 {
@@ -344,7 +344,7 @@ TaskProcess::ParamType TaskProcess::Param::getType()
     return mType;
 }
 
-android::String8& TaskProcess::Param::getParamString()
+std::string& TaskProcess::Param::getParamString()
 {
     ASSERT((mType == TaskProcess::EId) || (mType == TaskProcess::EVal));
     return mString;

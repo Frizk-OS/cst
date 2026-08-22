@@ -21,7 +21,7 @@
 #include <vector>
 
 #include <UniquePtr.h>
-#include <utils/StrongPointer.h>
+#include <memory>
 
 #include "audio/Buffer.h"
 #include "TaskGeneric.h"
@@ -34,7 +34,7 @@ public:
     TaskProcess();
     virtual ~TaskProcess();
     virtual TaskGeneric::ExecutionResult run();
-    virtual bool parseAttribute(const android::String8& name, const android::String8& value);
+    virtual bool parseAttribute(const std::string& name, const std::string& value);
 private:
     TaskGeneric::ExecutionResult doRun(bool builtin);
 
@@ -43,7 +43,7 @@ private:
     //typedef necessary to prevent compiler's confusion
     typedef void* void_ptr;
     typedef UniquePtr<TaskCase::Value> UniqueValue;
-    typedef UniquePtr<android::sp<Buffer> > UniqueBuffer;
+    typedef UniquePtr<std::shared_ptr<Buffer> > UniqueBuffer;
     /// construct Buffers and Values for calling builtin functions.
     /// all constructed stuffs automatically deleted by the passed UniquePtrs
     bool prepareParams(std::vector<TaskProcess::Param>& list,
@@ -59,7 +59,7 @@ private:
         EScript
     };
     ProcessType mType;
-    android::String8 mName; // buit-in function or script name
+    std::string mName; // buit-in function or script name
 
     enum ParamType {
         EId,
@@ -68,10 +68,10 @@ private:
     };
     class Param {
     public:
-        Param(ParamType type, android::String8& string);
+        Param(ParamType type, std::string& string);
         Param(TaskCase::Value& val);
         ParamType getType();
-        android::String8& getParamString();
+        std::string& getParamString();
         TaskCase::Value& getValue();
         TaskCase::Value* getValuePtr();
         inline bool isIdType() {
@@ -79,7 +79,7 @@ private:
         }
     private:
         ParamType mType;
-        android::String8 mString;
+        std::string mString;
         TaskCase::Value mValue;
     };
 

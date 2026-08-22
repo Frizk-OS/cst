@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <iostream>
 #include <fstream>
-#include <utils/String8.h>
+#include <string>
 #include "Log.h"
 #include "StringUtil.h"
 #include "audio/Buffer.h"
@@ -77,7 +77,7 @@ bool Buffer::changeToStereo()
 
 const char* EXTENSION_S16_STEREO = ".r2s";
 const char* EXTENSION_S16_MONO = ".r2m";
-Buffer* Buffer::loadFromFile(const android::String8& filename)
+Buffer* Buffer::loadFromFile(const std::string& filename)
 {
     bool stereo;
     if (StringUtil::endsWith(filename, EXTENSION_S16_STEREO)) {
@@ -85,13 +85,13 @@ Buffer* Buffer::loadFromFile(const android::String8& filename)
     } else if (StringUtil::endsWith(filename, EXTENSION_S16_MONO)) {
         stereo = false;
     } else {
-        LOGE("Buffer::loadFromFile specified file %s has unknown extension.", filename.string());
+        LOGE("Buffer::loadFromFile specified file %s has unknown extension.", filename.c_str());
         return NULL;
     }
-    std::ifstream file(filename.string(),  std::ios::in | std::ios::binary |
+    std::ifstream file(filename.c_str(),  std::ios::in | std::ios::binary |
             std::ios::ate);
     if (!file.is_open()) {
-        LOGE("Buffer::loadFromFile cannot open file %s.", filename.string());
+        LOGE("Buffer::loadFromFile cannot open file %s.", filename.c_str());
         return NULL;
     }
     size_t size = file.tellg();
@@ -105,25 +105,25 @@ Buffer* Buffer::loadFromFile(const android::String8& filename)
     return buffer;
 }
 
-bool Buffer::saveToFile(const android::String8& filename)
+bool Buffer::saveToFile(const std::string& filename)
 {
-    android::String8 filenameWithExtension(filename);
+    std::string filenameWithExtension(filename);
     if (isStereo()) {
         filenameWithExtension.append(EXTENSION_S16_STEREO);
     } else {
         filenameWithExtension.append(EXTENSION_S16_MONO);
     }
-    std::ofstream file(filenameWithExtension.string(),  std::ios::out | std::ios::binary |
+    std::ofstream file(filenameWithExtension.c_str(),  std::ios::out | std::ios::binary |
             std::ios::trunc);
     if (!file.is_open()) {
         LOGE("Buffer::saveToFile cannot create file %s.",
-                filenameWithExtension.string());
+                filenameWithExtension.c_str());
         return false;
     }
     file.write(mData, mSize);
     bool writeOK = true;
     if (file.rdstate() != std::ios_base::goodbit) {
-        LOGE("Got error while writing file %s %x", filenameWithExtension.string(), file.rdstate());
+        LOGE("Got error while writing file %s %x", filenameWithExtension.c_str(), file.rdstate());
         writeOK = false;
     }
     file.close();

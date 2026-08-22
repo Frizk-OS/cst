@@ -18,7 +18,7 @@
 #ifndef CTSAUDIO_SETTINGS_H
 #define CTSAUDIO_SETTINGS_H
 
-#include <utils/String8.h>
+#include <string>
 
 class Settings {
 public:
@@ -32,11 +32,11 @@ public:
         ETEST_XML       = 4, // name of test description xml
         EMAX_SETTINGS   = 4  // not real setting
     };
-    void addSetting(SettingType type, const android::String8 setting);
-    const android::String8& getSetting(SettingType type);
+    void addSetting(SettingType type, const std::string& setting);
+    const std::string& getSetting(SettingType type) const;
 private:
     static Settings* mInstance;
-    android::String8 mSettings[EMAX_SETTINGS + 1];
+    std::string mSettings[EMAX_SETTINGS + 1];
 };
 
 

@@ -18,7 +18,7 @@
 #define CTSAUDIO_SIGNALPROCESSINGIMPL_H
 
 #include <UniquePtr.h>
-#include <utils/String8.h>
+#include <string>
 
 #include "SignalProcessingInterface.h"
 #include "ClientSocket.h"
@@ -29,15 +29,15 @@
  */
 class SignalProcessingImpl: public SignalProcessingInterface {
 public:
-    static const android::String8 MAIN_PROCESSING_SCRIPT;
+    static const std::string MAIN_PROCESSING_SCRIPT;
     SignalProcessingImpl();
     virtual ~SignalProcessingImpl();
     /**
      * @param script main script to call function script
      */
-    virtual bool init(const android::String8& script);
+    virtual bool init(const std::string& script);
 
-    virtual TaskGeneric::ExecutionResult run(const android::String8& functionScript,
+    virtual TaskGeneric::ExecutionResult run(const std::string& functionScript,
             int nInputs, bool* inputTypes, void** inputs,
             int nOutputs, bool* outputTypes, void** outputs);
 private:

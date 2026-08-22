@@ -21,25 +21,25 @@
 
 
 ClientImpl::ClientImpl()
-    : mAudio(new RemoteAudio(mSocket))
+    : mAudio(std::make_shared<RemoteAudio>(mSocket))
 {
 
 }
 
 ClientImpl::~ClientImpl()
 {
-    mAudio->release();
+    if (mAudio) mAudio->release();
 }
 
-bool ClientImpl::init(const android::String8& param)
+bool ClientImpl::init(const std::string& param)
 {
     Adb adb(param);
     if (!adb.setPortForwarding(HOST_TCP_PORT, CLIENT_TCP_PORT)) {
         LOGE("adb port forwarding failed");
         return false;
     }
-    android::String8 clientBinary("client/CtsAudioClient.apk");
-    android::String8 componentName("com.android.cts.audiotest/.CtsAudioClientActivity");
+    const std::string clientBinary("client/CtsAudioClient.apk");
+    const std::string componentName("com.android.cts.audiotest/.CtsAudioClientActivity");
     if (!adb.launchClient(clientBinary, componentName)) {
         LOGE("cannot install or launch client");
         return false;

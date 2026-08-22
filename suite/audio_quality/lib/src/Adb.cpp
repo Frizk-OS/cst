@@ -14,11 +14,12 @@
  * the License.
  */
 #include <stdlib.h>
+#include <cstdio>
 
 #include <StringUtil.h>
 #include "Adb.h"
 
-Adb::Adb(const android::String8& device)
+Adb::Adb(const std::string& device)
     : mDevice(device)
 {
 
@@ -31,49 +32,48 @@ Adb::~Adb()
 
 bool Adb::setPortForwarding(int hostPort, int devicePort)
 {
-    android::String8 command;
-    if (command.appendFormat("forward tcp:%d tcp:%d", hostPort, devicePort) != 0) {
+    char buf[128];
+    if (snprintf(buf, sizeof(buf), "forward tcp:%d tcp:%d", hostPort, devicePort) < 0) {
         return false;
     }
-    if (executeCommand(command) != 0) {
+    if (executeCommand(std::string(buf)) != 0) {
         return false;
     }
     return true;
 }
 
-bool Adb::launchClient(const android::String8& clientBinary, const android::String8& component)
+bool Adb::launchClient(const std::string& clientBinary, const std::string& component)
 {
-    android::String8 command;
-    if (command.appendFormat("install -r %s", clientBinary.string()) != 0) {
+    char buf[1024];
+    if (snprintf(buf, sizeof(buf), "install -r %s", clientBinary.c_str()) < 0) {
         return false;
     }
-    if (executeCommand(command) != 0) {
+    if (executeCommand(std::string(buf)) != 0) {
         return false;
     }
-    command.clear();
-    if (command.appendFormat("shell am start -W -n %s", component.string()) != 0) {
+    if (snprintf(buf, sizeof(buf), "shell am start -W -n %s", component.c_str()) < 0) {
         return false;
     }
-    if (executeCommand(command) != 0) {
+    if (executeCommand(std::string(buf)) != 0) {
         return false;
     }
     return true;
 }
 
 /** @param command ADB command except adb -s XYZW */
-int Adb::executeCommand(const android::String8& command)
+int Adb::executeCommand(const std::string& command)
 {
-    android::String8 adbCommand;
+    char adbBuf[2048];
     if (mDevice.empty()) {
-        if (adbCommand.appendFormat("adb %s", command.string()) != 0) {
+        if (snprintf(adbBuf, sizeof(adbBuf), "adb %s", command.c_str()) < 0) {
             return -1;
         }
     } else {
-        if (adbCommand.appendFormat("adb -s %s %s", mDevice.string(),
-                command.string()) != 0) {
+        if (snprintf(adbBuf, sizeof(adbBuf), "adb -s %s %s", mDevice.c_str(),
+                command.c_str()) < 0) {
             return -1;
         }
     }
-    return system(adbCommand.string());
+    return system(adbBuf);
 }
 

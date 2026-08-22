@@ -32,10 +32,10 @@ public:
         ASSERT_TRUE(setup != NULL);
         ASSERT_TRUE(action != NULL);
         mSequential = new TaskSequential();
-        const android::String8 REPEAT("repeat");
-        const android::String8 N_10("10");
-        const android::String8 INDEX("index");
-        const android::String8 I("i");
+        const std::string REPEAT("repeat");
+        const std::string N_10("10");
+        const std::string INDEX("index");
+        const std::string I("i");
         ASSERT_TRUE(mSequential->parseAttribute(REPEAT, N_10));
         ASSERT_TRUE(mSequential->parseAttribute(INDEX, I));
         ASSERT_TRUE(action->addChild(mSequential));

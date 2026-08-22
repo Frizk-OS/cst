@@ -39,17 +39,17 @@ public:
 
 
 TEST_F(TaskSequentialTest, AttributeTest) {
-    const android::String8 REPEAT("repeat");
-    const android::String8 N_10("10");
-    const android::String8 INDEX("index");
-    const android::String8 I("i");
-    const android::String8 NO_SUCH_THING("no_such_thing");
-    const android::String8 SHOULD_FAIL("should_fail");
+    const std::string REPEAT("repeat");
+    const std::string N_10("10");
+    const std::string INDEX("index");
+    const std::string I("i");
+    const std::string NO_SUCH_THING("no_such_thing");
+    const std::string SHOULD_FAIL("should_fail");
     ASSERT_TRUE(mSequential->parseAttribute(REPEAT, N_10));
     ASSERT_TRUE(mSequential->parseAttribute(INDEX, I));
     ASSERT_TRUE(!mSequential->parseAttribute(NO_SUCH_THING, SHOULD_FAIL));
     mSequential->run();
-    const android::String8 RE(".*");
+    const std::string RE(".*");
     std::list<TaskCase::IndexPair>* indices = mTestCase->findAllIndices(RE);
     ASSERT_TRUE(indices != NULL);
     ASSERT_TRUE(indices->size() == 1);

@@ -22,8 +22,8 @@
 #include <map>
 #include <list>
 #include <utility>
-#include <utils/String8.h>
-#include <utils/StrongPointer.h>
+#include <string>
+#include <memory>
 #include "Log.h"
 #include "audio/Buffer.h"
 #include "TaskGeneric.h"
@@ -38,18 +38,18 @@ public:
     virtual bool addChild(TaskGeneric* child);
     virtual TaskGeneric::ExecutionResult run();
 
-    bool getCaseName(android::String8& name) const;
+    bool getCaseName(std::string& name) const;
 
-    bool registerBuffer(const android::String8& name, android::sp<Buffer>& buffer);
+    bool registerBuffer(const std::string& name, std::shared_ptr<Buffer>& buffer);
     // update already existing buffer. Actually the old buffer will be deleted.
-    bool updateBuffer(const android::String8& name, android::sp<Buffer>& buffer);
+    bool updateBuffer(const std::string& name, std::shared_ptr<Buffer>& buffer);
     /// find buffer with given id. sp will be NULL if not found
-    android::sp<Buffer> findBuffer(const android::String8& name);
-    typedef std::pair<android::String8, android::sp<Buffer> > BufferPair;
+    std::shared_ptr<Buffer> findBuffer(const std::string& name);
+    typedef std::pair<std::string, std::shared_ptr<Buffer> > BufferPair;
     /// find all buffers with given regular expression. returns NULL if not found
-    std::list<BufferPair>*  findAllBuffers(const android::String8& re);
+    std::list<BufferPair>*  findAllBuffers(const std::string& re);
 
-    android::sp<RemoteAudio>& getRemoteAudio();
+    std::shared_ptr<RemoteAudio>& getRemoteAudio();
 
     class Value {
     public:
@@ -103,37 +103,37 @@ public:
         Type mType;
     };
 
-    bool registerValue(const android::String8& name, Value& val);
-    bool updateValue(const android::String8& name, Value& val);
-    bool findValue(const android::String8& name, Value& val);
-    typedef std::pair<android::String8, Value> ValuePair;
+    bool registerValue(const std::string& name, Value& val);
+    bool updateValue(const std::string& name, Value& val);
+    bool findValue(const std::string& name, Value& val);
+    typedef std::pair<std::string, Value> ValuePair;
     /// find all Values with given regular expression. returns NULL if not found
-    std::list<ValuePair>*  findAllValues(const android::String8& re);
+    std::list<ValuePair>*  findAllValues(const std::string& re);
 
-    bool registerIndex(const android::String8& name, int value = -1);
-    bool updateIndex(const android::String8& name, int value);
-    bool findIndex(const android::String8& name, int& val);
-    typedef std::pair<android::String8, int> IndexPair;
+    bool registerIndex(const std::string& name, int value = -1);
+    bool updateIndex(const std::string& name, int value);
+    bool findIndex(const std::string& name, int& val);
+    typedef std::pair<std::string, int> IndexPair;
     /// find all Indices with given regular expression. returns NULL if not found
-    std::list<IndexPair>*  findAllIndices(const android::String8& re);
+    std::list<IndexPair>*  findAllIndices(const std::string& re);
 
     /**
      * Translate variable name like $i into index variable
      * All xxxValue and xxxBuffer calls do translation inside.
      */
-    bool translateVarName(const android::String8& orig, android::String8& translated);
+    bool translateVarName(const std::string& orig, std::string& translated);
 
-    void setDetails(android::String8 details);
-    const android::String8& getDetails() const;
+    void setDetails(std::string details);
+    const std::string& getDetails() const;
 private:
     void releaseRemoteAudio();
 
 private:
-    std::map<android::String8, android::sp<Buffer> > mBufferList;
-    std::map<android::String8, int> mIndexList;
-    std::map<android::String8, Value> mValueList;
+    std::map<std::string, std::shared_ptr<Buffer> > mBufferList;
+    std::map<std::string, int> mIndexList;
+    std::map<std::string, Value> mValueList;
     ClientInterface* mClient;
-    android::String8 mDetails;
+    std::string mDetails;
 };
 
 

@@ -29,18 +29,18 @@ TEST_F(AudioHardwareTest, DetectTest) {
 }
 
 TEST_F(AudioHardwareTest, LocalFactoryTest) {
-    android::sp<AudioHardware> playback = AudioHardware::createAudioHw(true, true);
+    std::shared_ptr<AudioHardware> playback = AudioHardware::createAudioHw(true, true);
     ASSERT_TRUE(playback.get() != NULL);
-    android::sp<AudioHardware> recording = AudioHardware::createAudioHw(true, false);
+    std::shared_ptr<AudioHardware> recording = AudioHardware::createAudioHw(true, false);
     ASSERT_TRUE(recording.get() != NULL);
 }
 
 TEST_F(AudioHardwareTest, RemoteFactoryTest) {
     TaskCase* testCase = new TaskCase();
     ASSERT_TRUE(testCase != NULL);
-    android::sp<AudioHardware> playback = AudioHardware::createAudioHw(false, true, testCase);
+    std::shared_ptr<AudioHardware> playback = AudioHardware::createAudioHw(false, true, testCase);
     ASSERT_TRUE(playback.get() != NULL);
-    android::sp<AudioHardware> recording = AudioHardware::createAudioHw(false, false, testCase);
+    std::shared_ptr<AudioHardware> recording = AudioHardware::createAudioHw(false, false, testCase);
     ASSERT_TRUE(recording.get() != NULL);
     delete testCase;
 }

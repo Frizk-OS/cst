@@ -18,7 +18,7 @@
 #ifndef CTSAUDIO_AUDIOLOCAL_H
 #define CTSAUDIO_AUDIOLOCAL_H
 
-#include <utils/StrongPointer.h>
+#include <memory>
 #include <utils/threads.h>
 
 #include <Semaphore.h>
@@ -35,7 +35,7 @@ public:
 
     virtual bool prepare(AudioHardware::SamplingRate samplingRate, int gain,
             int mode = AudioHardware::EModeVoice);
-    virtual bool startPlaybackOrRecord(android::sp<Buffer>& buffer, int numberRepetition = 1);
+    virtual bool startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer, int numberRepetition = 1);
     virtual bool waitForCompletion();
     virtual void stopPlaybackOrRecord();
 
@@ -44,7 +44,7 @@ protected:
     AudioLocal();
 
     virtual bool doPrepare(AudioHardware::SamplingRate, int samplesInOneGo) = 0;
-    virtual bool doPlaybackOrRecord(android::sp<Buffer>& buffer) = 0;
+    virtual bool doPlaybackOrRecord(std::shared_ptr<Buffer>& buffer) = 0;
     virtual void doStop() = 0;
     virtual void releaseHw() {};
 
@@ -70,7 +70,7 @@ private:
     // Thus, all parameters can be stored here.
     AudioHardware::SamplingRate mSamplingRate;
 
-    android::sp<Buffer> mBuffer;
+    std::shared_ptr<Buffer> mBuffer;
     int mNumberRepetition;
     int mCurrentRepeat;
 

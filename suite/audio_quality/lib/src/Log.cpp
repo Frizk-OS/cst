@@ -67,11 +67,11 @@ bool Log::init(const char* dirName)
     if (dirName == NULL) {
         return true;
     }
-    android::String8 logFile;
-    if (logFile.appendFormat("%s/log.txt", dirName) != 0) {
+    char buf[1024];
+    if (snprintf(buf, sizeof(buf), "%s/log.txt", dirName) < 0) {
         return false;
     }
-    return FileUtil::init(logFile.string());
+    return FileUtil::init(buf);
 }
 
 

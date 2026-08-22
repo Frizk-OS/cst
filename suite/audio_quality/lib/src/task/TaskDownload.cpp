@@ -22,12 +22,12 @@
 #include "task/TaskCase.h"
 #include "task/TaskDownload.h"
 
-static const android::String8 STR_ID("id");
+static const std::string STR_ID("id");
 
 TaskDownload::TaskDownload()
     : TaskGeneric(TaskGeneric::ETaskDownload)
 {
-    const android::String8* list[] = {&STR_ID, NULL};
+    const std::string* list[] = {&STR_ID, NULL};
     registerSupportedStringAttributes(list);
 }
 
@@ -38,22 +38,22 @@ TaskDownload::~TaskDownload()
 
 TaskGeneric::ExecutionResult TaskDownload::run()
 {
-    android::String8 id;
+    std::string id;
     if (!findStringAttribute(STR_ID, id)) {
-        LOGE("TaskDownload::run %s string not found", STR_ID.string());
+        LOGE("TaskDownload::run %s string not found", STR_ID.c_str());
         return TaskGeneric::EResultError;
     }
 
-    android::sp<Buffer> buffer = getTestCase()->findBuffer(id);
+    std::shared_ptr<Buffer> buffer = getTestCase()->findBuffer(id);
     if (buffer.get() == NULL) {
-        LOGE("TaskDownload::run cannot find buffer %s", id.string());
+        LOGE("TaskDownload::run cannot find buffer %s", id.c_str());
         return TaskGeneric::EResultError;
     }
     int downloadId;
     if (!getTestCase()->getRemoteAudio()->downloadData(id, buffer, downloadId)) {
         return TaskGeneric::EResultError;
     }
-    LOGI("Downloaded buffer %s to DUT with id %d", id.string(), downloadId);
+    LOGI("Downloaded buffer %s to DUT with id %d", id.c_str(), downloadId);
     return TaskGeneric::EResultOK;
 }
 

@@ -55,12 +55,12 @@ bool Report::init(const char* dirName)
     if (dirName == NULL) {
         return true;
     }
-    android::String8 report;
+    std::string report;
     if (report.appendFormat("%s/report.xml", dirName) != 0) {
         return false;
     }
     Settings::Instance()->addSetting(Settings::EREPORT_FILE, report);
-    return FileUtil::init(report.string());
+    return FileUtil::init(report.c_str());
 }
 
 void Report::printf(const char* fmt, ...)
@@ -73,7 +73,7 @@ void Report::printf(const char* fmt, ...)
 
 void Report::addCasePassed(const TaskCase* task)
 {
-    android::String8 name(" ");
+    std::string name(" ");
     task->getCaseName(name);
     StringPair pair(name, task->getDetails());
     mPassedCases.push_back(pair);
@@ -81,7 +81,7 @@ void Report::addCasePassed(const TaskCase* task)
 
 void Report::addCaseFailed(const TaskCase* task)
 {
-    android::String8 name(" ");
+    std::string name(" ");
     task->getCaseName(name);
     StringPair pair(name, task->getDetails());
     mFailedCases.push_back(pair);
@@ -93,11 +93,11 @@ void Report::writeResult(std::list<StringPair>::const_iterator begin,
     std::list<StringPair>::const_iterator it;
     for (it = begin; it != end; it++) {
         if (passed) {
-            printf("    <test title=\"%s\" result=\"pass\" >", it->first.string());
+            printf("    <test title=\"%s\" result=\"pass\" >", it->first.c_str());
         } else {
-            printf("    <test title=\"%s\" result=\"fail\" >", it->first.string());
+            printf("    <test title=\"%s\" result=\"fail\" >", it->first.c_str());
         }
-        printf("        <details>\n%s", it->second.string());
+        printf("        <details>\n%s", it->second.c_str());
         printf("        </details>");
         printf("    </test>");
     }
@@ -107,13 +107,13 @@ void Report::writeReport()
 {
     printf("<?xml version='1.0' encoding='utf-8' standalone='yes' ?>");
     printf("<audio-test-results-report report-version=\"1\" creation-time=\"%s\">",
-            Settings::Instance()->getSetting(Settings::EREPORT_TIME).string());
+            Settings::Instance()->getSetting(Settings::EREPORT_TIME).c_str());
     printf("  <verifier-info version-name=\"1\" version-code=\"1\" />");
     printf("  <device-info>");
-    printf("    %s", Settings::Instance()->getSetting(Settings::EDEVICE_INFO).string());
+    printf("    %s", Settings::Instance()->getSetting(Settings::EDEVICE_INFO).c_str());
     printf("  </device-info>");
     printf("  <audio-test-results xml=\"%s\">",
-            Settings::Instance()->getSetting(Settings::ETEST_XML).string());
+            Settings::Instance()->getSetting(Settings::ETEST_XML).c_str());
 
     writeResult(mFailedCases.begin(), mFailedCases.end(), false);
     writeResult(mPassedCases.begin(), mPassedCases.end(), true);

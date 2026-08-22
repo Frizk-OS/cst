@@ -26,7 +26,7 @@ public:
     TaskMessage();
     virtual ~TaskMessage();
     virtual TaskGeneric::ExecutionResult run();
-    virtual bool parseAttribute(const android::String8& name, const android::String8& value);
+    virtual bool parseAttribute(const std::string& name, const std::string& value);
 };
 
 

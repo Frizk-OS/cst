@@ -20,12 +20,12 @@
 #include "Log.h"
 #include "audio/AudioSignalFactory.h"
 
-android::sp<Buffer> AudioSignalFactory::generateSineWave(AudioHardware::BytesPerSample BPS,
+std::shared_ptr<Buffer> AudioSignalFactory::generateSineWave(AudioHardware::BytesPerSample BPS,
         int maxPositive, AudioHardware::SamplingRate samplingRate, int signalFreq,
         int samples,  bool stereo)
 {
     int bufferSize = samples * (stereo? 2 : 1) * BPS;
-    android::sp<Buffer> buffer(new Buffer(bufferSize));
+    std::shared_ptr<Buffer> buffer(new Buffer(bufferSize));
     // only 16bit signed
     ASSERT(BPS == AudioHardware::E2BPS);
     int16_t* data = reinterpret_cast<int16_t*>(buffer->getData());
@@ -42,11 +42,11 @@ android::sp<Buffer> AudioSignalFactory::generateSineWave(AudioHardware::BytesPer
     buffer->setSize(buffer->getCapacity());
     return buffer;
 }
-android::sp<Buffer> AudioSignalFactory::generateWhiteNoise(AudioHardware::BytesPerSample BPS,
+std::shared_ptr<Buffer> AudioSignalFactory::generateWhiteNoise(AudioHardware::BytesPerSample BPS,
         int maxPositive, int samples, bool stereo)
 {
     int bufferSize = samples * (stereo? 2 : 1) * BPS;
-    android::sp<Buffer> buffer(new Buffer(bufferSize, bufferSize));
+    std::shared_ptr<Buffer> buffer(new Buffer(bufferSize, bufferSize));
     // only 16bit signed
     ASSERT(BPS == AudioHardware::E2BPS);
     srand(123456);
@@ -67,11 +67,11 @@ android::sp<Buffer> AudioSignalFactory::generateWhiteNoise(AudioHardware::BytesP
     return buffer;
 }
 
-android::sp<Buffer> AudioSignalFactory::generateZeroSound(AudioHardware::BytesPerSample BPS,
+std::shared_ptr<Buffer> AudioSignalFactory::generateZeroSound(AudioHardware::BytesPerSample BPS,
         int samples, bool stereo)
 {
     int bufferSize = samples * (stereo? 2 : 1) * BPS;
-    android::sp<Buffer> buffer(new Buffer(bufferSize, bufferSize));
+    std::shared_ptr<Buffer> buffer(new Buffer(bufferSize, bufferSize));
     // only 16bit signed
     ASSERT(BPS == AudioHardware::E2BPS);
     int16_t* data = reinterpret_cast<int16_t*>(buffer->getData());

@@ -30,7 +30,7 @@ public:
         const char* mName;
         BuiltinProcessingMemberFn mFunction;
         size_t mNInput;
-        const bool* mInputTypes; // true: android::sp<Buffer>*, false: Value*
+        const bool* mInputTypes; // true: std::shared_ptr<Buffer>*, false: Value*
         size_t mNOutput;
         const bool* mOutputTypes;
     };
@@ -41,7 +41,7 @@ public:
      * calculate RMS of given data. The rms is passed to moving average filter
      * And the averaged RMS should be within passMin to passMax to pass the test.
      * Otherwise, it will just return EResultOK.
-     * Input: android::sp<Buffer> data, int64_t passMin, int64_t passMax
+     * Input: std::shared_ptr<Buffer> data, int64_t passMin, int64_t passMax
      * Output:int64_t rms
      */
     TaskGeneric::ExecutionResult rms_mva(void** inputs, void** outputs);

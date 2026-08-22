@@ -29,13 +29,13 @@
 
 // reported generated under reports/YYYY_MM_DD_HH_MM_SS dir
 const char reportTopDir[] = "reports";
-android::String8 FileUtil::mDirPath;
+std::string FileUtil::mDirPath;
 
-bool FileUtil::prepare(android::String8& dirPath)
+bool FileUtil::prepare(std::string& dirPath)
 {
-    if (mDirPath.length() != 0) {
+    if (!mDirPath.empty()) {
         dirPath = mDirPath;
-        _LOGD_("mDirPath %s", mDirPath.string());
+        _LOGD_("mDirPath %s", mDirPath.c_str());
         return true;
     }
 
@@ -55,23 +55,24 @@ bool FileUtil::prepare(android::String8& dirPath)
         _LOGD_("mkdir of topdir failed, error %d", errno);
         return false;
     }
-    android::String8 reportTime;
-    if (reportTime.appendFormat("%04d_%02d_%02d_%02d_%02d_%02d", tm->tm_year + 1900,
-                tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec) != 0) {
+    char reportTimeBuf[64];
+    if (snprintf(reportTimeBuf, sizeof(reportTimeBuf), "%04d_%02d_%02d_%02d_%02d_%02d", tm->tm_year + 1900,
+                tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec) < 0) {
             return false;
     }
+    std::string reportTime(reportTimeBuf);
     Settings::Instance()->addSetting(Settings::EREPORT_TIME, reportTime);
-    android::String8 path;
-    if (path.appendFormat("%s/%s", reportTopDir, reportTime.string()) != 0) {
+    char pathBuf[1024];
+    if (snprintf(pathBuf, sizeof(pathBuf), "%s/%s", reportTopDir, reportTime.c_str()) < 0) {
         return false;
     }
-    result = mkdir(path.string(), S_IRWXU);
+    result = mkdir(pathBuf, S_IRWXU);
     if ((result == -1) && (errno != EEXIST)) {
         _LOGD_("mkdir of report dir failed, error %d", errno);
         return false;
     }
-    mDirPath = path;
-    dirPath = path;
+    mDirPath = pathBuf;
+    dirPath = mDirPath;
 
     return true;
 }

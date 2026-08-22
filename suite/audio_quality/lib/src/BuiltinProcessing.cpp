@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 #include <math.h>
-#include <utils/StrongPointer.h>
+#include <memory>
 #include "audio/Buffer.h"
 #include "BuiltinProcessing.h"
 #include "Log.h"
@@ -47,7 +47,7 @@ TaskGeneric::ExecutionResult BuiltinProcessing::rms_mva(void** inputs, void** ou
 {
     LOGD("BuiltinProcessing::rms_mva in %x %x %x out %x",
             inputs[0], inputs[1], inputs[2], outputs[0]);
-    android::sp<Buffer>& data(*reinterpret_cast<android::sp<Buffer>*>(inputs[0]));
+    std::shared_ptr<Buffer>& data(*reinterpret_cast<std::shared_ptr<Buffer>*>(inputs[0]));
 
     int64_t passMin = (reinterpret_cast<TaskCase::Value*>(inputs[1]))->getInt64();
     int64_t passMax = (reinterpret_cast<TaskCase::Value*>(inputs[2]))->getInt64();

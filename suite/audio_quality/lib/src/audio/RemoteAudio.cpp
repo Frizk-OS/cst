@@ -148,19 +148,19 @@ int RemoteAudio::socketRxCallback(int fd, int events, void* data)
     return 1;
 }
 
-void RemoteAudio::sendCommand(android::sp<android::MessageHandler>& command)
+void RemoteAudio::sendCommand(std::shared_ptr<android::MessageHandler>& command)
 {
     mLooper->sendMessage(command, toCommandHandler(command)->getMessage());
 }
 
-bool RemoteAudio::waitForCompletion(android::sp<android::MessageHandler>& command, int timeInMSec)
+bool RemoteAudio::waitForCompletion(std::shared_ptr<android::MessageHandler>& command, int timeInMSec)
 {
     LOGV("waitForCompletion %d", timeInMSec);
     return toCommandHandler(command)->timedWait(timeInMSec);
 }
 
 bool RemoteAudio::waitForPlaybackOrRecordingCompletion(
-        android::sp<android::MessageHandler>& commandHandler)
+        std::shared_ptr<android::MessageHandler>& commandHandler)
 {
     CommandHandler* handler = reinterpret_cast<CommandHandler*>(commandHandler.get());
     handler->mStateLock.lock();
@@ -175,7 +175,7 @@ bool RemoteAudio::waitForPlaybackOrRecordingCompletion(
     return waitForCompletion(commandHandler, runTime + CLIENT_WAIT_TIMEOUT_MSEC);
 }
 
-void RemoteAudio::doStop(android::sp<android::MessageHandler>& commandHandler,
+void RemoteAudio::doStop(std::shared_ptr<android::MessageHandler>& commandHandler,
         AudioProtocol::CommandId id)
 {
     CommandHandler* handler = reinterpret_cast<CommandHandler*>(commandHandler.get());
@@ -187,13 +187,13 @@ void RemoteAudio::doStop(android::sp<android::MessageHandler>& commandHandler,
     handler->mActive = false;
     handler->mNotifyOnReply = false;
     handler->mStateLock.unlock();
-    android::sp<android::MessageHandler> command(new CommandHandler(*this, (int)id));
+    std::shared_ptr<android::MessageHandler> command(new CommandHandler(*this, (int)id));
     sendCommand(command);
     waitForCompletion(command, CLIENT_WAIT_TIMEOUT_MSEC);
 }
 
 
-bool RemoteAudio::downloadData(const android::String8 name, android::sp<Buffer>& buffer, int& id)
+bool RemoteAudio::downloadData(const std::string name, std::shared_ptr<Buffer>& buffer, int& id)
 {
     CommandHandler* handler = reinterpret_cast<CommandHandler*>(mDownloadHandler.get());
     id = mDownloadId;
@@ -217,12 +217,12 @@ bool RemoteAudio::downloadData(const android::String8 name, android::sp<Buffer>&
     return handler->mResult;
 }
 
-int RemoteAudio::getDataId(const android::String8& name)
+int RemoteAudio::getDataId(const std::string& name)
 {
-    std::map<android::String8, int>::iterator it;
+    std::map<std::string, int>::iterator it;
     it = mIdMap.find(name);
     if (it == mIdMap.end()) {
-        LOGE("Buffer name %s not registered", name.string());
+        LOGE("Buffer name %s not registered", name.c_str());
         return -1;
     }
     return it->second;
@@ -238,7 +238,7 @@ bool RemoteAudio::startPlayback(bool stereo, int samplingF, int mode, int volume
         handler->mStateLock.unlock();
         return false;
     }
-    std::map<int, android::sp<Buffer> >::iterator it;
+    std::map<int, std::shared_ptr<Buffer> >::iterator it;
     it = mBufferList.find(id);
     if (it == mBufferList.end()) {
         LOGE("Buffer id %d not registered", id);
@@ -274,7 +274,7 @@ bool RemoteAudio::waitForPlaybackCompletion()
 }
 
 bool RemoteAudio::startRecording(bool stereo, int samplingF, int mode, int volume,
-        android::sp<Buffer>& buffer)
+        std::shared_ptr<Buffer>& buffer)
 {
     CommandHandler* handler = reinterpret_cast<CommandHandler*>(mRecordingHandler.get());
     handler->mStateLock.lock();
@@ -308,7 +308,7 @@ void RemoteAudio::stopRecording()
     doStop(mRecordingHandler, AudioProtocol::ECmdStopRecording);
 }
 
-bool RemoteAudio::getDeviceInfo(android::String8& data)
+bool RemoteAudio::getDeviceInfo(std::string& data)
 {
     CommandHandler* handler = reinterpret_cast<CommandHandler*>(mDeviceInfoHandler.get());
     handler->mStateLock.lock();
@@ -328,7 +328,7 @@ bool RemoteAudio::getDeviceInfo(android::String8& data)
 /** should be called before RemoteAudio is destroyed */
 void RemoteAudio::release()
 {
-    android::sp<android::MessageHandler> command(new CommandHandler(*this, CommandHandler::EExit));
+    std::shared_ptr<android::MessageHandler> command(new CommandHandler(*this, CommandHandler::EExit));
     sendCommand(command);
     join(); // wait for exit
     mSocket.release();

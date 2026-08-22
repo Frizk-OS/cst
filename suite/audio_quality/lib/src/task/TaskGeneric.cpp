@@ -101,19 +101,19 @@ TaskGeneric::ExecutionResult TaskGeneric::run()
     return result;
 }
 
-bool TaskGeneric::parseAttribute(const android::String8& name, const android::String8& value)
+bool TaskGeneric::parseAttribute(const std::string& name, const std::string& value)
 {
     // default implementation only handles registered string attributes
     if (!addStringAttribute(name, value)) {
         LOGE("parseAttribute unknown attribute %s %s for type %d",
-                name.string(), value.string(), getType());
+                name.c_str(), value.c_str(), getType());
         return false;
     }
     return true;
 }
 
 
-void TaskGeneric::registerSupportedStringAttributes(const android::String8* keys[])
+void TaskGeneric::registerSupportedStringAttributes(const std::string* keys[])
 {
     int i = 0;
     while (keys[i] != NULL) {
@@ -122,9 +122,9 @@ void TaskGeneric::registerSupportedStringAttributes(const android::String8* keys
     }
 }
 
-bool TaskGeneric::addStringAttribute(const android::String8& key, const android::String8& value)
+bool TaskGeneric::addStringAttribute(const std::string& key, const std::string& value)
 {
-    std::set<android::String8, android::String8>::iterator it = mAllowedStringAttributes.find(key);
+    std::set<std::string, std::string>::iterator it = mAllowedStringAttributes.find(key);
     if (it == mAllowedStringAttributes.end()) {
         return false; // not allowed
     }
@@ -132,9 +132,9 @@ bool TaskGeneric::addStringAttribute(const android::String8& key, const android:
     return true;
 }
 
-bool TaskGeneric::findStringAttribute(const android::String8& key, android::String8& value) const
+bool TaskGeneric::findStringAttribute(const std::string& key, std::string& value) const
 {
-    std::map<android::String8, android::String8>::const_iterator it = mStringAttributes.find(key);
+    std::map<std::string, std::string>::const_iterator it = mStringAttributes.find(key);
     if (it == mStringAttributes.end()) {
         return false; // not found
     }

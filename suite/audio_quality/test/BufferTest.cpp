@@ -46,7 +46,7 @@ TEST_F(BufferTest, saveLoadStereoTest) {
         data[2*i] = i;
         data[2*i+1] = i;
     }
-    android::String8 file("/tmp/cts_audio_temp");
+    std::string file("/tmp/cts_audio_temp");
     ASSERT_TRUE(buffer->saveToFile(file));
     file.append(".r2s");
     UniquePtr<Buffer> bufferRead(Buffer::loadFromFile(file));

@@ -18,7 +18,7 @@
 #ifndef CTSAUDIO_CLIENTIMPL_H
 #define CTSAUDIO_CLIENTIMPL_H
 
-#include <utils/StrongPointer.h>
+#include <memory>
 #include "ClientInterface.h"
 #include "ClientSocket.h"
 #include "audio/RemoteAudio.h"
@@ -29,19 +29,19 @@ public:
     static const int CLIENT_TCP_PORT = 15001;
     ClientImpl();
     virtual ~ClientImpl();
-    virtual bool init(const android::String8& param);
+    virtual bool init(const std::string& param);
 
     virtual ClientSocket& getSocket() {
         return mSocket;
     };
 
-    virtual android::sp<RemoteAudio>& getAudio() {
+    virtual std::shared_ptr<RemoteAudio>& getAudio() {
         return mAudio;
     };
 
 private:
     ClientSocket mSocket;
-    android::sp<RemoteAudio> mAudio;
+    std::shared_ptr<RemoteAudio> mAudio;
 
 };
 

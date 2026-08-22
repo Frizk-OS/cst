@@ -14,7 +14,7 @@
  * the License.
  */
 
-#include <utils/String8.h>
+#include <string>
 
 #include <gtest/gtest.h>
 
@@ -35,7 +35,7 @@ protected:
         GenericFactory factory;
         mClient = factory.createClientInterface();
         ASSERT_TRUE(mClient != NULL);
-        android::String8 dummyParam;
+        std::string dummyParam;
         ASSERT_TRUE(mClient->init(dummyParam));
     }
 
@@ -51,39 +51,39 @@ TEST_F(ClientInterfaceTest, InitTest) {
 
 TEST_F(ClientInterfaceTest, getDeviceInfoTest) {
     ClientImpl* client = reinterpret_cast<ClientImpl*>(mClient);
-    android::sp<RemoteAudio>& audio(client->getAudio());
-    android::String8 info;
+    std::shared_ptr<RemoteAudio>& audio(client->getAudio());
+    std::string info;
 
     ASSERT_TRUE(audio->getDeviceInfo(info));
-    LOGD("device info %s", info.string());
+    LOGD("device info %s", info.c_str());
 }
 
 TEST_F(ClientInterfaceTest, PlayTest) {
     ClientImpl* client = reinterpret_cast<ClientImpl*>(mClient);
-    android::sp<RemoteAudio>& audio(client->getAudio());
+    std::shared_ptr<RemoteAudio>& audio(client->getAudio());
     const int maxPositive = 10000;
     const int signalFreq = AudioHardware::ESampleRate_44100/100;
     const int samples = 8192*2;
-    android::sp<Buffer> buffer = AudioSignalFactory::generateSineWave(AudioHardware::E2BPS,
+    std::shared_ptr<Buffer> buffer = AudioSignalFactory::generateSineWave(AudioHardware::E2BPS,
             maxPositive, AudioHardware::ESampleRate_44100, signalFreq, samples);
     int id;
-    android::String8 name("1");
+    std::string name("1");
     ASSERT_TRUE(audio->downloadData(name, buffer, id));
     ASSERT_TRUE(audio->startPlayback(true, AudioHardware::ESampleRate_44100,
             AudioHardware::EModeVoice, 100, id, 1));
     ASSERT_TRUE(audio->waitForPlaybackCompletion());
     ASSERT_TRUE(id == audio->getDataId(name));
-    android::String8 name2("2");
+    std::string name2("2");
     ASSERT_TRUE(audio->getDataId(name2) < 0);
 }
 
 TEST_F(ClientInterfaceTest, RecordTest) {
     ClientImpl* client = reinterpret_cast<ClientImpl*>(mClient);
-    android::sp<RemoteAudio>& audio(client->getAudio());
+    std::shared_ptr<RemoteAudio>& audio(client->getAudio());
     const int maxPositive = 10000;
     const int signalFreq = AudioHardware::ESampleRate_44100 / 100;
     const int samples = 44100 * 4;
-    android::sp<Buffer> buffer(new Buffer(samples * 2, samples * 2, false));
+    std::shared_ptr<Buffer> buffer(new Buffer(samples * 2, samples * 2, false));
 
     ASSERT_TRUE(audio->startRecording(false, AudioHardware::ESampleRate_44100,
             AudioHardware::EModeVoice, 100, buffer));

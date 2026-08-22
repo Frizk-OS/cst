@@ -17,8 +17,8 @@
 #include <gtest/gtest.h>
 #include "task/TaskAll.h"
 
-static const android::String8 AAA("aaa");
-static const android::String8 BBB("bbb");
+static const std::string AAA("aaa");
+static const std::string BBB("bbb");
 
 class TaskTest : public testing::Test {
 public:
@@ -42,7 +42,7 @@ public:
             mLiveInstanceCounter++;
 
 
-            const android::String8* list[] = {&AAA, &BBB, NULL};
+            const std::string* list[] = {&AAA, &BBB, NULL};
             registerSupportedStringAttributes(list);
         };
         virtual ~TestTaskDummy(){
@@ -54,10 +54,10 @@ public:
             mRunCounter++;
             return TaskGeneric::run();
         };
-        bool addStringAttributePublic(const android::String8& key, android::String8& value){
+        bool addStringAttributePublic(const std::string& key, std::string& value){
             return addStringAttribute(key, value);
         }
-        bool findStringAttributePublic(const android::String8& key, android::String8& value){
+        bool findStringAttributePublic(const std::string& key, std::string& value){
             return findStringAttribute(key, value);
         }
     };
@@ -111,20 +111,20 @@ TEST_F(TaskTest, RunTest) {
 }
 
 TEST_F(TaskTest, StringAttributeTest) {
-    android::String8 aaaVal("aaa_val");
-    android::String8 bbbVal("bbb_val");
-    android::String8 read;
+    std::string aaaVal("aaa_val");
+    std::string bbbVal("bbb_val");
+    std::string read;
     TestTaskDummy* task = reinterpret_cast<TestTaskDummy*>(mTaskSetup);
     ASSERT_TRUE(task->addStringAttributePublic(AAA, aaaVal));
     ASSERT_TRUE(task->addStringAttributePublic(BBB, bbbVal));
-    const android::String8 CCC("ccc");
+    const std::string CCC("ccc");
     ASSERT_TRUE(!task->addStringAttributePublic(CCC, bbbVal));
     ASSERT_TRUE(task->findStringAttributePublic(AAA, read));
     ASSERT_TRUE(read == aaaVal);
     ASSERT_TRUE(task->findStringAttributePublic(BBB, read));
     ASSERT_TRUE(read == bbbVal);
-    const android::String8 VERSION("version");
-    const android::String8 NAME("name");
+    const std::string VERSION("version");
+    const std::string NAME("name");
     ASSERT_TRUE(!task->findStringAttributePublic(VERSION, read));
     ASSERT_TRUE(!task->findStringAttributePublic(NAME, read));
 }

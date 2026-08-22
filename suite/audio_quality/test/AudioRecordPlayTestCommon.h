@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 #include <utils/threads.h>
-#include <utils/StrongPointer.h>
+#include <memory>
 
 #include <audio/AudioHardware.h>
 #include <audio/AudioPlaybackLocal.h>
@@ -32,10 +32,10 @@
 
 class AudioRecordPlayTestCommon : public testing::Test {
 protected:
-    android::sp<Buffer> mBufferRecording;
-    android::sp<Buffer> mBufferPlayback;
-    android::sp<AudioHardware> mAudioRecordingHw;
-    android::sp<AudioHardware> mAudioPlaybackHw;
+    std::shared_ptr<Buffer> mBufferRecording;
+    std::shared_ptr<Buffer> mBufferPlayback;
+    std::shared_ptr<AudioHardware> mAudioRecordingHw;
+    std::shared_ptr<AudioHardware> mAudioPlaybackHw;
 
     static const int MAX_POSITIVE_AMPLITUDE = 10000;
     static const int SIGNAL_FREQ = 1000;
@@ -82,8 +82,8 @@ protected:
         ASSERT_TRUE(mBufferRecording->amountHandled() == mBufferRecording->getSize());
     }
 
-    virtual android::sp<AudioHardware> createRecordingHw() = 0;
-    virtual android::sp<AudioHardware> createPlaybackHw() = 0;
+    virtual std::shared_ptr<AudioHardware> createRecordingHw() = 0;
+    virtual std::shared_ptr<AudioHardware> createPlaybackHw() = 0;
 };
 
 

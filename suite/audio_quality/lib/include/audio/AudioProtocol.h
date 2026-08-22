@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 
-#include <utils/StrongPointer.h>
+#include <memory>
 #include "Log.h"
 #include "audio/Buffer.h"
 #include "ClientSocket.h"
@@ -36,7 +36,7 @@ public:
     uint32_t mNumberRepetition; // only for playback
     uint32_t mVolume;
     uint32_t mId;
-    android::sp<Buffer> mBuffer;
+    std::shared_ptr<Buffer> mBuffer;
     void* mExtra; // extra data for whatever purpose
 };
 

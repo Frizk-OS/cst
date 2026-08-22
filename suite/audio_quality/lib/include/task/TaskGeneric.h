@@ -22,7 +22,7 @@
 #include <list>
 #include <map>
 #include <set>
-#include <utils/String8.h>
+#include <string>
 
 
 class TaskCase;
@@ -90,16 +90,16 @@ public:
     /**
      * parse attribute from XML DOM. name/value pair will be passed for all attributes.
      */
-    virtual bool parseAttribute(const android::String8& name, const android::String8& value);
+    virtual bool parseAttribute(const std::string& name, const std::string& value);
 
     bool forEachChild(bool (*runForEachChild)(TaskGeneric* child, void* data), void* data);
 
 protected:
     /// used by child instance to register allowed attributes
     /// keys array should end with NULL
-    void registerSupportedStringAttributes(const android::String8* keys[]);
-    bool addStringAttribute(const android::String8& key, const android::String8& value);
-    bool findStringAttribute(const android::String8& key, android::String8& value) const;
+    void registerSupportedStringAttributes(const std::string* keys[]);
+    bool addStringAttribute(const std::string& key, const std::string& value);
+    bool findStringAttribute(const std::string& key, std::string& value) const;
     inline std::list<TaskGeneric*>& getChildren() {
         return mChildren;
     };
@@ -109,8 +109,8 @@ private:
     TaskGeneric* mParent;
     std::list<TaskGeneric*> mChildren;
 
-    std::set<android::String8> mAllowedStringAttributes;
-    std::map<android::String8, android::String8> mStringAttributes;
+    std::set<std::string> mAllowedStringAttributes;
+    std::map<std::string, std::string> mStringAttributes;
 
 };
 

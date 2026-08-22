@@ -80,12 +80,12 @@ ModelBuilder::~ModelBuilder()
     delete mFactory;
 }
 
-TaskGeneric* ModelBuilder::parseTestDescriptionXml(const android::String8& xmlFileName,
+TaskGeneric* ModelBuilder::parseTestDescriptionXml(const std::string& xmlFileName,
         bool caseOnly)
 {
-    TiXmlDocument doc(xmlFileName.string());
+    TiXmlDocument doc(xmlFileName.c_str());
     if (!doc.LoadFile()) {
-        LOGE("ModelBuilder::parseTestDescriptionXml cannot load file %s", xmlFileName.string());
+        LOGE("ModelBuilder::parseTestDescriptionXml cannot load file %s", xmlFileName.c_str());
         return NULL;
     }
     const TiXmlElement* root;
@@ -182,7 +182,7 @@ TaskCase* ModelBuilder::parseCase(const TiXmlElement& root)
 }
 
 
-TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const android::String8& xmlFileName)
+TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const std::string& xmlFileName)
 {
     UniquePtr<TaskBatch> batch(
             reinterpret_cast<TaskBatch*>(mFactory->createTask(TaskGeneric::ETaskBatch)));
@@ -199,7 +199,7 @@ TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const android::Str
         LOGE("ModelBuilder::handleBatch no include inside batch");
         return NULL;
     }
-    android::String8 path = xmlFileName.getPathDir();
+    std::string path = xmlFileName.getPathDir();
 
     UniquePtr<TaskCase> testCase;
     int i = 0;
@@ -231,14 +231,14 @@ TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const android::Str
     return batch.release();
 }
 
-TaskCase* ModelBuilder::parseInclude(const TiXmlElement& elem, const android::String8& path)
+TaskCase* ModelBuilder::parseInclude(const TiXmlElement& elem, const std::string& path)
 {
     const char* fileName = elem.Attribute("file");
     if (fileName == NULL) {
         LOGE("ModelBuilder::handleBatch no include elements");
         return NULL;
     }
-    android::String8 incFile = path;
+    std::string incFile = path;
     incFile.appendPath(fileName);
 
     // again no dynamic_cast intentionally
@@ -252,8 +252,8 @@ bool ModelBuilder::parseAttributes(const TiXmlElement& elem, TaskGeneric& task)
         if (attr == NULL) {
             break;
         }
-        android::String8 name(attr->Name());
-        android::String8 value(attr->Value());
+        std::string name(attr->Name());
+        std::string value(attr->Value());
         if (!task.parseAttribute(name, value)) {
             LOGE("ModelBuilder::parseAttributes cannot parse attribute %s:%s for task type %d",
                     attr->Name(), attr->Value(), task.getType());

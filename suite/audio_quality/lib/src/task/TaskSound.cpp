@@ -22,14 +22,14 @@
 #include "task/TaskCase.h"
 #include "task/TaskSound.h"
 
-static const android::String8 STR_ID("id");
-static const android::String8 STR_TYPE("type");
+static const std::string STR_ID("id");
+static const std::string STR_TYPE("type");
 
 TaskSound::TaskSound()
     : TaskGeneric(TaskGeneric::ETaskSound),
       mPreload(false)
 {
-    const android::String8* list[] = {&STR_ID, &STR_TYPE, NULL};
+    const std::string* list[] = {&STR_ID, &STR_TYPE, NULL};
     registerSupportedStringAttributes(list);
 }
 
@@ -38,7 +38,7 @@ TaskSound::~TaskSound()
 
 }
 
-bool TaskSound::parseAttribute(const android::String8& name, const android::String8& value)
+bool TaskSound::parseAttribute(const std::string& name, const std::string& value)
 {
     if (StringUtil::compare(name, "preload") == 0) {
             if (StringUtil::compare(value, "1") == 0) {
@@ -51,22 +51,22 @@ bool TaskSound::parseAttribute(const android::String8& name, const android::Stri
 
 TaskGeneric::ExecutionResult TaskSound::run()
 {
-    android::String8 id;
+    std::string id;
     if (!findStringAttribute(STR_ID, id)) {
-        LOGE("TaskSound::run %s string not found", STR_ID.string());
+        LOGE("TaskSound::run %s string not found", STR_ID.c_str());
         return TaskGeneric::EResultError;
     }
-    android::String8 type;
+    std::string type;
     if (!findStringAttribute(STR_TYPE, type)) {
-        LOGE("TaskSound::run %s string not found", STR_TYPE.string());
+        LOGE("TaskSound::run %s string not found", STR_TYPE.c_str());
         return TaskGeneric::EResultError;
     }
-    UniquePtr<std::vector<android::String8> > tokens(StringUtil::split(type, ':'));
+    UniquePtr<std::vector<std::string> > tokens(StringUtil::split(type, ':'));
     if (tokens.get() == NULL) {
         LOGE("alloc failed");
         return TaskGeneric::EResultError;
     }
-    android::sp<Buffer> buffer;
+    std::shared_ptr<Buffer> buffer;
     if (StringUtil::compare(tokens->at(0), "file") == 0) {
         if (tokens->size() != 2) {
             LOGE("Wrong number of parameters %d", tokens->size());
@@ -76,9 +76,9 @@ TaskGeneric::ExecutionResult TaskSound::run()
         if (tokens->size() != 4) {
             LOGE("Wrong number of parameters %d", tokens->size());
         }
-        int amplitude = atoi(tokens->at(1).string());
-        int freq = atoi(tokens->at(2).string());
-        int time = atoi(tokens->at(3).string());
+        int amplitude = atoi(tokens->at(1).c_str());
+        int freq = atoi(tokens->at(2).c_str());
+        int time = atoi(tokens->at(3).c_str());
         int samples = time * AudioHardware::ESampleRate_44100 / 1000;
         buffer = AudioSignalFactory::generateSineWave(AudioHardware::E2BPS, amplitude,
                 AudioHardware::ESampleRate_44100, freq, samples, true);
@@ -87,13 +87,13 @@ TaskGeneric::ExecutionResult TaskSound::run()
         if (tokens->size() != 3) {
             LOGE("Wrong number of parameters %d", tokens->size());
         }
-        int amplitude = atoi(tokens->at(1).string());
-        int time = atoi(tokens->at(2).string());
+        int amplitude = atoi(tokens->at(1).c_str());
+        int time = atoi(tokens->at(2).c_str());
         int samples = time * AudioHardware::ESampleRate_44100 / 1000;
         buffer = AudioSignalFactory::generateWhiteNoise(AudioHardware::E2BPS, amplitude,
                 samples, true);
     } else { // unknown word
-        LOGE("TaskSound::run unknown word in type %s", type.string());
+        LOGE("TaskSound::run unknown word in type %s", type.c_str());
         // next buffer check will return
     }
 
@@ -101,7 +101,7 @@ TaskGeneric::ExecutionResult TaskSound::run()
         return TaskGeneric::EResultError;
     }
     if (!getTestCase()->registerBuffer(id, buffer)) {
-        LOGE("TaskSound::run registering buffer %s failed", id.string());
+        LOGE("TaskSound::run registering buffer %s failed", id.c_str());
         return TaskGeneric::EResultError;
     }
     if (mPreload) {
@@ -109,7 +109,7 @@ TaskGeneric::ExecutionResult TaskSound::run()
         if (!getTestCase()->getRemoteAudio()->downloadData(id, buffer, downloadId)) {
             return TaskGeneric::EResultError;
         }
-        LOGI("Downloaded buffer %s to DUT with id %d", id.string(), downloadId);
+        LOGI("Downloaded buffer %s to DUT with id %d", id.c_str(), downloadId);
     }
     return TaskGeneric::EResultOK;
 }

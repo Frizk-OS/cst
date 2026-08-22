@@ -25,7 +25,7 @@ public:
 };
 
 TEST_F(ModelBuilderTest, ParsingCaseNoAttribTest) {
-    android::String8 xmlFile("test_description/test/no_attrib.xml");
+    std::string xmlFile("test_description/test/no_attrib.xml");
     TaskGeneric* testCase = mModelBuilder.parseTestDescriptionXml(xmlFile);
     ASSERT_TRUE(testCase != NULL);
     //TODO verify TestCase
@@ -33,7 +33,7 @@ TEST_F(ModelBuilderTest, ParsingCaseNoAttribTest) {
 }
 
 TEST_F(ModelBuilderTest, ParsingCaseTest) {
-    android::String8 xmlFile("test_description/host_speaker_calibration.xml");
+    std::string xmlFile("test_description/host_speaker_calibration.xml");
     TaskGeneric* testCase = mModelBuilder.parseTestDescriptionXml(xmlFile);
     ASSERT_TRUE(testCase != NULL);
     //TODO verify TestCase
@@ -41,7 +41,7 @@ TEST_F(ModelBuilderTest, ParsingCaseTest) {
 }
 
 TEST_F(ModelBuilderTest, ParsingBatchTest) {
-    android::String8 xmlFile("test_description/all_playback.xml");
+    std::string xmlFile("test_description/all_playback.xml");
     TaskGeneric* testBatch = mModelBuilder.parseTestDescriptionXml(xmlFile);
     ASSERT_TRUE(testBatch != NULL);
     //TODO verify TestCase
@@ -49,7 +49,7 @@ TEST_F(ModelBuilderTest, ParsingBatchTest) {
 }
 
 TEST_F(ModelBuilderTest, CaseOnlyTest) {
-    android::String8 xmlFile("test_description/all_playback.xml");
+    std::string xmlFile("test_description/all_playback.xml");
     TaskGeneric* task = mModelBuilder.parseTestDescriptionXml(xmlFile, true);
     ASSERT_TRUE(task == NULL);
 
@@ -57,28 +57,28 @@ TEST_F(ModelBuilderTest, CaseOnlyTest) {
 }
 
 TEST_F(ModelBuilderTest, MissingMandatoryTest) {
-    android::String8 xmlFile("test_description/test/missing_mandatory.xml");
+    std::string xmlFile("test_description/test/missing_mandatory.xml");
     TaskGeneric* task = mModelBuilder.parseTestDescriptionXml(xmlFile);
     ASSERT_TRUE(task == NULL);
     delete task;
 }
 
 TEST_F(ModelBuilderTest, UnknownElementTest) {
-    android::String8 xmlFile("test_description/test/unknown_element.xml");
+    std::string xmlFile("test_description/test/unknown_element.xml");
     TaskGeneric* task = mModelBuilder.parseTestDescriptionXml(xmlFile);
     ASSERT_TRUE(task == NULL);
     delete task;
 }
 
 TEST_F(ModelBuilderTest, WrongAttributeTest) {
-    android::String8 xmlFile("test_description/test/wrong_attrib.xml");
+    std::string xmlFile("test_description/test/wrong_attrib.xml");
     TaskGeneric* task = mModelBuilder.parseTestDescriptionXml(xmlFile);
     ASSERT_TRUE(task == NULL);
     delete task;
 }
 
 TEST_F(ModelBuilderTest, BuiltinRMSTest) {
-    android::String8 xmlFile("test_description/test/test_rms_vma.xml");
+    std::string xmlFile("test_description/test/test_rms_vma.xml");
     TaskGeneric* task = mModelBuilder.parseTestDescriptionXml(xmlFile);
     ASSERT_TRUE(task != NULL);
     TaskGeneric::ExecutionResult result = task->run();

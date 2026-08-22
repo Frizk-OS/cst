@@ -30,11 +30,11 @@ public:
 
 
 TEST_F(FileUtilTest, initTest) {
-    android::String8 dirPath;
+    std::string dirPath;
     ASSERT_TRUE(FileUtil::prepare(dirPath));
     ASSERT_TRUE(dirPath.find("reports/") == 0);
-    LOGI("returned %s %d", dirPath.string(), dirPath.find("reports/"));
-    android::String8 dirPath2;
+    LOGI("returned %s %d", dirPath.c_str(), dirPath.find("reports/"));
+    std::string dirPath2;
     ASSERT_TRUE(FileUtil::prepare(dirPath2));
     ASSERT_TRUE(dirPath == dirPath2);
 }

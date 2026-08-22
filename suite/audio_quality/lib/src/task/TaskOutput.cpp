@@ -32,7 +32,7 @@ TaskOutput::~TaskOutput()
 {
 
 }
-bool TaskOutput::parseAttribute(const android::String8& name, const android::String8& value)
+bool TaskOutput::parseAttribute(const std::string& name, const std::string& value)
 {
     if (StringUtil::compare(name, "waitforcompletion") == 0) {
         if (StringUtil::compare(value, "1") == 0) {
@@ -45,7 +45,7 @@ bool TaskOutput::parseAttribute(const android::String8& name, const android::Str
 TaskGeneric::ExecutionResult TaskOutput::start()
 {
     bool localDevice = (mDeviceType == TaskAsync::EDeviceHost);
-    android::sp<AudioHardware> hw = AudioHardware::createAudioHw(localDevice, true, getTestCase());
+    std::shared_ptr<AudioHardware> hw = AudioHardware::createAudioHw(localDevice, true, getTestCase());
     if (hw.get() == NULL) {
         LOGE("cannot create Audio HW");
         return TaskGeneric::EResultError;
@@ -54,9 +54,9 @@ TaskGeneric::ExecutionResult TaskOutput::start()
         LOGE("prepare failed");
         return TaskGeneric::EResultError;
     }
-    android::sp<Buffer> buffer = getTestCase()->findBuffer(mId);
+    std::shared_ptr<Buffer> buffer = getTestCase()->findBuffer(mId);
     if (buffer.get() == NULL) {
-        LOGE("cannot find buffer %s", mId.string());
+        LOGE("cannot find buffer %s", mId.c_str());
         return TaskGeneric::EResultError;
     }
     buffer->restart(); // reset to play from beginning

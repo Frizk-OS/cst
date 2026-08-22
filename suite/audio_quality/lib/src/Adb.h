@@ -17,23 +17,23 @@
 #ifndef CTSAUDIO_ADB_H
 #define CTSAUDIO_ADB_H
 
-#include <utils/String8.h>
+#include <string>
 
 /** ADB interface to set port forwarding and launch client app */
 class Adb {
 public:
     /// device: device number typically passed in adb's -s argument.
     /// if device string is empty, adb command will be called without -s option.
-    Adb(const android::String8& device);
+    Adb(const std::string& device);
     ~Adb();
     bool setPortForwarding(int hostPort, int devicePort);
     /// install given clientBinary to DUT and launch given component.
-    bool launchClient(const android::String8& clientBinary, const android::String8& component);
+    bool launchClient(const std::string& clientBinary, const std::string& component);
 private:
-    int executeCommand(const android::String8& command);
+    int executeCommand(const std::string& command);
 
 private:
-    android::String8 mDevice;
+    std::string mDevice;
 };
 
 #endif // CTSAUDIO_ADB_H

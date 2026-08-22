@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 #include <utils/threads.h>
-#include <utils/StrongPointer.h>
+#include <memory>
 
 #include <audio/AudioHardware.h>
 #include <audio/AudioPlaybackLocal.h>
@@ -34,8 +34,8 @@
 
 class AudioPlayTestCommon : public testing::Test {
 protected:
-    android::sp<Buffer> mBuffer;
-    android::sp<AudioHardware> mAudioHw;
+    std::shared_ptr<Buffer> mBuffer;
+    std::shared_ptr<AudioHardware> mAudioHw;
 
     static const int MAX_POSITIVE_AMPLITUDE = 1000;
     static const int SIGNAL_FREQ = 1000;
@@ -85,7 +85,7 @@ protected:
         playAll(1);
     }
 
-    virtual android::sp<AudioHardware> createAudioHw() = 0;
+    virtual std::shared_ptr<AudioHardware> createAudioHw() = 0;
 };
 
 #endif // CTSAUDIO_AUDIOPLAYTESTCOMMON_H

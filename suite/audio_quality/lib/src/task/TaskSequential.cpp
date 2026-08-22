@@ -41,7 +41,7 @@ TaskGeneric::ExecutionResult TaskSequential::run()
     bool storeIndex = (mIndexName.length() == 0 ? false: true);
     if (storeIndex && !getTestCase()->registerIndex(mIndexName, mRepeatIndex)) {
         if (!getTestCase()->updateIndex(mIndexName, mRepeatIndex)) {
-            LOGE("register/update of index %s failed", mIndexName.string());
+            LOGE("register/update of index %s failed", mIndexName.c_str());
             return TaskGeneric::EResultError;
         }
     }
@@ -49,7 +49,7 @@ TaskGeneric::ExecutionResult TaskSequential::run()
     TaskGeneric::ExecutionResult firstError(TaskGeneric::EResultOK);
 
     for (mRepeatIndex = 0; mRepeatIndex < mRepeatCount; mRepeatIndex++) {
-        LOGI("  TaskSequential index %s loop %d-th", mIndexName.string(), mRepeatIndex);
+        LOGI("  TaskSequential index %s loop %d-th", mIndexName.c_str(), mRepeatIndex);
         if (storeIndex && !getTestCase()->updateIndex(mIndexName, mRepeatIndex)) {
             return TaskGeneric::EResultError;
         }
@@ -118,19 +118,19 @@ TaskGeneric::ExecutionResult TaskSequential::runAsyncTasksQueued()
 }
 
 
-bool TaskSequential::parseAttribute(const android::String8& name, const android::String8& value)
+bool TaskSequential::parseAttribute(const std::string& name, const std::string& value)
 {
     if (StringUtil::compare(name, "repeat") == 0) {
-        mRepeatCount = atoi(value.string());
+        mRepeatCount = atoi(value.c_str());
         if (mRepeatCount <= 0) {
             LOGE("TaskSequential::parseAttribute invalid value %s for key %s",
-                    value.string(), name.string());
+                    value.c_str(), name.c_str());
             return false;
         }
         return true;
     } else if (StringUtil::compare(name, "index") == 0) {
         mIndexName.append(value);
-        LOGD("TaskSequential::parseAttribute index %s", mIndexName.string());
+        LOGD("TaskSequential::parseAttribute index %s", mIndexName.c_str());
         return true;
     } else {
         return false;

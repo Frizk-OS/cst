@@ -29,11 +29,11 @@ TEST_F(ScriptExecTest, PythonVersionTest) {
 
 
 TEST_F(ScriptExecTest, checkIfPassedTest) {
-    android::String8 pass1("___CTS_AUDIO_PASS___");
-    android::String8 match1;
+    std::string pass1("___CTS_AUDIO_PASS___");
+    std::string match1;
     ASSERT_TRUE(SimpleScriptExec::checkIfPassed(pass1, match1));
 
-    android::String8 fail1;
+    std::string fail1;
     ASSERT_TRUE(!SimpleScriptExec::checkIfPassed(fail1, match1));
 }
 

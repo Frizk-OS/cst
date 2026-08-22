@@ -55,13 +55,13 @@ TaskGeneric::ExecutionResult TaskAsync::run()
     return result;
 }
 
-bool TaskAsync::parseAttribute(const android::String8& name, const android::String8& value)
+bool TaskAsync::parseAttribute(const std::string& name, const std::string& value)
 {
     bool result = true;
     if (StringUtil::compare(name, "id") == 0) {
         mId.append(value);
     } else if (StringUtil::compare(name, "gain") == 0) {
-        mVolume = atoi(value.string());
+        mVolume = atoi(value.c_str());
         if ((mVolume < 1) || (mVolume > 100)) {
             LOGE("TaskGeneric::parseAttribute gain out of range %d", mVolume);
             return false;

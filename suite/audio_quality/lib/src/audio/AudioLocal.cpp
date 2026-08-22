@@ -38,7 +38,7 @@ bool AudioLocal::prepare(AudioHardware::SamplingRate samplingRate,  int gain, in
     return issueCommandAndWaitForCompletion(ECmInitialize);
 }
 
-bool AudioLocal::startPlaybackOrRecord(android::sp<Buffer>& buffer, int numberRepetition)
+bool AudioLocal::startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer, int numberRepetition)
 {
     LOGV("startPlaybackOrRecord");
     if (mState != EStInitialized) {

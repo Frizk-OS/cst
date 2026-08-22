@@ -18,7 +18,7 @@
 #ifndef CTSAUDIO_TASKSEQUENTIAL_H
 #define CTSAUDIO_TASKSEQUENTIAL_H
 
-#include <utils/String8.h>
+#include <string>
 #include <list>
 #include "TaskGeneric.h"
 
@@ -29,7 +29,7 @@ public:
     TaskSequential();
     virtual ~TaskSequential();
     virtual TaskGeneric::ExecutionResult run();
-    virtual bool parseAttribute(const android::String8& name, const android::String8& value);
+    virtual bool parseAttribute(const std::string& name, const std::string& value);
     /**
      * Queue async task for asynchronous execution (= call complete later)
      * If the task is already queued, it will not be queued again ,but will just return true.
@@ -45,7 +45,7 @@ private:
 
 private:
     int mRepeatCount;
-    android::String8 mIndexName;
+    std::string mIndexName;
     int mRepeatIndex;
     std::list<TaskAsync*> mAsyncTasks;
 };

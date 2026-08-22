@@ -25,12 +25,12 @@ class TaskOutput: public TaskAsync {
 public:
     TaskOutput();
     virtual ~TaskOutput();
-    virtual bool parseAttribute(const android::String8& name, const android::String8& value);
+    virtual bool parseAttribute(const std::string& name, const std::string& value);
     virtual TaskGeneric::ExecutionResult start();
     virtual TaskGeneric::ExecutionResult complete();
 
 private:
-    android::sp<AudioHardware> mHw;
+    std::shared_ptr<AudioHardware> mHw;
     bool mWaitForCompletion;
 };
 

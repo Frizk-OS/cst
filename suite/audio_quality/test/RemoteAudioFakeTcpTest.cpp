@@ -18,11 +18,11 @@
 
 #include <unistd.h>
 
-#include <utils/String8.h>
+#include <string>
 
 #include <gtest/gtest.h>
 
-#include <utils/StrongPointer.h>
+#include <memory>
 
 #include <Log.h>
 #include <audio/AudioHardware.h>
@@ -104,7 +104,7 @@ public:
 
 class RemoteAudioFakeTcpTest : public testing::Test {
 protected:
-    android::sp<RemoteAudio> mRemoteAudio;
+    std::shared_ptr<RemoteAudio> mRemoteAudio;
     ClientSocketForTest mTestSocket;
 
 protected:
@@ -121,7 +121,7 @@ protected:
     }
 
     void doDownload() {
-        android::sp<Buffer> buffer = AudioSignalFactory::generateZeroSound(AudioHardware::E2BPS, 2,
+        std::shared_ptr<Buffer> buffer = AudioSignalFactory::generateZeroSound(AudioHardware::E2BPS, 2,
                 false);
         uint32_t prepareSend[] = {
                 U32_ENDIAN_SWAP(AudioProtocol::ECmdDownload),
@@ -141,7 +141,7 @@ protected:
         mTestSocket.setReadExpectation((char*)prepareReply, sizeof(prepareReply));
 
         int id = -1;
-        android::String8 name("1");
+        std::string name("1");
         ASSERT_TRUE(mRemoteAudio->downloadData(name, buffer, id));
         ASSERT_TRUE(id >= 0);
     }
@@ -260,7 +260,7 @@ TEST_F(RemoteAudioFakeTcpTest, RecordingTest) {
     int volume = 0;
     int noSamples = 44; // 1ms worth
 
-    android::sp<Buffer> buffer(new Buffer(100, noSamples*2, false));
+    std::shared_ptr<Buffer> buffer(new Buffer(100, noSamples*2, false));
 
     uint32_t startSend[] = {
             U32_ENDIAN_SWAP(AudioProtocol::ECmdStartRecording),
@@ -324,7 +324,7 @@ TEST_F(RemoteAudioFakeTcpTest, getDeviceInfoTest) {
     // this is reply, but set expectation for reply first as it is sent after send
     mTestSocket.setReadExpectation((char*)prepareReply, sizeof(prepareReply));
 
-    android::String8 info;
+    std::string info;
     ASSERT_TRUE(mRemoteAudio->getDeviceInfo(info));
     ASSERT_TRUE(info == "0123");
 }

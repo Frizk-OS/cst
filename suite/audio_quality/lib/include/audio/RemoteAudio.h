@@ -21,8 +21,8 @@
 #include <map>
 
 #include <utils/Looper.h>
-#include <utils/String8.h>
-#include <utils/StrongPointer.h>
+#include <string>
+#include <memory>
 #include <utils/threads.h>
 
 #include "audio/Buffer.h"
@@ -45,20 +45,20 @@ public:
 
     /** launch a thread, and connect to host */
     bool init(int port);
-    bool downloadData(const android::String8 name, android::sp<Buffer>& buffer, int& id);
+    bool downloadData(const std::string name, std::shared_ptr<Buffer>& buffer, int& id);
     // <0 : not found
-    int getDataId(const android::String8& name);
+    int getDataId(const std::string& name);
     bool startPlayback(bool stereo, int samplingF, int mode, int volume,
             int id, int numberRepetition);
     void stopPlayback();
     bool waitForPlaybackCompletion();
     // buffer.getSize() determines number of samples
     bool startRecording(bool stereo, int samplingF, int mode, int volume,
-            android::sp<Buffer>& buffer);
+            std::shared_ptr<Buffer>& buffer);
     bool waitForRecordingCompletion();
     void stopRecording();
 
-    bool getDeviceInfo(android::String8& data);
+    bool getDeviceInfo(std::string& data);
     /** should be called before RemoteAudio is destroyed */
     void release();
 
@@ -73,17 +73,17 @@ private:
     static int socketRxCallback(int fd, int events, void* data);
 
     class CommandHandler;
-    void sendCommand(android::sp<android::MessageHandler>& command);
+    void sendCommand(std::shared_ptr<android::MessageHandler>& command);
 
     // this is just semaphore wait without any addition
-    bool waitForCompletion(android::sp<android::MessageHandler>& command, int timeInMSec);
+    bool waitForCompletion(std::shared_ptr<android::MessageHandler>& command, int timeInMSec);
     // common code for waitForXXXCompletion
     bool waitForPlaybackOrRecordingCompletion(
-            android::sp<android::MessageHandler>& commandHandler);
+            std::shared_ptr<android::MessageHandler>& commandHandler);
     // common code for stopXXX
-    void doStop(android::sp<android::MessageHandler>& commandHandler, AudioProtocol::CommandId id);
+    void doStop(std::shared_ptr<android::MessageHandler>& commandHandler, AudioProtocol::CommandId id);
 
-    CommandHandler* toCommandHandler(android::sp<android::MessageHandler>& command) {
+    CommandHandler* toCommandHandler(std::shared_ptr<android::MessageHandler>& command) {
         return reinterpret_cast<CommandHandler*>(command.get());
     };
 
@@ -102,7 +102,7 @@ private:
     ClientSocket& mSocket;
 
 
-    android::sp<android::Looper> mLooper;
+    std::shared_ptr<android::Looper> mLooper;
 
     friend class CommandHandler;
 
@@ -139,15 +139,15 @@ private:
         bool mActive;
         friend class RemoteAudio;
     };
-    android::sp<android::MessageHandler> mDownloadHandler;
-    android::sp<android::MessageHandler> mPlaybackHandler;
-    android::sp<android::MessageHandler> mRecordingHandler;
-    android::sp<android::MessageHandler> mDeviceInfoHandler;
+    std::shared_ptr<android::MessageHandler> mDownloadHandler;
+    std::shared_ptr<android::MessageHandler> mPlaybackHandler;
+    std::shared_ptr<android::MessageHandler> mRecordingHandler;
+    std::shared_ptr<android::MessageHandler> mDeviceInfoHandler;
 
     AudioProtocol* mCmds[AudioProtocol::ECmdLast - AudioProtocol::ECmdStart];
     int mDownloadId;
-    std::map<int, android::sp<Buffer> > mBufferList;
-    std::map<android::String8, int> mIdMap;
+    std::map<int, std::shared_ptr<Buffer> > mBufferList;
+    std::map<std::string, int> mIdMap;
 };
 
 

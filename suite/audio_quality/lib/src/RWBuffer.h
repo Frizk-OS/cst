@@ -19,7 +19,7 @@
 #define CTSAUDIO_RWBUFFER_H
 
 #include <stdint.h>
-#include <utils/String8.h>
+#include <string>
 #include "Log.h"
 
 /// utility for R/W buffer
@@ -78,10 +78,10 @@ public:
         memcpy(mBuffer + mWrPoint, src, sizeof(T));
         mWrPoint += sizeof(T);
     }
-    void writeStr(const android::String8& str) {
+    void writeStr(const std::string& str) {
         size_t len = str.length();
         assertWriteCapacity(len);
-        memcpy(mBuffer + mWrPoint, str.string(), len);
+        memcpy(mBuffer + mWrPoint, str.c_str(), len);
         mWrPoint += len;
     }
     template <typename T> T read() {

@@ -20,7 +20,7 @@
 #include <list>
 #include <map>
 
-#include <utils/String8.h>
+#include <string>
 #include "FileUtil.h"
 
 class TaskCase;
@@ -48,7 +48,7 @@ private:
     bool init(const char* dirName);
     void writeReport();
     void printf(const char* fmt, ...);
-    typedef std::pair<android::String8, android::String8> StringPair;
+    typedef std::pair<std::string, std::string> StringPair;
     void writeResult(std::list<StringPair>::const_iterator begin,
             std::list<StringPair>::const_iterator end, bool passed);
 

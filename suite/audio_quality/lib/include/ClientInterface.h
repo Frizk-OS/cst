@@ -17,8 +17,8 @@
 #ifndef CTSAUDIO_CLIENTINTERFACE_H
 #define CTSAUDIO_CLIENTINTERFACE_H
 
-#include <utils/String8.h>
-#include <utils/StrongPointer.h>
+#include <string>
+#include <memory>
 
 #include "audio/RemoteAudio.h"
 #include "ClientSocket.h"
@@ -28,13 +28,13 @@ public:
     virtual ~ClientInterface() {};
     /**
      * launch client and perform initial connection
-     * @param param parameter for connection. It will be device serial number or zero length string
+     * @param param parameter for connection. It will be device serial number or empty string
      */
-    virtual bool init(const android::String8& param) = 0;
+    virtual bool init(const std::string& param) = 0;
 
     virtual ClientSocket& getSocket()  = 0;
 
-    virtual android::sp<RemoteAudio>& getAudio() = 0;
+    virtual std::shared_ptr<RemoteAudio>& getAudio() = 0;
 
 };
 

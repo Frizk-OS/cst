@@ -29,7 +29,7 @@ TaskGeneric::ExecutionResult TaskMessage::run()
     //TODO
     return TaskGeneric::EResultError;
 }
-bool TaskMessage::parseAttribute(const android::String8& name, const android::String8& value)
+bool TaskMessage::parseAttribute(const std::string& name, const std::string& value)
 {
     //TODO
     return false;

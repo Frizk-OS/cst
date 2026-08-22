@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include <utils/StrongPointer.h>
+#include <memory>
 
 #include "Log.h"
 #include "audio/Buffer.h"
@@ -39,7 +39,7 @@ enum ToPythonCommandType {
     EExecutionResult    = 0x10
 };
 
-const android::String8 \
+const std::string \
     SignalProcessingImpl::MAIN_PROCESSING_SCRIPT("test_description/processing_main.py");
 
 SignalProcessingImpl::SignalProcessingImpl()
@@ -66,7 +66,7 @@ SignalProcessingImpl::~SignalProcessingImpl()
 
 const int CHILD_WAIT_TIME_US = 100000;
 
-bool SignalProcessingImpl::init(const android::String8& script)
+bool SignalProcessingImpl::init(const std::string& script)
 {
     pid_t pid;
     if ((pid = fork()) < 0) {
@@ -74,9 +74,9 @@ bool SignalProcessingImpl::init(const android::String8& script)
         return false;
     } else if (pid == 0) { // child
         if (execl(SimpleScriptExec::PYTHON_PATH, SimpleScriptExec::PYTHON_PATH,
-                script.string(), NULL) < 0) {
+                script.c_str(), NULL) < 0) {
             CHILD_LOGE("execl %s %s failed %d", SimpleScriptExec::PYTHON_PATH,
-                    script.string(), errno);
+                    script.c_str(), errno);
             exit(EXIT_FAILURE);
         }
     } else { // parent
@@ -109,7 +109,7 @@ bool SignalProcessingImpl::init(const android::String8& script)
 }
 
 
-TaskGeneric::ExecutionResult SignalProcessingImpl::run( const android::String8& functionScript,
+TaskGeneric::ExecutionResult SignalProcessingImpl::run( const std::string& functionScript,
         int nInputs, bool* inputTypes, void** inputs,
         int nOutputs, bool* outputTypes, void** outputs)
 {
@@ -125,8 +125,8 @@ TaskGeneric::ExecutionResult SignalProcessingImpl::run( const android::String8& 
     }
     for (int i = 0; i < nInputs; i++) {
         mBuffer.reset();
-        if (inputTypes[i]) { // android::sp<Buffer>*
-            android::sp<Buffer>* buffer = reinterpret_cast<android::sp<Buffer>*>(inputs[i]);
+        if (inputTypes[i]) { // std::shared_ptr<Buffer>*
+            std::shared_ptr<Buffer>* buffer = reinterpret_cast<std::shared_ptr<Buffer>*>(inputs[i]);
             mBuffer.write<int32_t>((int32_t)((*buffer)->isStereo() ? EAudioStereo : EAudioMono));
             int dataLen = (*buffer)->getSize();
             mBuffer.write<int32_t>(dataLen);
@@ -182,13 +182,13 @@ TaskGeneric::ExecutionResult SignalProcessingImpl::run( const android::String8& 
             LOGE("read failed");
             return TaskGeneric::EResultError;
         }
-        if (outputTypes[i]) { // android::sp<Buffer>*
+        if (outputTypes[i]) { // std::shared_ptr<Buffer>*
             int32_t dataLen;
             if (!read((char*)&dataLen, sizeof(dataLen))) {
                 LOGE("read failed");
                 return TaskGeneric::EResultError;
             }
-            android::sp<Buffer>* buffer = reinterpret_cast<android::sp<Buffer>*>(outputs[i]);
+            std::shared_ptr<Buffer>* buffer = reinterpret_cast<std::shared_ptr<Buffer>*>(outputs[i]);
             if (buffer->get() == NULL) { // data not allocated, this can happen for unknown-length output
                 *buffer = new Buffer(dataLen, dataLen, (type == EAudioStereo) ? true: false);
                 if (buffer->get() == NULL) {

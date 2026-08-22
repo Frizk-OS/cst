@@ -18,7 +18,7 @@
 #ifndef CTSAUDIO_AUDIORECORDINGLOCAL_H
 #define CTSAUDIO_AUDIORECORDINGLOCAL_H
 
-#include <utils/String8.h>
+#include <string>
 
 #include <tinyalsa/asoundlib.h>
 
@@ -31,7 +31,7 @@ public:
     virtual ~AudioRecordingLocal();
 protected:
     bool doPrepare(AudioHardware::SamplingRate, int samplesInOneGo);
-    bool doPlaybackOrRecord(android::sp<Buffer>& buffer);
+    bool doPlaybackOrRecord(std::shared_ptr<Buffer>& buffer);
     void doStop();
     void releaseHw();
 

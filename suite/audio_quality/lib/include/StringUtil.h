@@ -18,22 +18,22 @@
 #ifndef CTSAUDIO_STRINGUTIL_H
 #define CTSAUDIO_STRINGUTIL_H
 
-#include <utils/String8.h>
+#include <string>
 #include <vector>
 
 /**
- * Utility class for implementing missing features from android::String8
+ * Utility class for implementing missing features from std::string
  */
 class StringUtil {
 public:
     /// split the given string with given delimiter and return the vector of string
-    /// it may return NULL if memory alloc fails.
-    /// If vector is not NULL, there will be at least one string
-    static std::vector<android::String8>* split(const android::String8& str, char delimiter);
+    /// it may return nullptr if memory alloc fails.
+    /// If vector is not nullptr, there will be at least one string
+    static std::vector<std::string>* split(const std::string& str, char delimiter);
     /// This function will return zero length string if pos is invalid.
-    static android::String8 substr(const android::String8& str, size_t pos, size_t n);
-    static int compare(const android::String8& str, const char* other);
-    static bool endsWith(const android::String8& str, const char* other);
+    static std::string substr(const std::string& str, size_t pos, size_t n);
+    static int compare(const std::string& str, const char* other);
+    static bool endsWith(const std::string& str, const char* other);
 };
 
 

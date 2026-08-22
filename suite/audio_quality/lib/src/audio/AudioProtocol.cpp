@@ -18,8 +18,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <utils/StrongPointer.h>
+#include <memory>
 #include <utils/UniquePtr.h>
+#include <string>
 
 #include "audio/Buffer.h"
 #include "Log.h"
@@ -189,8 +190,10 @@ bool CmdGetDeviceInfo::handleReply(const uint32_t* data, AudioParam* param)
     }
     (infoString.get())[len] = 0;
     LOGI("received data %s from device", infoString.get());
-    android::String8* string = reinterpret_cast<android::String8*>(param->mExtra);
-    string->setTo(infoString.get(), len);
+    std::string* string = reinterpret_cast<std::string*>(param->mExtra);
+    if (string) {
+        string->assign(infoString.get(), len);
+    }
     return true;
 }
 

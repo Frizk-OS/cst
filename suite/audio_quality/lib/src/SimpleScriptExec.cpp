@@ -27,35 +27,35 @@ const char* PASS_MAGIC_WORD = "___CTS_AUDIO_PASS___";
 
 bool SimpleScriptExec::checkPythonEnv()
 {
-    android::String8 script("test_description/conf/check_conf.py");
-    android::String8 param;
-    android::String8 result;
+    std::string script("test_description/conf/check_conf.py");
+    std::string param;
+    std::string result;
     if (!runScript(script, param, result)) {
         return false;
     }
 
-    android::String8 rePattern;
+    std::string rePattern;
     return checkIfPassed(result, rePattern);
 }
 
-bool SimpleScriptExec::checkIfPassed(const android::String8& str, const android::String8& reMatch,
+bool SimpleScriptExec::checkIfPassed(const std::string& str, const std::string& reMatch,
         int nmatch, regmatch_t pmatch[])
 {
-    android::String8 match;
+    std::string match;
     match.append(PASS_MAGIC_WORD);
     match.append(reMatch);
-    LOGV("re match %s", match.string());
+    LOGV("re match %s", match.c_str());
     regex_t re;
     int cflags = REG_EXTENDED;
     if (nmatch == 0) {
         cflags |= REG_NOSUB;
     }
-    if (regcomp(&re, match.string(), cflags) != 0) {
+    if (regcomp(&re, match.c_str(), cflags) != 0) {
         LOGE("regcomp failed");
         return false;
     }
     bool result = false;
-    if (regexec(&re, str.string(), nmatch, pmatch, 0) == 0) {
+    if (regexec(&re, str.c_str(), nmatch, pmatch, 0) == 0) {
         // match found. passed
         result = true;
     }
@@ -63,17 +63,17 @@ bool SimpleScriptExec::checkIfPassed(const android::String8& str, const android:
     return result;
 }
 
-bool SimpleScriptExec::runScript(const android::String8& script, const android::String8& param,
-        android::String8& result)
+bool SimpleScriptExec::runScript(const std::string& script, const std::string& param,
+        std::string& result)
 {
     FILE *fpipe;
-    android::String8 command;
-    command.appendFormat("%s %s %s", PYTHON_PATH, script.string(), param.string());
+    std::string command;
+    command.appendFormat("%s %s %s", PYTHON_PATH, script.c_str(), param.c_str());
     const int READ_SIZE = 1024;
     char buffer[READ_SIZE];
     size_t len = 0;
 
-    if ( !(fpipe = (FILE*)popen(command.string(),"r")) ) {
+    if ( !(fpipe = (FILE*)popen(command.c_str(),"r")) ) {
         LOGE("cannot execute python");
         return false;
     }

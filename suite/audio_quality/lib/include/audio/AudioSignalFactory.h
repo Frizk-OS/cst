@@ -18,7 +18,7 @@
 #ifndef CTSAUDIO_AUDIOSIGNALFACTORY_H
 #define CTSAUDIO_AUDIOSIGNALFACTORY_H
 
-#include <utils/StrongPointer.h>
+#include <memory>
 
 #include "AudioHardware.h"
 #include "Buffer.h"
@@ -27,12 +27,12 @@
  */
 class AudioSignalFactory {
 public:
-    static android::sp<Buffer> generateSineWave(AudioHardware::BytesPerSample BPS,
+    static std::shared_ptr<Buffer> generateSineWave(AudioHardware::BytesPerSample BPS,
             int maxPositive, AudioHardware::SamplingRate samplingRate, int signalFreq, int samples,
             bool stereo = true);
-    static android::sp<Buffer> generateWhiteNoise(AudioHardware::BytesPerSample BPS,
+    static std::shared_ptr<Buffer> generateWhiteNoise(AudioHardware::BytesPerSample BPS,
             int maxPositive, int samples, bool stereo = true);
-    static android::sp<Buffer> generateZeroSound(AudioHardware::BytesPerSample BPS,
+    static std::shared_ptr<Buffer> generateZeroSound(AudioHardware::BytesPerSample BPS,
             int samples, bool stereo = true);
 };
 

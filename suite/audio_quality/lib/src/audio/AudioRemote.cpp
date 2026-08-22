@@ -30,19 +30,19 @@ bool AudioRemote::prepare(AudioHardware::SamplingRate samplingRate, int volume, 
     return true;
 }
 
-AudioRemote::AudioRemote(android::sp<RemoteAudio>& remote)
+AudioRemote::AudioRemote(std::shared_ptr<RemoteAudio>& remote)
     : mRemote(remote)
 {
 
 }
 
-AudioRemotePlayback::AudioRemotePlayback(android::sp<RemoteAudio>& remote)
+AudioRemotePlayback::AudioRemotePlayback(std::shared_ptr<RemoteAudio>& remote)
     : AudioRemote(remote)
 {
 
 }
 
-bool AudioRemotePlayback::startPlaybackOrRecord(android::sp<Buffer>& buffer, int numberRepetition)
+bool AudioRemotePlayback::startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer, int numberRepetition)
 {
     //TODO not supported for the moment
     return false;
@@ -63,13 +63,13 @@ bool AudioRemotePlayback::startPlaybackForRemoteData(int id, bool stereo, int nu
     return mRemote->startPlayback(stereo, mSamplingRate, mMode, mVolume, id, numberRepetition);
 }
 
-AudioRemoteRecording::AudioRemoteRecording(android::sp<RemoteAudio>& remote)
+AudioRemoteRecording::AudioRemoteRecording(std::shared_ptr<RemoteAudio>& remote)
     : AudioRemote(remote)
 {
 
 }
 
-bool AudioRemoteRecording::startPlaybackOrRecord(android::sp<Buffer>& buffer,
+bool AudioRemoteRecording::startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer,
         int /*numberRepetition*/)
 {
     bool stereo = buffer->isStereo();

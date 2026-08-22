@@ -20,12 +20,13 @@
 
 #include "Log.h"
 #include "StringUtil.h"
+#include <cstring>
 
-std::vector<android::String8>* StringUtil::split(const android::String8& str, char delimiter)
+std::vector<std::string>* StringUtil::split(const std::string& str, char delimiter)
 {
-    std::vector<android::String8>* tokens = new std::vector<android::String8>();
-    unsigned int lastTokenEnd = 0;
-    for (unsigned int i = 0; i < str.length(); i++) {
+    auto tokens = new std::vector<std::string>();
+    size_t lastTokenEnd = 0;
+    for (size_t i = 0; i < str.size(); i++) {
         if (str[i] == delimiter) {
             if ((i - lastTokenEnd) > 0) {
                 tokens->push_back(substr(str, lastTokenEnd, i - lastTokenEnd));
@@ -33,47 +34,36 @@ std::vector<android::String8>* StringUtil::split(const android::String8& str, ch
             lastTokenEnd = i + 1; // 1 for skipping delimiter
         }
     }
-    if (lastTokenEnd < str.length()) {
-        tokens->push_back(substr(str, lastTokenEnd, str.length() - lastTokenEnd));
+    if (lastTokenEnd < str.size()) {
+        tokens->push_back(substr(str, lastTokenEnd, str.size() - lastTokenEnd));
     }
     return tokens;
 }
 
-android::String8 StringUtil::substr(const android::String8& str, size_t pos, size_t n)
+std::string StringUtil::substr(const std::string& str, size_t pos, size_t n)
 {
-    size_t l = str.length();
+    size_t l = str.size();
 
     if (pos >= l) {
-        android::String8 resultDummy;
-        return resultDummy;
+        return std::string();
     }
     if ((pos + n) > l) {
         n = l - pos;
     }
-    android::String8 result(str.string() + pos, n);
-    return result;
+    return std::string(str.data() + pos, n);
 }
 
-int StringUtil::compare(const android::String8& str, const char* other)
+int StringUtil::compare(const std::string& str, const char* other)
 {
-    return strcmp(str.string(), other);
+    return strcmp(str.c_str(), other);
 }
 
-bool StringUtil::endsWith(const android::String8& str, const char* other)
+bool StringUtil::endsWith(const std::string& str, const char* other)
 {
-    size_t l1 = str.length();
+    size_t l1 = str.size();
     size_t l2 = strlen(other);
-    const char* data = str.string();
     if (l2 > l1) {
         return false;
     }
-    size_t iStr = l1 - l2;
-    size_t iOther = 0;
-    for(; iStr < l1; iStr++) {
-        if (data[iStr] != other[iOther]) {
-            return false;
-        }
-        iOther++;
-    }
-    return true;
+    return str.compare(l1 - l2, l2, other) == 0;
 }

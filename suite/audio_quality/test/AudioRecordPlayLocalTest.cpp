@@ -22,11 +22,11 @@ class AudioRecordPlayLocalTest: public AudioRecordPlayTestCommon {
 public:
     virtual ~AudioRecordPlayLocalTest() {};
 protected:
-    android::sp<AudioHardware> createRecordingHw() {
+    std::shared_ptr<AudioHardware> createRecordingHw() {
         return AudioHardware::createAudioHw(true, false);
     };
 
-    android::sp<AudioHardware> createPlaybackHw() {
+    std::shared_ptr<AudioHardware> createPlaybackHw() {
         return AudioHardware::createAudioHw(true, true);
     }
 };

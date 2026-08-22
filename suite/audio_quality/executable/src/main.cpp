@@ -16,7 +16,7 @@
 #include <getopt.h>
 #include <stdio.h>
 
-#include <utils/String8.h>
+#include <string>
 
 #include <UniquePtr.h>
 
@@ -26,6 +26,7 @@
 #include "Settings.h"
 #include "task/TaskGeneric.h"
 #include "task/ModelBuilder.h"
+#include <filesystem>
 
 // For flushing report and log before exiting
 class CleanupStatics {
@@ -38,14 +39,14 @@ public:
         Log::Finalize();
         Report::Finalize();
         // create zip file after log and report files are closed.
-        android::String8 reportDirPath =
-                Settings::Instance()->getSetting(Settings::EREPORT_FILE).getPathDir();
-        android::String8 zipFilename = reportDirPath.getPathLeaf();
-        android::String8 command = android::String8::format("cd %s;zip -r ../%s.zip *",
-                reportDirPath.string(), zipFilename.string());
-        fprintf(stderr, "\n\nexecuting %s\n", command.string());
-        if (system(command.string()) == -1) {
-            fprintf(stderr, "cannot create zip file with command %s\n", command.string());
+            std::string reportFile = Settings::Instance()->getSetting(Settings::EREPORT_FILE);
+        std::filesystem::path reportPath(reportFile);
+        std::string reportDirPath = reportPath.parent_path().c_str();
+        std::string zipFilename = reportPath.filename().c_str();
+        std::string command = std::string("cd ") + reportDirPath + "; zip -r ../" + zipFilename + ".zip *";
+        fprintf(stderr, "\n\nexecuting %s\n", command.c_str());
+        if (system(command.c_str()) == -1) {
+            fprintf(stderr, "cannot create zip file with command %s\n", command.c_str());
         }
         Settings::Finalize();
     }
@@ -82,9 +83,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    android::String8 xmlFile(argv[optind]);
+    std::string xmlFile(argv[optind]);
 
-    android::String8 dirName;
+    std::string dirName;
     if (!FileUtil::prepare(dirName)) {
         fprintf(stderr, "cannot prepare report dir");
         return 1;
@@ -96,16 +97,16 @@ int main(int argc, char *argv[])
         return 1;
     }
     if (serial != NULL) {
-        android::String8 strSerial(serial);
+        std::string strSerial(serial);
         Settings::Instance()->addSetting(Settings::EADB, strSerial);
     }
-    if (Log::Instance(dirName.string()) == NULL) {
+    if (Log::Instance(dirName.c_str()) == NULL) {
         fprintf(stderr, "cannot create Log");
         return 1;
     }
     Log::Instance()->setLogLevel((Log::LogLevel)logLevel);
     // Log can be used from here
-    if (Report::Instance(dirName.string()) == NULL) {
+    if (Report::Instance(dirName.c_str()) == NULL) {
 
         LOGE("cannot create log");
         return 1;
@@ -121,7 +122,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "cannot init ClientInterface");
         return 1;
     }
-    android::String8 deviceInfo;
+    std::string deviceInfo;
     if (!client->getAudio()->getDeviceInfo(deviceInfo)) {
         fprintf(stderr, "cannot get device info");
         return 1;
@@ -132,7 +133,7 @@ int main(int argc, char *argv[])
     ModelBuilder modelBuilder;
     UniquePtr<TaskGeneric> topTask(modelBuilder.parseTestDescriptionXml(xmlFile));
     if (topTask.get() == NULL) {
-        LOGE("Parsing of %x failed", xmlFile.string());
+        LOGE("Parsing of %x failed", xmlFile.c_str());
         return 1;
     }
     Settings::Instance()->addSetting(Settings::ETEST_XML, xmlFile);

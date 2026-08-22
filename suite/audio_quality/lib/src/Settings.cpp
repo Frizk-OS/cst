@@ -17,11 +17,11 @@
 #include "Settings.h"
 #include "Log.h"
 
-Settings* Settings::mInstance = NULL;
+Settings* Settings::mInstance = nullptr;
 
 Settings* Settings::Instance()
 {
-    if (mInstance == NULL) {
+    if (mInstance == nullptr) {
         mInstance = new Settings();
     }
     return mInstance;
@@ -30,15 +30,15 @@ Settings* Settings::Instance()
 void Settings::Finalize()
 {
     delete mInstance;
-    mInstance = NULL;
+    mInstance = nullptr;
 }
 
 
-void Settings::addSetting(SettingType type, const android::String8 setting)
+void Settings::addSetting(SettingType type, const std::string& setting)
 {
     mSettings[type] = setting;
 }
-const android::String8& Settings::getSetting(SettingType type)
+const std::string& Settings::getSetting(SettingType type) const
 {
     return mSettings[type];
 }

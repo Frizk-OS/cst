@@ -17,7 +17,7 @@
 
 #ifndef CTSAUDIO_AUDIOREMOTE_H
 #define CTSAUDIO_AUDIOREMOTE_H
-#include <utils/StrongPointer.h>
+#include <memory>
 #include "AudioHardware.h"
 // real implementation
 #include "RemoteAudio.h"
@@ -30,11 +30,11 @@ public:
             int mode = AudioHardware::EModeVoice);
 
 protected:
-    AudioRemote(android::sp<RemoteAudio>& remote);
+    AudioRemote(std::shared_ptr<RemoteAudio>& remote);
     virtual ~AudioRemote() {};
 
 protected:
-    android::sp<RemoteAudio> mRemote;
+    std::shared_ptr<RemoteAudio> mRemote;
     AudioHardware::SamplingRate mSamplingRate;
     int mVolume;
     int mMode;
@@ -42,9 +42,9 @@ protected:
 
 class AudioRemotePlayback: public AudioRemote {
 public:
-    AudioRemotePlayback(android::sp<RemoteAudio>& remote);
+    AudioRemotePlayback(std::shared_ptr<RemoteAudio>& remote);
     virtual ~AudioRemotePlayback() {};
-    virtual bool startPlaybackOrRecord(android::sp<Buffer>& buffer, int numberRepetition = 1);
+    virtual bool startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer, int numberRepetition = 1);
     virtual bool waitForCompletion();
     virtual void stopPlaybackOrRecord();
     bool startPlaybackForRemoteData(int id, bool stereo,  int numberRepetition = 1);
@@ -52,9 +52,9 @@ public:
 
 class AudioRemoteRecording: public AudioRemote {
 public:
-    AudioRemoteRecording(android::sp<RemoteAudio>& remote);
+    AudioRemoteRecording(std::shared_ptr<RemoteAudio>& remote);
     virtual ~AudioRemoteRecording() {};
-    virtual bool startPlaybackOrRecord(android::sp<Buffer>& buffer, int numberRepetition = 1);
+    virtual bool startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer, int numberRepetition = 1);
     virtual bool waitForCompletion();
     virtual void stopPlaybackOrRecord();
 };

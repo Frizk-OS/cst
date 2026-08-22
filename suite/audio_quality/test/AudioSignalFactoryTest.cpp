@@ -22,7 +22,7 @@
 class AudioSignalFactoryTest: public testing::Test {
 protected:
 
-    void testSignalBasic(android::sp<Buffer>& buffer, int maxPositive,
+    void testSignalBasic(std::shared_ptr<Buffer>& buffer, int maxPositive,
             AudioHardware::SamplingRate samplingRate, int signalFreq, int samples) {
         ASSERT_TRUE(buffer->getSize() == (unsigned int)(AudioHardware::E2BPS * 2 * samples));
         int16_t* data = reinterpret_cast<int16_t*>(buffer->getData());
@@ -41,7 +41,7 @@ TEST_F(AudioSignalFactoryTest, SineTest) {
     const int maxPositive = 1000;
     const int signalFreq = AudioHardware::ESampleRate_44100/100;
     const int samples = 8192 * 10;
-    android::sp<Buffer> buffer = AudioSignalFactory::generateSineWave(AudioHardware::E2BPS,
+    std::shared_ptr<Buffer> buffer = AudioSignalFactory::generateSineWave(AudioHardware::E2BPS,
             maxPositive, AudioHardware::ESampleRate_44100, signalFreq, samples);
     testSignalBasic(buffer, maxPositive, AudioHardware::ESampleRate_44100, signalFreq, samples);
 }
@@ -50,7 +50,7 @@ TEST_F(AudioSignalFactoryTest, WhiteNoiseTest) {
     const int maxPositive = 1000;
     const int signalFreq = AudioHardware::ESampleRate_44100/100;
     const int samples = 8192 * 10;
-    android::sp<Buffer> buffer = AudioSignalFactory::generateWhiteNoise(AudioHardware::E2BPS,
+    std::shared_ptr<Buffer> buffer = AudioSignalFactory::generateWhiteNoise(AudioHardware::E2BPS,
             maxPositive, samples);
     testSignalBasic(buffer, maxPositive, AudioHardware::ESampleRate_44100, signalFreq, samples);
 }

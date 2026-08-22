@@ -20,7 +20,7 @@
 #include <sys/types.h>
 #include <regex.h>
 
-#include <utils/String8.h>
+#include <string>
 
 /**
  * Utility class for executing simple scripts
@@ -37,8 +37,8 @@ public:
      * @param param arguments to pass
      * @param result
      */
-    static bool runScript(const android::String8& script, const android::String8& param,
-            android::String8& result);
+    static bool runScript(const std::string& script, const std::string& param,
+            std::string& result);
 
     /**
      * check if the given str include magic words for pass.
@@ -49,7 +49,7 @@ public:
      * @param pmatch pattern match elements
      * @return true if passed
      */
-    static bool checkIfPassed(const android::String8& str, const android::String8& reMatch,
+    static bool checkIfPassed(const std::string& str, const std::string& reMatch,
             int nmatch = 0, regmatch_t pmatch[] = NULL);
 };
 

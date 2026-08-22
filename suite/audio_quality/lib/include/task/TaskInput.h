@@ -18,7 +18,7 @@
 #ifndef CTSAUDIO_TASKINPUT_H
 #define CTSAUDIO_TASKINPUT_H
 
-#include <utils/StrongPointer.h>
+#include <memory>
 #include "TaskAsync.h"
 #include "audio/AudioHardware.h"
 #include "audio/Buffer.h"
@@ -27,13 +27,13 @@ class TaskInput: public TaskAsync {
 public:
     TaskInput();
     virtual ~TaskInput();
-    virtual bool parseAttribute(const android::String8& name, const android::String8& value);
+    virtual bool parseAttribute(const std::string& name, const std::string& value);
     virtual TaskGeneric::ExecutionResult start();
     virtual TaskGeneric::ExecutionResult complete();
 private:
     int mRecordingTimeInMs;
-    android::sp<AudioHardware> mHw;
-    android::sp<Buffer> mBuffer;
+    std::shared_ptr<AudioHardware> mHw;
+    std::shared_ptr<Buffer> mBuffer;
 };
 
 

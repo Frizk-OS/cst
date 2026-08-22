@@ -19,14 +19,14 @@
 
 #include "task/TaskBatch.h"
 
-static const android::String8 STR_NAME("name");
-static const android::String8 STR_VERSION("version");
-static const android::String8 STR_DESCRIPTION("description");
+static const std::string STR_NAME("name");
+static const std::string STR_VERSION("version");
+static const std::string STR_DESCRIPTION("description");
 
 TaskBatch::TaskBatch()
     :TaskGeneric(TaskGeneric::ETaskBatch)
 {
-    const android::String8* list[] = {&STR_NAME, &STR_VERSION, &STR_DESCRIPTION, NULL};
+    const std::string* list[] = {&STR_NAME, &STR_VERSION, &STR_DESCRIPTION, NULL};
     registerSupportedStringAttributes(list);
 }
 
@@ -52,14 +52,14 @@ bool runAlways(TaskGeneric* child, void* data)
 
 TaskGeneric::ExecutionResult TaskBatch::run()
 {
-    android::String8 name;
-    android::String8 version;
+    std::string name;
+    std::string version;
 
     if (!findStringAttribute(STR_NAME, name) || !findStringAttribute(STR_VERSION, version)) {
         LOGW("TaskBatch::run no name or version information");
     }
-    MSG("= Test batch %s version %s started. =", name.string(),
-            version.string());
+    MSG("= Test batch %s version %s started. =", name.c_str(),
+            version.c_str());
     bool result = TaskGeneric::forEachChild(runAlways, NULL);
     MSG("= Finished Test batch =");
     return TaskGeneric::EResultOK;

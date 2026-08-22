@@ -30,7 +30,7 @@ public:
     TaskAsync(TaskType type);
     virtual ~TaskAsync();
     virtual TaskGeneric::ExecutionResult run();
-    virtual bool parseAttribute(const android::String8& name, const android::String8& value);
+    virtual bool parseAttribute(const std::string& name, const std::string& value);
     virtual TaskGeneric::ExecutionResult start() = 0;
     virtual TaskGeneric::ExecutionResult complete() = 0;
 
@@ -45,7 +45,7 @@ private:
     TaskSequential* getParentSequential();
 
 protected:
-    android::String8 mId;
+    std::string mId;
     int mVolume;
 
     enum DeviceType {

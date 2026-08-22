@@ -37,27 +37,27 @@ public:
 
 
 TEST_F(TaskCaseTest, DataMapTest) {
-    android::sp<Buffer> buffer1(new Buffer(4, 4, true));
-    android::sp<Buffer> buffer2(new Buffer(4, 4, true));
-    android::sp<Buffer> buffer3(new Buffer(4, 4, true));
-    android::sp<Buffer> buffer4(new Buffer(4, 4, true));
+    std::shared_ptr<Buffer> buffer1(new Buffer(4, 4, true));
+    std::shared_ptr<Buffer> buffer2(new Buffer(4, 4, true));
+    std::shared_ptr<Buffer> buffer3(new Buffer(4, 4, true));
+    std::shared_ptr<Buffer> buffer4(new Buffer(4, 4, true));
 
-    const android::String8 BUFFER1("buffer1");
-    const android::String8 BUFFER2("buffer2");
-    const android::String8 BUFFER3("buffer3");
-    const android::String8 BUFFER4("buffer4");
+    const std::string BUFFER1("buffer1");
+    const std::string BUFFER2("buffer2");
+    const std::string BUFFER3("buffer3");
+    const std::string BUFFER4("buffer4");
     ASSERT_TRUE(mTaskCase->registerBuffer(BUFFER1, buffer1));
     ASSERT_TRUE(mTaskCase->registerBuffer(BUFFER2, buffer2));
     ASSERT_TRUE(mTaskCase->registerBuffer(BUFFER3, buffer3));
     ASSERT_TRUE(mTaskCase->registerBuffer(BUFFER4, buffer4));
 
-    android::sp<Buffer> buffer1f = mTaskCase->findBuffer(BUFFER1);
+    std::shared_ptr<Buffer> buffer1f = mTaskCase->findBuffer(BUFFER1);
     //LOGI("buffer1 %x, buffer1f %x", &buffer1, buffer1f);
     ASSERT_TRUE(buffer1.get() == buffer1f.get());
-    const android::String8 NO_SUCH_BUFFER("no_such_buffer");
+    const std::string NO_SUCH_BUFFER("no_such_buffer");
     buffer1f = mTaskCase->findBuffer(NO_SUCH_BUFFER);
     ASSERT_TRUE(buffer1f.get() == NULL);
-    const android::String8 RE("buffer[1-2]");
+    const std::string RE("buffer[1-2]");
     std::list<TaskCase::BufferPair>* list = mTaskCase->findAllBuffers(RE);
     ASSERT_TRUE(list != NULL);
     ASSERT_TRUE(((list->front().second.get() == buffer1.get()) &&
@@ -78,11 +78,11 @@ TEST_F(TaskCaseTest, ValueMapTest) {
     ASSERT_TRUE(val2 == val2_copy);
     ASSERT_TRUE(val1.getDouble() == 1.0f);
     ASSERT_TRUE(val3.getInt64() == 1);
-    const android::String8 V1("v1");
-    const android::String8 V2("v2");
-    const android::String8 V3("v3");
-    const android::String8 V4("v4");
-    const android::String8 V5("v5");
+    const std::string V1("v1");
+    const std::string V2("v2");
+    const std::string V3("v3");
+    const std::string V4("v4");
+    const std::string V5("v5");
     ASSERT_TRUE(mTaskCase->registerValue(V1, val1));
     ASSERT_TRUE(mTaskCase->registerValue(V2, val2));
     ASSERT_TRUE(mTaskCase->registerValue(V3, val3));
@@ -98,7 +98,7 @@ TEST_F(TaskCaseTest, ValueMapTest) {
     ASSERT_TRUE(!mTaskCase->updateValue(V5, val4));
     ASSERT_TRUE(!mTaskCase->findValue(V5, valRead));
 
-    const android::String8 RE("v[2-3]");
+    const std::string RE("v[2-3]");
     std::list<TaskCase::ValuePair>* list = mTaskCase->findAllValues(RE);
     ASSERT_TRUE(list != NULL);
     ASSERT_TRUE(((list->front().second == val2) && (list->back().second == val3)) ||
@@ -114,9 +114,9 @@ TEST_F(TaskCaseTest, IndexMapTest) {
 
     int i = 0;
     int j = 1;
-    const android::String8 I("i");
-    const android::String8 J("j");
-    const android::String8 K("k");
+    const std::string I("i");
+    const std::string J("j");
+    const std::string K("k");
     ASSERT_TRUE(mTaskCase->registerIndex(I));
     ASSERT_TRUE(mTaskCase->registerIndex(J));
     ASSERT_TRUE(mTaskCase->updateIndex(I, i));
@@ -131,30 +131,30 @@ TEST_F(TaskCaseTest, IndexMapTest) {
 }
 
 TEST_F(TaskCaseTest, VarTranslateTest) {
-    const android::String8 I("i");
-    const android::String8 J("j");
-    const android::String8 K("k");
+    const std::string I("i");
+    const std::string J("j");
+    const std::string K("k");
     ASSERT_TRUE(mTaskCase->registerIndex(I, 1));
     ASSERT_TRUE(mTaskCase->registerIndex(J, 2));
     ASSERT_TRUE(mTaskCase->registerIndex(K, 3));
 
-    android::String8 orig1("hello_$i_$j");
-    android::String8 result1;
+    std::string orig1("hello_$i_$j");
+    std::string result1;
     ASSERT_TRUE(mTaskCase->translateVarName(orig1, result1));
     ASSERT_TRUE(StringUtil::compare(result1, "hello_1_2") == 0);
 
-    android::String8 orig2("hello_$i_$j_$k_there");
-    android::String8 result2;
+    std::string orig2("hello_$i_$j_$k_there");
+    std::string result2;
     ASSERT_TRUE(mTaskCase->translateVarName(orig2, result2));
     ASSERT_TRUE(StringUtil::compare(result2, "hello_1_2_3_there") == 0);
 
     // should fail as there is no such var
-    android::String8 orig3("$n");
-    android::String8 result3;
+    std::string orig3("$n");
+    std::string result3;
     ASSERT_TRUE(!mTaskCase->translateVarName(orig3, result3));
 
-    android::String8 orig4("hello_there");
-    android::String8 result4;
+    std::string orig4("hello_there");
+    std::string result4;
     ASSERT_TRUE(mTaskCase->translateVarName(orig4, result4));
     ASSERT_TRUE(StringUtil::compare(result4, "hello_there") == 0);
 }

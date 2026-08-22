@@ -17,7 +17,7 @@
 #ifndef CTSAUDIO_SIGNALPROCESSINGINTERFACE_H
 #define CTSAUDIO_SIGNALPROCESSINGINTERFACE_H
 
-#include <utils/String8.h>
+#include <string>
 
 #include "task/TaskGeneric.h"
 
@@ -29,20 +29,20 @@ class SignalProcessingInterface {
 public:
     virtual ~SignalProcessingInterface() {};
 
-    virtual bool init(const android::String8& script) = 0;
+    virtual bool init(const std::string& script) = 0;
     /**
      * run the script with given input / output parameters. Note that this function does not
      * do any type check.
      * @param functionScript function name (python script name to run for this call)
      * @param nInputs number of inputs. This is the length of inputTypes and inputs array
      * @param inputTypes represent types of each input.
-     *              when true: android::sp<Buffer>*, false: Value*
-     * @param inputs pointer to input. Either android::sp<Buffer>* or Value*
+     *              when true: std::shared_ptr<Buffer>*, false: Value*
+     * @param inputs pointer to input. Either std::shared_ptr<Buffer>* or Value*
      * @param nOutputs
      * @param outputTypes
      * @param outputs
      */
-    virtual TaskGeneric::ExecutionResult run(const android::String8& functionScript,
+    virtual TaskGeneric::ExecutionResult run(const std::string& functionScript,
             int nInputs, bool* inputTypes, void** inputs,
             int nOutputs, bool* outputTypes, void** outputs) = 0;
 };

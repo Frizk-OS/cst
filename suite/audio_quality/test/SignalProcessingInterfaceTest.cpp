@@ -15,7 +15,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <utils/String8.h>
+#include <string>
 
 #include <audio/AudioSignalFactory.h>
 #include <SignalProcessingInterface.h>
@@ -44,18 +44,18 @@ TEST_F(SignalProcessingInterfaceTest, InitTest) {
 }
 
 TEST_F(SignalProcessingInterfaceTest, EchoTest) {
-    android::String8 functionName("echo");
+    std::string functionName("echo");
     int nInputs = 4;
     int nOutputs = 4;
     bool inputTypes[4] = { true, true, false, false };
     bool outputTypes[4] = { true, true, false, false };
 
-    android::sp<Buffer> in0(new Buffer(160000, 160000, true));
+    std::shared_ptr<Buffer> in0(new Buffer(160000, 160000, true));
     char* data0 = in0->getData();
     for (size_t i = 0; i < in0->getSize(); i++) {
         data0[i] = i;
     }
-    android::sp<Buffer> in1(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> in1(new Buffer(8, 8, false));
     char* data1 = in1->getData();
     for (size_t i = 0; i < in1->getSize(); i++) {
         data1[i] = i;
@@ -64,12 +64,12 @@ TEST_F(SignalProcessingInterfaceTest, EchoTest) {
     TaskCase::Value in3((int64_t)100);
     void* inputs[4] = { &in0, &in1, &in2, &in3 };
 
-    android::sp<Buffer> out0(new Buffer(160000, 160000, true));
+    std::shared_ptr<Buffer> out0(new Buffer(160000, 160000, true));
     char* outdata0 = out0->getData();
     for (size_t i = 0; i < out0->getSize(); i++) {
         outdata0[i] = 0xaa;
     }
-    android::sp<Buffer> out1(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> out1(new Buffer(8, 8, false));
     char* outdata1 = out1->getData();
     for (size_t i = 0; i < out1->getSize(); i++) {
         outdata1[i] = 0xbb;
@@ -88,7 +88,7 @@ TEST_F(SignalProcessingInterfaceTest, EchoTest) {
 }
 
 TEST_F(SignalProcessingInterfaceTest, intsumTest) {
-    android::String8 functionName("intsum");
+    std::string functionName("intsum");
     int nInputs = 2;
     int nOutputs = 1;
     bool inputTypes[2] = { false, false };
@@ -113,7 +113,7 @@ TEST_F(SignalProcessingInterfaceTest, TwoInstanceTest) {
     ASSERT_TRUE(sp2 != NULL);
     ASSERT_TRUE(sp2->init(SignalProcessingImpl::MAIN_PROCESSING_SCRIPT));
 
-    android::String8 functionName("intsum");
+    std::string functionName("intsum");
     int nInputs = 2;
     int nOutputs = 1;
     bool inputTypes[2] = { false, false };
@@ -140,28 +140,28 @@ TEST_F(SignalProcessingInterfaceTest, TwoInstanceTest) {
 
 // test to run processing/example.py
 TEST_F(SignalProcessingInterfaceTest, exampleTest) {
-    android::String8 functionName("example");
+    std::string functionName("example");
     int nInputs = 8;
     int nOutputs = 4;
     bool inputTypes[8] = { true, true, true, true, false, false, false, false };
     bool outputTypes[4] = { true, true, false, false };
 
-    android::sp<Buffer> in0(new Buffer(16, 16, true));
+    std::shared_ptr<Buffer> in0(new Buffer(16, 16, true));
     char* data0 = in0->getData();
     for (size_t i = 0; i < in0->getSize(); i++) {
         data0[i] = i;
     }
-    android::sp<Buffer> in1(new Buffer(16, 16, true));
+    std::shared_ptr<Buffer> in1(new Buffer(16, 16, true));
     char* data1 = in1->getData();
     for (size_t i = 0; i < in1->getSize(); i++) {
         data1[i] = i;
     }
-    android::sp<Buffer> in2(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> in2(new Buffer(8, 8, false));
     char* data2 = in2->getData();
     for (size_t i = 0; i < in2->getSize(); i++) {
         data2[i] = i;
     }
-    android::sp<Buffer> in3(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> in3(new Buffer(8, 8, false));
     char* data3 = in3->getData();
     for (size_t i = 0; i < in3->getSize(); i++) {
         data3[i] = i;
@@ -172,12 +172,12 @@ TEST_F(SignalProcessingInterfaceTest, exampleTest) {
     TaskCase::Value in7(1.0f);
     void* inputs[8] = { &in0, &in1, &in2, &in3, &in4, &in5, &in6, &in7 };
 
-    android::sp<Buffer> out0(new Buffer(16, 16, true));
+    std::shared_ptr<Buffer> out0(new Buffer(16, 16, true));
     char* outdata0 = out0->getData();
     for (size_t i = 0; i < out0->getSize(); i++) {
         outdata0[i] = 0xaa;
     }
-    android::sp<Buffer> out1(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> out1(new Buffer(8, 8, false));
     char* outdata1 = out1->getData();
     for (size_t i = 0; i < out1->getSize(); i++) {
         outdata1[i] = 0xbb;

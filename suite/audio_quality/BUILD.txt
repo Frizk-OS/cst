@@ -5,3 +5,17 @@ Necessary Python libraries:
 	sudo apt-get install python-scipy python-numpy python-matplotlib
 
 run make cts_audio frop top dir.
+
+Modern toolchain requirement:
+    GCC 4.8 is not supported for this port. Use Clang 18+ or GCC 13+.
+
+Meson (standalone host build):
+    CXX=clang++ CC=clang meson setup builddir --wipe -Dc_std=c17 -Dcpp_std=c++26
+    meson compile -C builddir
+    meson test -C builddir --suite audio-quality
+
+Optional test target:
+    CXX=clang++ CC=clang meson setup builddir -Dtests=true -Dc_std=c17 -Dcpp_std=c++26
+
+Fedora packages for the host toolchain:
+    sudo dnf install clang lld ninja-build meson tinyalsa-devel tinyxml2-devel gtest-devel

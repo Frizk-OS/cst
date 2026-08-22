@@ -17,8 +17,8 @@
 
 #ifndef CTSAUDIO_TASKSOUND_H
 #define CTSAUDIO_TASKSOUND_H
-#include <utils/String8.h>
-#include <utils/StrongPointer.h>
+#include <string>
+#include <memory>
 #include "audio/Buffer.h"
 #include "TaskGeneric.h"
 
@@ -28,9 +28,9 @@ public:
     TaskSound();
     virtual ~TaskSound();
     virtual TaskGeneric::ExecutionResult run();
-    virtual bool parseAttribute(const android::String8& name, const android::String8& value);
+    virtual bool parseAttribute(const std::string& name, const std::string& value);
 private:
-    android::sp<Buffer> mBuffer;
+    std::shared_ptr<Buffer> mBuffer;
     bool mPreload;
 };
 

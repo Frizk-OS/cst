@@ -17,7 +17,7 @@
 #ifndef CTSAUDIO_AUDIOHARDWARE_H
 #define CTSAUDIO_AUDIOHARDWARE_H
 
-#include <utils/StrongPointer.h>
+#include <memory>
 #include <utils/RefBase.h>
 #include "Buffer.h"
 
@@ -54,7 +54,7 @@ public:
      * options are : local or remote, playback or recording
      * can return NULL(sp.get() == NULL) if H/W not found
      */
-    static android::sp<AudioHardware> createAudioHw(bool local, bool playback,
+    static std::shared_ptr<AudioHardware> createAudioHw(bool local, bool playback,
             TaskCase* testCase = NULL);
 
     virtual ~AudioHardware();
@@ -67,7 +67,7 @@ public:
      * Convenience API to pass buffer ID. The buffer can be either present in testCase
      * or in remote device (when testCase is NULL)
      */
-    virtual bool startPlaybackOrRecordById(const android::String8& id, TaskCase* testCase = NULL);
+    virtual bool startPlaybackOrRecordById(const std::string& id, TaskCase* testCase = NULL);
 
     /**
      *  Playback / Record with given buffer
@@ -76,7 +76,7 @@ public:
      *         For record, it does not have much meaning as the last recording will always
      *         override.
      */
-    virtual bool startPlaybackOrRecord(android::sp<Buffer>& buffer,
+    virtual bool startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer,
             int numberRepetition = 1) = 0;
     /**
      * Wait for the playback / recording to complete. return true when successfully finished.

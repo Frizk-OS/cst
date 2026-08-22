@@ -18,7 +18,7 @@
 #ifndef CTSAUDIO_MODELBUILDER_H
 #define CTSAUDIO_MODELBUILDER_H
 
-#include <utils/String8.h>
+#include <string>
 #include "TaskAll.h"
 
 class TiXmlElement;
@@ -39,7 +39,7 @@ public:
     /**
      * parse given xml with test case or batch. When caseOnly is true, only test case can be in.
      */
-    virtual TaskGeneric* parseTestDescriptionXml(const android::String8& xmlFileName,
+    virtual TaskGeneric* parseTestDescriptionXml(const std::string& xmlFileName,
             bool caseOnly = false);
 
     struct ChildInfo {
@@ -51,8 +51,8 @@ private:
     virtual bool parseAttributes(const TiXmlElement& elem, TaskGeneric& task);
     virtual TaskGeneric* parseGeneric(const TiXmlElement& elem, int tableIndex);
     virtual TaskCase* parseCase(const TiXmlElement& root);
-    virtual TaskBatch* parseBatch(const TiXmlElement& root, const android::String8& xmlFileName);
-    virtual TaskCase* parseInclude(const TiXmlElement& elem, const android::String8& path);
+    virtual TaskBatch* parseBatch(const TiXmlElement& root, const std::string& xmlFileName);
+    virtual TaskCase* parseInclude(const TiXmlElement& elem, const std::string& path);
 
     struct ParsingInfo {
         const char* name; // XML element name

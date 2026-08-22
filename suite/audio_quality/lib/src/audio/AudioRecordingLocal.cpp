@@ -68,7 +68,7 @@ bool AudioRecordingLocal::doPrepare(AudioHardware::SamplingRate samplingRate, in
     return true;
 }
 
-bool AudioRecordingLocal::doPlaybackOrRecord(android::sp<Buffer>& buffer)
+bool AudioRecordingLocal::doPlaybackOrRecord(std::shared_ptr<Buffer>& buffer)
 {
     int toRead = mSizes;
     if (buffer->amountToHandle() < (size_t)mSizes) {

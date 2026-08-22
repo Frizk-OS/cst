@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <utils/threads.h>
-#include <utils/StrongPointer.h>
+#include <memory>
 
 #include <audio/AudioLocal.h>
 #include <audio/Buffer.h>
@@ -28,7 +28,7 @@
 class AudioPlayerDummy: public AudioLocal {
 public:
     AudioHardware::SamplingRate mSamplingRate;
-    android::sp<Buffer> mBufferPassed;
+    std::shared_ptr<Buffer> mBufferPassed;
     bool mPrepareCalled;
     bool mdoStartPlaybackOrRecordCalled;
     bool mdoContinuePlaybackOrRecordCalled;
@@ -51,7 +51,7 @@ public:
         return true;
     };
 
-    virtual bool doPlaybackOrRecord(android::sp<Buffer>& buffer) {
+    virtual bool doPlaybackOrRecord(std::shared_ptr<Buffer>& buffer) {
         buffer->increaseHandled(mPlaybackUnit);
         return true;
     };
@@ -68,8 +68,8 @@ public:
     virtual ~AudioLocalTest() {};
 
 protected:
-    android::sp<AudioHardware> createAudioHw() {
-        android::sp<AudioHardware> hw(new AudioPlayerDummy());
+    std::shared_ptr<AudioHardware> createAudioHw() {
+        std::shared_ptr<AudioHardware> hw(new AudioPlayerDummy());
         return hw;
     }
 };

@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <utils/String8.h>
+#include <string>
 
 #include <utils/RefBase.h>
 
@@ -109,7 +109,7 @@ public:
 
     /// save the buffer to file
     /// extension appropriate for the data type will be appended to file name
-    bool saveToFile(const android::String8& filename);
+    bool saveToFile(const std::string& filename);
 
     bool operator ==(const Buffer& b) const;
 
@@ -117,7 +117,7 @@ public:
     /// data format is decided by extension
     /// .r2s: 16 bps, stereo
     /// .r2m: 16bps, mono
-    static Buffer* loadFromFile(const android::String8& filename);
+    static Buffer* loadFromFile(const std::string& filename);
 private:
     // max data that can be hold
     size_t mCapacity;

@@ -27,15 +27,15 @@
 #include "StringUtil.h"
 #include "task/TaskCase.h"
 
-static const android::String8 STR_NAME("name");
-static const android::String8 STR_VERSION("version");
-static const android::String8 STR_DESCRIPTION("description");
+static const std::string STR_NAME("name");
+static const std::string STR_VERSION("version");
+static const std::string STR_DESCRIPTION("description");
 
 TaskCase::TaskCase()
     : TaskGeneric(TaskGeneric::ETaskCase),
       mClient(NULL)
 {
-    const android::String8* list[] = {&STR_NAME, &STR_VERSION, &STR_DESCRIPTION, NULL};
+    const std::string* list[] = {&STR_NAME, &STR_VERSION, &STR_DESCRIPTION, NULL};
     registerSupportedStringAttributes(list);
 }
 
@@ -44,7 +44,7 @@ TaskCase::~TaskCase()
     delete mClient;
 }
 
-bool TaskCase::getCaseName(android::String8& name) const
+bool TaskCase::getCaseName(std::string& name) const
 {
     if (!findStringAttribute(STR_NAME, name)) {
         LOGW("TaskCase no name");
@@ -65,25 +65,25 @@ bool TaskCase::addChild(TaskGeneric* child)
 }
 
 template <typename T> bool registerGeneric(
-        typename std::map<android::String8, T>& map,
-        const android::String8& name, T& data)
+        typename std::map<std::string, T>& map,
+        const std::string& name, T& data)
 {
-    typename std::map<android::String8, T>::iterator it;
+    typename std::map<std::string, T>::iterator it;
     it = map.find(name);
     if (it != map.end()) {
-        LOGV("registerGeneric key %s already registered", name.string());
+        LOGV("registerGeneric key %s already registered", name.c_str());
         return false;
     }
-    LOGD("registerGeneric registered key %s", name.string());
+    LOGD("registerGeneric registered key %s", name.c_str());
     map[name] = data;
     return true;
 }
 
-template <typename T> bool findGeneric(typename std::map<android::String8, T>& map,
-        const android::String8& name, T& data)
+template <typename T> bool findGeneric(typename std::map<std::string, T>& map,
+        const std::string& name, T& data)
 {
-    LOGD("findGeneric key %s", name.string());
-    typename std::map<android::String8, T>::iterator it;
+    LOGD("findGeneric key %s", name.c_str());
+    typename std::map<std::string, T>::iterator it;
     it = map.find(name);
     if (it == map.end()) {
         return false;
@@ -92,11 +92,11 @@ template <typename T> bool findGeneric(typename std::map<android::String8, T>& m
     return true;
 }
 
-template <typename T> bool updateGeneric(typename std::map<android::String8, T>& map,
-        const android::String8& name, T& data)
+template <typename T> bool updateGeneric(typename std::map<std::string, T>& map,
+        const std::string& name, T& data)
 {
-    LOGD("updateGeneric key %s", name.string());
-    typename std::map<android::String8, T>::iterator it;
+    LOGD("updateGeneric key %s", name.c_str());
+    typename std::map<std::string, T>::iterator it;
     it = map.find(name);
     if (it == map.end()) {
         return false;
@@ -107,26 +107,26 @@ template <typename T> bool updateGeneric(typename std::map<android::String8, T>&
 
 // return all the matches for the given regular expression.
 // name string and the data itself is copied.
-template <typename T> typename std::list<std::pair<android::String8, T> >* findAllGeneric(
-        typename std::map<android::String8, T>& map, const char* re)
+template <typename T> typename std::list<std::pair<std::string, T> >* findAllGeneric(
+        typename std::map<std::string, T>& map, const char* re)
 {
     regex_t regex;
     if (regcomp(&regex, re, REG_EXTENDED | REG_NOSUB) != 0) {
         LOGE("regcomp failed");
         return NULL;
     }
-    typename std::map<android::String8, T>::iterator it;
-    typename std::list<std::pair<android::String8, T> >* list = NULL;
+    typename std::map<std::string, T>::iterator it;
+    typename std::list<std::pair<std::string, T> >* list = NULL;
     for (it = map.begin(); it != map.end(); it++) {
         if (regexec(&regex, it->first, 0, NULL, 0) == 0) {
             if (list == NULL) { // create only when found
-                list = new std::list<std::pair<android::String8, T> >();
+                list = new std::list<std::pair<std::string, T> >();
                 if (list == NULL) {
                     regfree(&regex);
                     return NULL;
                 }
             }
-            typename std::pair<android::String8, T> match(it->first, it->second);
+            typename std::pair<std::string, T> match(it->first, it->second);
             list->push_back(match);
         }
     }
@@ -135,109 +135,109 @@ template <typename T> typename std::list<std::pair<android::String8, T> >* findA
 }
 
 
-bool TaskCase::registerBuffer(const android::String8& orig, android::sp<Buffer>& buffer)
+bool TaskCase::registerBuffer(const std::string& orig, std::shared_ptr<Buffer>& buffer)
 {
-    android::String8 translated;
+    std::string translated;
     if (!translateVarName(orig, translated)) {
         return false;
     }
-    return registerGeneric<android::sp<Buffer> >(mBufferList, translated, buffer);
+    return registerGeneric<std::shared_ptr<Buffer> >(mBufferList, translated, buffer);
 }
 
-bool TaskCase::updateBuffer(const android::String8& orig, android::sp<Buffer>& buffer)
+bool TaskCase::updateBuffer(const std::string& orig, std::shared_ptr<Buffer>& buffer)
 {
-    android::String8 translated;
+    std::string translated;
     if (!translateVarName(orig, translated)) {
         return false;
     }
-    return updateGeneric<android::sp<Buffer> >(mBufferList, translated, buffer);
+    return updateGeneric<std::shared_ptr<Buffer> >(mBufferList, translated, buffer);
 }
 
-android::sp<Buffer> TaskCase::findBuffer(const android::String8& orig)
+std::shared_ptr<Buffer> TaskCase::findBuffer(const std::string& orig)
 {
-    android::String8 translated;
-    android::sp<Buffer> result;
+    std::string translated;
+    std::shared_ptr<Buffer> result;
     if (!translateVarName(orig, translated)) {
         return result;
     }
-    findGeneric<android::sp<Buffer> >(mBufferList, translated, result);
+    findGeneric<std::shared_ptr<Buffer> >(mBufferList, translated, result);
     return result;
 }
 
-std::list<TaskCase::BufferPair>* TaskCase::findAllBuffers(const android::String8& re)
+std::list<TaskCase::BufferPair>* TaskCase::findAllBuffers(const std::string& re)
 {
-    android::String8 translated;
+    std::string translated;
     if (!translateVarName(re, translated)) {
         return NULL;
     }
-    return findAllGeneric<android::sp<Buffer> >(mBufferList, translated.string());
+    return findAllGeneric<std::shared_ptr<Buffer> >(mBufferList, translated.c_str());
 }
 
 
-bool TaskCase::registerValue(const android::String8& orig, Value& val)
+bool TaskCase::registerValue(const std::string& orig, Value& val)
 {
-    android::String8 translated;
+    std::string translated;
     if (!translateVarName(orig, translated)) {
         return false;
     }
-    LOGD("str %x", translated.string());
+    LOGD("str %x", translated.c_str());
     return registerGeneric<Value>(mValueList, translated, val);
 }
 
-bool TaskCase::updateValue(const android::String8& orig, Value& val)
+bool TaskCase::updateValue(const std::string& orig, Value& val)
 {
-    android::String8 translated;
+    std::string translated;
     if (!translateVarName(orig, translated)) {
         return false;
     }
     return updateGeneric<Value>(mValueList, translated, val);
 }
 
-bool TaskCase::findValue(const android::String8& orig, Value& val)
+bool TaskCase::findValue(const std::string& orig, Value& val)
 {
-    android::String8 translated;
+    std::string translated;
     if (!translateVarName(orig, translated)) {
         return false;
     }
     return findGeneric<Value>(mValueList, translated, val);
 }
 
-std::list<TaskCase::ValuePair>* TaskCase::findAllValues(const android::String8& re)
+std::list<TaskCase::ValuePair>* TaskCase::findAllValues(const std::string& re)
 {
-    android::String8 translated;
+    std::string translated;
     if (!translateVarName(re, translated)) {
         return NULL;
     }
-    return findAllGeneric<Value>(mValueList, translated.string());
+    return findAllGeneric<Value>(mValueList, translated.c_str());
 }
 
-bool TaskCase::registerIndex(const android::String8& name, int value)
+bool TaskCase::registerIndex(const std::string& name, int value)
 {
     return registerGeneric<int>(mIndexList, name, value);
 }
 
-bool TaskCase::updateIndex(const android::String8& name, int value)
+bool TaskCase::updateIndex(const std::string& name, int value)
 {
     return updateGeneric<int>(mIndexList, name, value);
 }
 
-bool TaskCase::findIndex(const android::String8& name, int& val)
+bool TaskCase::findIndex(const std::string& name, int& val)
 {
     return findGeneric<int>(mIndexList, name, val);
 }
 
-std::list<TaskCase::IndexPair>* TaskCase::findAllIndices(const android::String8& re)
+std::list<TaskCase::IndexPair>* TaskCase::findAllIndices(const std::string& re)
 {
-    android::String8 translated;
+    std::string translated;
     if (!translateVarName(re, translated)) {
         return NULL;
     }
-    return findAllGeneric<int>(mIndexList, translated.string());
+    return findAllGeneric<int>(mIndexList, translated.c_str());
 }
 
-bool TaskCase::translateVarName(const android::String8& orig, android::String8& translated)
+bool TaskCase::translateVarName(const std::string& orig, std::string& translated)
 {
-    const char* src = orig.string();
+    const char* src = orig.c_str();
     const int nmatch = 2;
     regmatch_t pmatch[nmatch];
     regex_t re;
@@ -254,17 +254,17 @@ bool TaskCase::translateVarName(const android::String8& orig, android::String8& 
         matchStart = strStart + pmatch[1].rm_so;
         matchEnd = strStart + pmatch[1].rm_eo;
         translated.append(StringUtil::substr(orig, strStart, pmatch[1].rm_so - 1)); //-1 for $
-        android::String8 indexName;
+        std::string indexName;
         indexName.append(StringUtil::substr(orig, matchStart, matchEnd - matchStart));
         int val;
         if (!findIndex(indexName, val)) {
-            LOGE("TaskCase::translateVarName no index with name %s", indexName.string());
+            LOGE("TaskCase::translateVarName no index with name %s", indexName.c_str());
             regfree(&re);
             return false;
         }
         translated.appendFormat("%d", val);
         LOGD("match found strStart %d, matchStart %d, matchEnd %d, converted str %s",
-                strStart, matchStart, matchEnd, translated.string());
+                strStart, matchStart, matchEnd, translated.c_str());
         src += pmatch[1].rm_eo;
         strStart += pmatch[1].rm_eo;
     }
@@ -272,12 +272,12 @@ bool TaskCase::translateVarName(const android::String8& orig, android::String8& 
         //LOGD("%d %d", matchEnd, orig.length());
         translated.append(StringUtil::substr(orig, matchEnd, orig.length() - matchEnd));
     }
-    LOGD("translated str %s to %s", orig.string(), translated.string());
+    LOGD("translated str %s to %s", orig.c_str(), translated.c_str());
     regfree(&re);
     return true;
 }
 
-android::sp<RemoteAudio>& TaskCase::getRemoteAudio()
+std::shared_ptr<RemoteAudio>& TaskCase::getRemoteAudio()
 {
     if (mClient == NULL) {
         mClient = new ClientImpl();
@@ -292,12 +292,12 @@ void TaskCase::releaseRemoteAudio()
     mClient = NULL;
 }
 
-void TaskCase::setDetails(android::String8 details)
+void TaskCase::setDetails(std::string details)
 {
     mDetails = details;
 }
 
-const android::String8& TaskCase::getDetails() const
+const std::string& TaskCase::getDetails() const
 {
     return mDetails;
 }
@@ -305,13 +305,13 @@ const android::String8& TaskCase::getDetails() const
 
 TaskGeneric::ExecutionResult TaskCase::run()
 {
-    android::String8 name;
-    android::String8 version;
+    std::string name;
+    std::string version;
     //LOGI("str %d, %d", strlen(STR_NAME), strlen(STR_VERSION));
     if (!findStringAttribute(STR_NAME, name) || !findStringAttribute(STR_VERSION, version)) {
         LOGW("TaskCase::run no name or version information");
     }
-    MSG("== Test case %s version %s started ==", name.string(), version.string());
+    MSG("== Test case %s version %s started ==", name.c_str(), version.c_str());
     std::list<TaskGeneric*>::iterator i = getChildren().begin();
     std::list<TaskGeneric*>::iterator end = getChildren().end();
     TaskGeneric* setup = *i;
@@ -345,13 +345,13 @@ TaskGeneric::ExecutionResult TaskCase::run()
     }
     if (testPassed) {
         result = TaskGeneric::EResultPass;
-        MSG("== Case %s Passed ==", name.string());
+        MSG("== Case %s Passed ==", name.c_str());
         Report::Instance()->addCasePassed(this);
     } else {
         if (resultAction != TaskGeneric::EResultOK) {
             result = resultAction;
         }
-        MSG("== Case %s Failed ==", name.string());
+        MSG("== Case %s Failed ==", name.c_str());
         Report::Instance()->addCaseFailed(this);
     }
     // release remote audio for other cases to use
