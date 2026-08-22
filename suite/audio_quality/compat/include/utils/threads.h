@@ -73,4 +73,57 @@ private:
     std::thread mThread;
 };
 
+
+// status codes
+static constexpr int NO_ERROR = 0;
+static constexpr int UNKNOWN_ERROR = -1;
+
+inline Thread::~Thread()
+{
+    requestExitAndWait();
+}
+
+inline int Thread::run()
+{
+    try {
+        if (mThread.joinable()) return NO_ERROR; // already running
+        mExitRequested.store(false);
+        mThread = std::thread(&Thread::threadEntry, this);
+    } catch (...) {
+        return UNKNOWN_ERROR;
+    }
+    return NO_ERROR;
+}
+
+inline void Thread::requestExit()
+{
+    mExitRequested.store(true);
+}
+
+inline void Thread::requestExitAndWait()
+{
+    requestExit();
+    join();
+}
+
+inline void Thread::join()
+{
+    if (mThread.joinable()) {
+        try {
+            mThread.join();
+        } catch (...) {
+            // ignore
+        }
+    }
+}
+
+inline void Thread::threadEntry()
+{
+    if (!readyToRun()) return;
+    // keep calling threadLoop until it returns false or exit requested
+    while (!mExitRequested.load()) {
+        if (!threadLoop()) break;
+    }
+}
+
 }  // namespace android
