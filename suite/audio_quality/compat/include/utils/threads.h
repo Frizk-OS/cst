@@ -42,17 +42,35 @@ private:
     std::condition_variable mCondition;
 };
 
+#include <thread>
+#include <atomic>
+
 class Thread {
 public:
-    virtual ~Thread() = default;
+    virtual ~Thread();
 
-    virtual bool run() { return true; }
-    virtual void requestExit() { mExitRequested = true; }
-    bool join() { return true; }
-    bool start() { return true; }
+    // start the thread; return 0 (NO_ERROR) on success, negative on failure
+    virtual int run();
+
+    // request the thread to exit; thread should check mExitRequested
+    virtual void requestExit();
+
+    // request exit and wait for thread to finish
+    virtual void requestExitAndWait();
+
+    // join the thread (if running)
+    virtual void join();
 
 protected:
-    bool mExitRequested = false;
+    // thread entry point calls readyToRun() then repeatedly threadLoop()
+    virtual bool threadLoop() { return false; }
+    virtual bool readyToRun() { return true; }
+
+    std::atomic<bool> mExitRequested{false};
+
+private:
+    void threadEntry();
+    std::thread mThread;
 };
 
 }  // namespace android
