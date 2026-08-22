@@ -74,7 +74,7 @@ inline int Looper::pollOnce(int timeoutMs)
             char buf[64];
             while (read(mWakeRead, buf, sizeof(buf)) > 0) {}
             // process queued messages
-            std::queue<std::pair<sp<MessageHandler>, Message>> q;
+            std::queue<std::pair<std::shared_ptr<MessageHandler>, Message>> q;
             {
                 std::lock_guard<std::mutex> lk(mLock);
                 q.swap(mMsgQueue);
@@ -100,7 +100,7 @@ inline int Looper::pollOnce(int timeoutMs)
     return rc;
 }
 
-inline bool Looper::sendMessage(const sp<MessageHandler>& handler, const Message& msg)
+inline bool Looper::sendMessage(const std::shared_ptr<MessageHandler>& handler, const Message& msg)
 {
     {
         std::lock_guard<std::mutex> lk(mLock);

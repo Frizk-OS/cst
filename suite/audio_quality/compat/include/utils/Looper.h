@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utils/StrongPointer.h"
 #include <vector>
 #include <queue>
 #include <mutex>
@@ -44,8 +43,8 @@ public:
     // poll once and dispatch events. timeout in milliseconds
     int pollOnce(int timeoutMs);
 
-    bool sendMessage(const sp<MessageHandler>& handler, const Message& msg);
-    bool sendMessageDelayed(const sp<MessageHandler>& /*handler*/, const Message& /*message*/, int /*delayMs*/) { return false; }
+    bool sendMessage(const std::shared_ptr<MessageHandler>& handler, const Message& msg);
+    bool sendMessageDelayed(const std::shared_ptr<MessageHandler>& /*handler*/, const Message& /*message*/, int /*delayMs*/) { return false; }
 
 private:
     struct FdEntry {
@@ -57,7 +56,7 @@ private:
     };
 
     std::vector<FdEntry> mFds;
-    std::queue<std::pair<sp<MessageHandler>, Message>> mMsgQueue;
+    std::queue<std::pair<std::shared_ptr<MessageHandler>, Message>> mMsgQueue;
     std::mutex mLock;
     int mWakeRead = -1;
     int mWakeWrite = -1;
