@@ -14,6 +14,7 @@
  * the License.
  */
 
+#include <filesystem>
 #include <tinyxml.h>
 
 #include <UniquePtr.h>
@@ -199,7 +200,8 @@ TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const std::string&
         LOGE("ModelBuilder::handleBatch no include inside batch");
         return NULL;
     }
-    std::string path = xmlFileName.getPathDir();
+    std::filesystem::path xmlPath(xmlFileName);
+    std::string path = xmlPath.parent_path().string();
 
     UniquePtr<TaskCase> testCase;
     int i = 0;
@@ -238,11 +240,10 @@ TaskCase* ModelBuilder::parseInclude(const TiXmlElement& elem, const std::string
         LOGE("ModelBuilder::handleBatch no include elements");
         return NULL;
     }
-    std::string incFile = path;
-    incFile.appendPath(fileName);
+    std::filesystem::path incFile = std::filesystem::path(path) / fileName;
 
     // again no dynamic_cast intentionally
-    return reinterpret_cast<TaskCase*>(parseTestDescriptionXml(incFile, true));
+    return reinterpret_cast<TaskCase*>(parseTestDescriptionXml(incFile.string(), true));
 }
 
 bool ModelBuilder::parseAttributes(const TiXmlElement& elem, TaskGeneric& task)

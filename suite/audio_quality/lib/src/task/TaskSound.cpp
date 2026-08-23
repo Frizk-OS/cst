@@ -71,7 +71,7 @@ TaskGeneric::ExecutionResult TaskSound::run()
         if (tokens->size() != 2) {
             LOGE("Wrong number of parameters %d", tokens->size());
         }
-        buffer = Buffer::loadFromFile(tokens->at(1));
+        buffer.reset(Buffer::loadFromFile(tokens->at(1)));
     } else if (StringUtil::compare(tokens->at(0), "sin") == 0) {
         if (tokens->size() != 4) {
             LOGE("Wrong number of parameters %d", tokens->size());

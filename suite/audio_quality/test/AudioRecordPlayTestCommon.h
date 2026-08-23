@@ -51,15 +51,15 @@ protected:
                 MAX_POSITIVE_AMPLITUDE, AudioHardware::ESampleRate_44100,
                 SIGNAL_FREQ, NUMBER_SAMPLES);
         ASSERT_TRUE(mBufferPlayback.get() != NULL);
-        mBufferRecording = new Buffer(NUMBER_SAMPLES * 4, NUMBER_SAMPLES * 4);
+        mBufferRecording.reset(new Buffer(NUMBER_SAMPLES * 4, NUMBER_SAMPLES * 4));
         ASSERT_TRUE(mBufferRecording.get() != NULL);
     }
 
     virtual void TearDown() {
         mAudioRecordingHw->stopPlaybackOrRecord();
         mAudioPlaybackHw->stopPlaybackOrRecord();
-        mAudioRecordingHw.clear();
-        mAudioPlaybackHw.clear();
+        mAudioRecordingHw.reset();
+        mAudioPlaybackHw.reset();
     }
 
     void PlayAndRecord(int numberRepetition) {

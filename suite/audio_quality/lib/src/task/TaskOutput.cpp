@@ -88,7 +88,7 @@ TaskGeneric::ExecutionResult TaskOutput::complete()
         result = mHw->waitForCompletion();
     }
     mHw->stopPlaybackOrRecord();
-    mHw.clear();
+    mHw.reset();
     if (!result) {
         LOGE("waitForCompletion failed");
         return TaskGeneric::EResultError;

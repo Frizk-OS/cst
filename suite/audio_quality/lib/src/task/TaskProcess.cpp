@@ -272,7 +272,7 @@ bool TaskProcess::parseParams(std::vector<TaskProcess::Param>& list, const char*
             LOGD(" val %s", param.getParamString().c_str());
         } else if (isInput && (StringUtil::compare(item[0], "consti") == 0)) {
             long long value = atoll(item[1].c_str());
-            TaskCase::Value v(value);
+           TaskCase::Value v(static_cast<int64_t>(value));
             Param param(v);
             list.push_back(param);
             LOGD("consti %lld", value);
@@ -315,9 +315,9 @@ bool TaskProcess::parseAttribute(const std::string& name, const std::string& val
         mName.append(tokens->at(1));
         return true;
     } else if (StringUtil::compare(name, "input") == 0) {
-        return parseParams(mInput, value, true);
+        return parseParams(mInput, value.c_str(), true);
     } else if (StringUtil::compare(name, "output") == 0) {
-        return parseParams(mOutput, value, false);
+        return parseParams(mOutput, value.c_str(), false);
     } else {
         LOGE("cannot parse attr %s %s", name.c_str(), value.c_str());
         return false;

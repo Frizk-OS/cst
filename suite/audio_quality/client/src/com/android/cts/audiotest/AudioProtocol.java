@@ -42,8 +42,8 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
     private static final String TAG = "AudioProtocol";
     private static final int PORT_NUMBER = 15001;
 
-    private Thread mThread = new Thread(new ProtocolServer());
-    private boolean mExitRequested = false;
+    private final Thread mThread = new Thread(new ProtocolServer());
+    private volatile boolean mExitRequested = false;
 
     private static final int PROTOCOL_HEADER_SIZE = 8; // id + payload length
     private static final int MAX_NON_DATA_PAYLOAD_SIZE = 20;
@@ -59,9 +59,9 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
     private static final int CMD_STOP_RECORDING  = 0x12340005;
     private static final int CMD_GET_DEVICE_INFO = 0x12340006;
 
-    private ByteBuffer mHeaderBuffer = ByteBuffer.allocate(PROTOCOL_HEADER_SIZE);
-    private ByteBuffer mDataBuffer = ByteBuffer.allocate(MAX_NON_DATA_PAYLOAD_SIZE);
-    private ByteBuffer mReplyBuffer = ByteBuffer.allocate(PROTOCOL_SIMPLE_REPLY_SIZE);
+    private final ByteBuffer mHeaderBuffer = ByteBuffer.allocate(PROTOCOL_HEADER_SIZE);
+    private final ByteBuffer mDataBuffer = ByteBuffer.allocate(MAX_NON_DATA_PAYLOAD_SIZE);
+    private final ByteBuffer mReplyBuffer = ByteBuffer.allocate(PROTOCOL_SIMPLE_REPLY_SIZE);
 
     // all socket access (accept / read) set this timeout to check exit periodically.
     private static final int SOCKET_ACCESS_TIMEOUT = 2000;
@@ -69,7 +69,7 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
     private InputStream mInput = null;
     private OutputStream mOutput = null;
     // lock to use to write to socket, I/O streams, and also change socket (create, destroy)
-    private ReentrantLock mClientLock = new ReentrantLock();
+    private final ReentrantLock mClientLock = new ReentrantLock();
 
     private AudioRecord mRecord = null;
     private LoopThread mRecordThread = null;
@@ -96,7 +96,9 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
             mClientLock.lock();
             if (mClient != null) {
                 // wake up from socket read
-                mClient.shutdownInput();
+                if (mClient != null) {
+                    mClient.shutdownInput();
+                }
             }
         }catch (IOException e) {
                 // ignore
@@ -220,7 +222,7 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
 
     private void handleDownload(int len) throws IOException, ExitRequest {
         read(mInput, mDataBuffer, 4); // only for id
-        Integer id  = new Integer(mDataBuffer.getInt(0));
+        Integer id = Integer.valueOf(mDataBuffer.getInt(0));
         int dataLength = len - 4;
         ByteBuffer data = ByteBuffer.allocate(dataLength);
         read(mInput, data, dataLength);
@@ -233,7 +235,7 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
         // this error is too critical, so do not even send reply
         assertProtocol(len == 20, "wrong payload len");
         read(mInput, mDataBuffer, len);
-        final Integer id = new Integer(mDataBuffer.getInt(0));
+        final Integer id = Integer.valueOf(mDataBuffer.getInt(0));
         final int samplingRate = mDataBuffer.getInt(1 * 4);
         final boolean stereo = ((mDataBuffer.getInt(2 * 4) & 0x80000000) != 0);
         final int mode = mDataBuffer.getInt(2 * 4) & 0x7fffffff;
@@ -471,7 +473,7 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
             mClientLock.unlock();
         }
     }
-    private class LoopThread extends Thread {
+    private static final class LoopThread extends Thread {
         private Looper mLooper;
         LoopThread(Runnable runnable) {
             super(runnable);

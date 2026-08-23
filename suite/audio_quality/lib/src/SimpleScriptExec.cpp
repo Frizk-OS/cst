@@ -67,8 +67,7 @@ bool SimpleScriptExec::runScript(const std::string& script, const std::string& p
         std::string& result)
 {
     FILE *fpipe;
-    std::string command;
-    command.appendFormat("%s %s %s", PYTHON_PATH, script.c_str(), param.c_str());
+    std::string command = std::string(PYTHON_PATH) + " " + script + " " + param;
     const int READ_SIZE = 1024;
     char buffer[READ_SIZE];
     size_t len = 0;

@@ -23,9 +23,8 @@ common_includes = include_directories(
 )
 
 project_cpp_args = []
-if cpp.get_id() == 'gcc' or cpp.get_id() == 'clang'
-  project_cpp_args += ['-fno-exceptions']
-endif
+# Modern host port uses standard C++ exceptions and std::thread. Keep the compiler
+# defaults unless a project-specific flag is required.
 add_project_arguments(project_cpp_args, language: 'cpp')
 
 lib_sources = run_command(
@@ -45,7 +44,7 @@ lib_deps = [
   cpp.find_library('rt', required: false),
   cpp.find_library('m', required: false),
   dependency('tinyalsa', required: false),
-  dependency('tinyxml2', required: false),
+  dependency('tinyxml', required: true),
 ]
 
 cts_audio_quality_lib = static_library(
@@ -77,9 +76,9 @@ if get_option('tests')
   ).stdout().strip().split('\n')
   test_sources = test_sources[0] != '' ? test_sources : []
 
-  gtest_dep = dependency('gtest', required: false)
+  gtest_dep = dependency('gtest_main', required: false)
   if not gtest_dep.found()
-    gtest_dep = dependency('gtest_main', required: false)
+    gtest_dep = dependency('gtest', required: false)
   endif
 
   if gtest_dep.found() and test_sources.length() > 0

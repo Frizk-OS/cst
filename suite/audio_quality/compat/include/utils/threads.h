@@ -2,6 +2,8 @@
 
 #include <condition_variable>
 #include <mutex>
+#include <thread>
+#include <atomic>
 
 namespace android {
 
@@ -41,9 +43,6 @@ public:
 private:
     std::condition_variable mCondition;
 };
-
-#include <thread>
-#include <atomic>
 
 class Thread {
 public:

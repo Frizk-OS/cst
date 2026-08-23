@@ -110,14 +110,14 @@ protected:
 protected:
     virtual void SetUp() {
         ASSERT_TRUE(U32_ENDIAN_SWAP(0x12345678) == 0x78563412);
-        mRemoteAudio = new RemoteAudio(mTestSocket);
+        mRemoteAudio.reset(new RemoteAudio(mTestSocket));
         ASSERT_TRUE(mRemoteAudio != NULL);
         ASSERT_TRUE(mRemoteAudio->init(1234));
     }
 
     virtual void TearDown() {
         mRemoteAudio->release();
-        mRemoteAudio.clear();
+        mRemoteAudio.reset();
     }
 
     void doDownload() {

@@ -85,16 +85,16 @@ std::shared_ptr<AudioHardware> AudioHardware::createAudioHw(bool local, bool pla
             return NULL;
         }
         if (playback) {
-            hw = new AudioPlaybackLocal(mHwId);
+            hw = std::shared_ptr<AudioHardware>(new AudioPlaybackLocal(mHwId));
         } else {
-            hw = new AudioRecordingLocal(mHwId);
+            hw = std::shared_ptr<AudioHardware>(new AudioRecordingLocal(mHwId));
         }
     } else {
         if (testCase != NULL) {
             if (playback) {
-                hw = new AudioRemotePlayback(testCase->getRemoteAudio());
+                hw = std::shared_ptr<AudioHardware>(new AudioRemotePlayback(testCase->getRemoteAudio()));
             } else {
-                hw = new AudioRemoteRecording(testCase->getRemoteAudio());
+                hw = std::shared_ptr<AudioHardware>(new AudioRemoteRecording(testCase->getRemoteAudio()));
             }
         }
     }

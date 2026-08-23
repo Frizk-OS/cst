@@ -1,21 +1,23 @@
-C++: No special library required in host side, but gcc/g++ and std c++ library should be present.
-Python : version 2.6.5 or higher (should be /usr/bin/python)
-Necessary Python libraries:
-	- Python SciPy, NumPy
-	sudo apt-get install python-scipy python-numpy python-matplotlib
+Host build is Meson-only.
 
-run make cts_audio frop top dir.
+Required toolchain:
+    Clang 18+ or GCC 13+
+    C17 and C++26
 
-Modern toolchain requirement:
-    GCC 4.8 is not supported for this port. Use Clang 18+ or GCC 13+.
+Fedora setup:
+    sudo dnf install clang lld ninja-build meson tinyxml-devel gtest-devel
 
-Meson (standalone host build):
+Configure and build:
     CXX=clang++ CC=clang meson setup builddir --wipe -Dc_std=c17 -Dcpp_std=c++26
     meson compile -C builddir
-    meson test -C builddir --suite audio-quality
 
-Optional test target:
-    CXX=clang++ CC=clang meson setup builddir -Dtests=true -Dc_std=c17 -Dcpp_std=c++26
+Optional unit tests:
+    CXX=clang++ CC=clang meson setup builddir --wipe -Dc_std=c17 -Dcpp_std=c++26 -Dtests=true
+    meson compile -C builddir
+    meson test -C builddir
 
-Fedora packages for the host toolchain:
-    sudo dnf install clang lld ninja-build meson tinyalsa-devel tinyxml2-devel gtest-devel
+Notes:
+    - tinyalsa-devel is not shipped by Fedora, so this project uses a host-only compatibility
+      shim under compat/include/tinyalsa/asoundlib.h.
+    - The legacy host build path has been removed; Meson is the only supported build
+      entry point for this port.

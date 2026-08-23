@@ -55,10 +55,7 @@ bool Report::init(const char* dirName)
     if (dirName == NULL) {
         return true;
     }
-    std::string report;
-    if (report.appendFormat("%s/report.xml", dirName) != 0) {
-        return false;
-    }
+    std::string report = std::string(dirName) + "/report.xml";
     Settings::Instance()->addSetting(Settings::EREPORT_FILE, report);
     return FileUtil::init(report.c_str());
 }

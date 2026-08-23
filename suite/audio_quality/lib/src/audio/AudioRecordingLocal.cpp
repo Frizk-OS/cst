@@ -29,12 +29,12 @@ AudioRecordingLocal::AudioRecordingLocal(int hwId)
     : mHwId(hwId),
       mPcmHandle(NULL)
 {
-    LOGV("AudioRecordingLocal %x", (unsigned int)this);
+    LOGV("AudioRecordingLocal %p", static_cast<const void*>(this));
 }
 
 AudioRecordingLocal::~AudioRecordingLocal()
 {
-    LOGV("~AudioRecordingLocal %x", (unsigned int)this);
+    LOGV("~AudioRecordingLocal %p", static_cast<const void*>(this));
     releaseHw();
 }
 
@@ -97,7 +97,7 @@ void AudioRecordingLocal::doStop()
 void AudioRecordingLocal::releaseHw()
 {
     if (mPcmHandle != NULL) {
-        LOGV("releaseHw %x", (unsigned int)this);
+        LOGV("releaseHw %p", static_cast<const void*>(this));
         doStop();
         pcm_close(mPcmHandle);
         mPcmHandle = NULL;

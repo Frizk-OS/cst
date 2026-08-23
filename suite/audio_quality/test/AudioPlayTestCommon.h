@@ -58,7 +58,7 @@ protected:
     virtual void TearDown() {
         LOGV("AudioPlayTestCommon::TearDown");
         mAudioHw->stopPlaybackOrRecord(); // this stops the thread
-        mAudioHw.clear();
+        mAudioHw.reset();
     }
 
     void playAll(int numberRepetition) {

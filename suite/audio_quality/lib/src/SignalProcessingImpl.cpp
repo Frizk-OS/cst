@@ -190,7 +190,7 @@ TaskGeneric::ExecutionResult SignalProcessingImpl::run( const std::string& funct
             }
             std::shared_ptr<Buffer>* buffer = reinterpret_cast<std::shared_ptr<Buffer>*>(outputs[i]);
             if (buffer->get() == NULL) { // data not allocated, this can happen for unknown-length output
-                *buffer = new Buffer(dataLen, dataLen, (type == EAudioStereo) ? true: false);
+                buffer->reset(new Buffer(dataLen, dataLen, (type == EAudioStereo) ? true: false));
                 if (buffer->get() == NULL) {
                     LOGE("alloc failed");
                     return TaskGeneric::EResultError;

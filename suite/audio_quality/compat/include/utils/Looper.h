@@ -8,7 +8,6 @@
 #include <functional>
 #include <memory>
 #include <cstring>
-#include "Looper_impl.h"
 
 namespace android {
 
@@ -63,3 +62,9 @@ private:
 };
 
 }  // namespace android
+
+namespace android {
+static constexpr int ALOOPER_EVENT_INPUT = Looper::ALOOPER_EVENT_INPUT;
+}
+
+#include "Looper_impl.h"

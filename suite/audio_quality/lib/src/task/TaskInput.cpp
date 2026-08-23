@@ -35,8 +35,8 @@ TaskInput::~TaskInput()
 
 bool TaskInput::parseAttribute(const std::string& name, const std::string& value)
 {
-    if (strcmp(name, "time") == 0) {
-        mRecordingTimeInMs = atoi(value);
+    if (strcmp(name.c_str(), "time") == 0) {
+        mRecordingTimeInMs = atoi(value.c_str());
         if (mRecordingTimeInMs < 0) {
             LOGE("TaskInput::parseAttribute invalid recording time %d", mRecordingTimeInMs);
             return false;
@@ -84,7 +84,7 @@ TaskGeneric::ExecutionResult TaskInput::complete()
 {
     bool result = mHw->waitForCompletion();
     mHw->stopPlaybackOrRecord();
-    mHw.clear();
+    mHw.reset();
     if (!result) {
         LOGE("waitForComletion failed");
         return TaskGeneric::EResultError;

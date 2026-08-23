@@ -42,12 +42,12 @@ AudioPlaybackLocal::AudioPlaybackLocal(int hwId)
     : mHwId(hwId),
       mPcmHandle(NULL)
 {
-    LOGV("AudioPlaybackLocal %x", (unsigned int)this);
+    LOGV("AudioPlaybackLocal %p", static_cast<const void*>(this));
 }
 
 AudioPlaybackLocal::~AudioPlaybackLocal()
 {
-    LOGV("~AudioPlaybackLocal %x", (unsigned int)this);
+    LOGV("~AudioPlaybackLocal %p", static_cast<const void*>(this));
     releaseHw();
 }
 
@@ -108,7 +108,7 @@ void AudioPlaybackLocal::doStop()
 void AudioPlaybackLocal::releaseHw()
 {
     if (mPcmHandle != NULL) {
-        LOGV("releaseHw %x", (unsigned int)this);
+        LOGV("releaseHw %p", static_cast<const void*>(this));
         doStop();
         pcm_close(mPcmHandle);
         mPcmHandle = NULL;

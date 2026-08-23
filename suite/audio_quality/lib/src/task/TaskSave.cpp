@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <filesystem>
 
 #include <UniquePtr.h>
 
@@ -67,7 +68,7 @@ bool TaskSave::handleFile()
     if (!getTestCase()->getCaseName(caseName)) {
         return false;
     }
-    dirName.appendPath(caseName);
+    dirName = (std::filesystem::path(dirName) / caseName).string();
     int result = mkdir(dirName.c_str(), S_IRWXU);
     if ((result == -1) && (errno != EEXIST)) {
         LOGE("mkdir of save dir %s failed, error %d", dirName.c_str(), errno);
@@ -85,8 +86,7 @@ bool TaskSave::handleFile()
         std::list<TaskCase::BufferPair>::iterator it = buffersp->begin();
         std::list<TaskCase::BufferPair>::iterator end = buffersp->end();
         for (; it != end; it++) {
-            std::string fileName(dirName);
-            fileName.appendPath(it->first);
+            std::string fileName = (std::filesystem::path(dirName) / it->first).string();
             if (!it->second->saveToFile(fileName)) {
                 LOGE("save failed");
                 return false;
@@ -124,11 +124,13 @@ bool TaskSave::handleReport()
         std::list<TaskCase::ValuePair>::iterator end = values->end();
 
         for (; it != end; it++) {
+            char buffer[256];
             if (it->second.getType() == TaskCase::Value::ETypeDouble) {
-                details.appendFormat("   %s: %f\n", it->first.c_str(), it->second.getDouble());
+                snprintf(buffer, sizeof(buffer), "   %s: %f\n", it->first.c_str(), it->second.getDouble());
             } else { //64bit int
-                details.appendFormat("   %s: %lld\n", it->first.c_str(), it->second.getInt64());
+                snprintf(buffer, sizeof(buffer), "   %s: %lld\n", it->first.c_str(), it->second.getInt64());
             }
+            details.append(buffer);
         }
         MSG("%s", details.c_str());
     }

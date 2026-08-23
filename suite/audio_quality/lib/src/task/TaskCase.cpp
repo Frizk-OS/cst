@@ -118,7 +118,7 @@ template <typename T> typename std::list<std::pair<std::string, T> >* findAllGen
     typename std::map<std::string, T>::iterator it;
     typename std::list<std::pair<std::string, T> >* list = NULL;
     for (it = map.begin(); it != map.end(); it++) {
-        if (regexec(&regex, it->first, 0, NULL, 0) == 0) {
+        if (regexec(&regex, it->first.c_str(), 0, NULL, 0) == 0) {
             if (list == NULL) { // create only when found
                 list = new std::list<std::pair<std::string, T> >();
                 if (list == NULL) {
@@ -262,7 +262,7 @@ bool TaskCase::translateVarName(const std::string& orig, std::string& translated
             regfree(&re);
             return false;
         }
-        translated.appendFormat("%d", val);
+        translated += std::to_string(val);
         LOGD("match found strStart %d, matchStart %d, matchEnd %d, converted str %s",
                 strStart, matchStart, matchEnd, translated.c_str());
         src += pmatch[1].rm_eo;
