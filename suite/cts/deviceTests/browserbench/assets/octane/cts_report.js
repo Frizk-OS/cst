@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2013 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-/**
- *  Utility to report benchmarking result via HTTP POST
- *  to CTS.
- * @param msg message to add to the report
- * @param score resulting score
- * @param isFinal true if this is the last / final score
- */
-function CtsReport(msg, score, isFinal)
-{
-    req = new XMLHttpRequest();
-    req.open("POST", "cts_report.html?final=" + (isFinal ? "1" : "0") +
-             "&score=" + score + "&message=" + msg, false);
-    req.send(null)
+function CtsReport(message, score, isFinal) {
+    var request = new XMLHttpRequest();
+    var query = new URLSearchParams({
+        final: isFinal ? '1' : '0',
+        score: String(score),
+        message: message
+    });
+    request.open('POST', 'cts_report.html?' + query.toString(), false);
+    request.send(null);
 }
+
+window.CtsReport = CtsReport;
 
