@@ -52,12 +52,7 @@ bool TaskSave::handleFile()
         return true; // true as there is no need to save
     }
 
-    UniquePtr<std::vector<std::string> > list(StringUtil::split(fileValue, ','));
-    std::vector<std::string>* listp = list.get();
-    if (listp == NULL) {
-        LOGE("alloc failed");
-        return false;
-    }
+    const std::vector<std::string> list = StringUtil::split(fileValue, ',');
 
     std::string dirName;
     if (!FileUtil::prepare(dirName)) {
@@ -75,16 +70,14 @@ bool TaskSave::handleFile()
         return false;
     }
 
-    for (size_t i = 0; i < listp->size(); i++) {
-        UniquePtr<std::list<TaskCase::BufferPair> > buffers(
-                getTestCase()->findAllBuffers((*listp)[i]));
-        std::list<TaskCase::BufferPair>* buffersp = buffers.get();
-        if (buffersp == NULL) {
-            LOGE("no buffer for given pattern %s", ((*listp)[i]).c_str());
+    for (size_t i = 0; i < list.size(); i++) {
+        auto buffers = getTestCase()->findAllBuffers(list[i]);
+        if (buffers == nullptr) {
+            LOGE("no buffer for given pattern %s", list[i].c_str());
             return false;
         }
-        std::list<TaskCase::BufferPair>::iterator it = buffersp->begin();
-        std::list<TaskCase::BufferPair>::iterator end = buffersp->end();
+        auto it = buffers->begin();
+        auto end = buffers->end();
         for (; it != end; it++) {
             std::string fileName = (std::filesystem::path(dirName) / it->first).string();
             if (!it->second->saveToFile(fileName)) {
@@ -104,20 +97,13 @@ bool TaskSave::handleReport()
         return true; // true as there is no need to save
     }
 
-    UniquePtr<std::vector<std::string> > list(StringUtil::split(reportValue, ','));
-    std::vector<std::string>* listp = list.get();
-    if (listp == NULL) {
-        LOGE("alloc failed");
-        return false;
-    }
+    const std::vector<std::string> list = StringUtil::split(reportValue, ',');
     MSG("=== Values stored ===");
     std::string details;
-    for (size_t i = 0; i < listp->size(); i++) {
-        UniquePtr<std::list<TaskCase::ValuePair> > values(
-                getTestCase()->findAllValues((*listp)[i]));
-        std::list<TaskCase::ValuePair>* valuesp = values.get();
-        if (valuesp == NULL) {
-            LOGE("no value for given pattern %s", ((*listp)[i]).c_str());
+    for (size_t i = 0; i < list.size(); i++) {
+        auto values = getTestCase()->findAllValues(list[i]);
+        if (values == nullptr) {
+            LOGE("no value for given pattern %s", list[i].c_str());
             return false;
         }
         std::list<TaskCase::ValuePair>::iterator it = values->begin();
@@ -128,7 +114,8 @@ bool TaskSave::handleReport()
             if (it->second.getType() == TaskCase::Value::ETypeDouble) {
                 snprintf(buffer, sizeof(buffer), "   %s: %f\n", it->first.c_str(), it->second.getDouble());
             } else { //64bit int
-                snprintf(buffer, sizeof(buffer), "   %s: %lld\n", it->first.c_str(), it->second.getInt64());
+                snprintf(buffer, sizeof(buffer), "   %s: %lld\n", it->first.c_str(),
+                        static_cast<long long>(it->second.getInt64()));
             }
             details.append(buffer);
         }
@@ -153,5 +140,3 @@ TaskGeneric::ExecutionResult TaskSave::run()
         return TaskGeneric::EResultOK;
     }
 }
-
-

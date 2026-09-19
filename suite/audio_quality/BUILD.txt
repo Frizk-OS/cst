@@ -2,19 +2,34 @@ Host build is Meson-only.
 
 Required toolchain:
     Clang 18+ or GCC 13+
-    C17 and C++26
+    C23 and C++26
 
 Fedora setup:
     sudo dnf install clang lld ninja-build meson tinyxml-devel gtest-devel
 
 Configure and build:
-    CXX=clang++ CC=clang meson setup builddir --wipe -Dc_std=c17 -Dcpp_std=c++26
+    CXX=clang++ CC=clang meson setup builddir --wipe -Dc_std=c23 -Dcpp_std=c++26
     meson compile -C builddir
 
 Optional unit tests:
-    CXX=clang++ CC=clang meson setup builddir --wipe -Dc_std=c17 -Dcpp_std=c++26 -Dtests=true
+    CXX=clang++ CC=clang meson setup builddir --wipe -Dc_std=c23 -Dcpp_std=c++26 -Dtests=true
     meson compile -C builddir
     meson test -C builddir
+
+ARM32 cross-builds (ARMv7 hard-float):
+    meson setup builddir-arm32-gcc --cross-file meson/arm32-gcc.ini \
+        -Dcpp_std=c++23 -Dtests=false
+    meson compile -C builddir-arm32-gcc
+
+    meson setup builddir-arm32-clang --cross-file meson/arm32-clang.ini \
+        -Dcpp_std=c++23 -Dtests=false
+    meson compile -C builddir-arm32-clang
+
+The cross profiles require an ARM Linux sysroot and matching
+arm-linux-gnueabihf binutils/development libraries in PATH. The Clang profile
+uses Clang for compilation and the GNU ARM linker/sysroot for linking.
+The c++23 override is for GCC toolchains that do not yet accept c++26 mode;
+the native default remains C23/C++26.
 
 Notes:
     - tinyalsa-devel is not shipped by Fedora, so this project uses a host-only compatibility

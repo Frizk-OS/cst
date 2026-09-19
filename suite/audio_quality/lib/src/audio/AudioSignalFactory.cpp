@@ -13,7 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-#include <math.h>
+#include <cmath>
+#include <numbers>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -25,11 +26,12 @@ std::shared_ptr<Buffer> AudioSignalFactory::generateSineWave(AudioHardware::Byte
         int samples,  bool stereo)
 {
     int bufferSize = samples * (stereo? 2 : 1) * BPS;
-    std::shared_ptr<Buffer> buffer(new Buffer(bufferSize));
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(bufferSize);
     // only 16bit signed
     ASSERT(BPS == AudioHardware::E2BPS);
     int16_t* data = reinterpret_cast<int16_t*>(buffer->getData());
-    double multiplier = 2.0 * M_PI * (double)signalFreq / samplingRate;
+    const double multiplier = 2.0 * std::numbers::pi * static_cast<double>(signalFreq) /
+            static_cast<double>(samplingRate);
     for (int i = 0; i < samples; i++) {
         double val = sin(multiplier * i) * maxPositive;
         *data = (int16_t)val;
@@ -46,13 +48,12 @@ std::shared_ptr<Buffer> AudioSignalFactory::generateWhiteNoise(AudioHardware::By
         int maxPositive, int samples, bool stereo)
 {
     int bufferSize = samples * (stereo? 2 : 1) * BPS;
-    std::shared_ptr<Buffer> buffer(new Buffer(bufferSize, bufferSize));
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(bufferSize, bufferSize);
     // only 16bit signed
     ASSERT(BPS == AudioHardware::E2BPS);
     srand(123456);
     int16_t* data = reinterpret_cast<int16_t*>(buffer->getData());
     int middle = RAND_MAX / 2;
-    double multiplier = (double)maxPositive / middle;
     for (int i = 0; i < samples; i++) {
         int val =  rand();
         val = (int16_t)((val - middle) * maxPositive / middle);
@@ -71,7 +72,7 @@ std::shared_ptr<Buffer> AudioSignalFactory::generateZeroSound(AudioHardware::Byt
         int samples, bool stereo)
 {
     int bufferSize = samples * (stereo? 2 : 1) * BPS;
-    std::shared_ptr<Buffer> buffer(new Buffer(bufferSize, bufferSize));
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(bufferSize, bufferSize);
     // only 16bit signed
     ASSERT(BPS == AudioHardware::E2BPS);
     int16_t* data = reinterpret_cast<int16_t*>(buffer->getData());
@@ -86,5 +87,4 @@ std::shared_ptr<Buffer> AudioSignalFactory::generateZeroSound(AudioHardware::Byt
     buffer->setSize(buffer->getCapacity());
     return buffer;
 }
-
 

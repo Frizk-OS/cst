@@ -79,7 +79,8 @@ TaskCase* TaskGeneric::getTestCase()
 
 void TaskGeneric::setParent(TaskGeneric* parent)
 {
-    LOGD("TaskGeneric::setParent self %x, parent %x", this, parent);
+    LOGD("TaskGeneric::setParent self %p, parent %p",
+            static_cast<void*>(this), static_cast<void*>(parent));
     mParent = parent;
 }
 
@@ -141,4 +142,3 @@ bool TaskGeneric::findStringAttribute(const std::string& key, std::string& value
     value = it->second;
     return true;
 }
-

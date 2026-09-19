@@ -13,9 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-#include <stdint.h>
+#include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <string>
 #include "Log.h"
 #include "StringUtil.h"
@@ -27,25 +29,19 @@ Buffer::Buffer(size_t capacity, size_t size, bool stereo)
       mHandled(0),
       mStereo(stereo)
 {
-    mData = new char[capacity];
+    mData = std::make_unique<char[]>(capacity);
     //LOGV("Buffer %d data %x", capacity, (unsigned int)mData);
     // assume 4bytes alignment
-    ASSERT(((long)mData & 0x3) == 0);
+    ASSERT((reinterpret_cast<std::uintptr_t>(mData.get()) & 0x3U) == 0);
     // filling with zero just to make valgrind happy.
     // Otherwise, valgrind will complain about uninitialized data for all captured data
-    memset(mData, capacity, 0);
-};
-
-Buffer::~Buffer()
-{
-    delete[] mData;
-    //LOGV("~Buffer %d", mCapacity);
+    std::memset(mData.get(), 0, capacity);
 }
 
 void Buffer::changeToMono(ConvertOption option)
 {
     size_t newSize = mSize/2;
-    int16_t* data = reinterpret_cast<int16_t*>(mData);
+    auto* data = reinterpret_cast<int16_t*>(mData.get());
     if (option == EKeepCh0) {
         for (size_t i = 0; i < newSize/2; i++) { //16bpp only
             int16_t l = data[i * 2];
@@ -77,7 +73,7 @@ bool Buffer::changeToStereo()
 
 const char* EXTENSION_S16_STEREO = ".r2s";
 const char* EXTENSION_S16_MONO = ".r2m";
-Buffer* Buffer::loadFromFile(const std::string& filename)
+std::shared_ptr<Buffer> Buffer::loadFromFile(const std::string& filename)
 {
     bool stereo;
     if (StringUtil::endsWith(filename, EXTENSION_S16_STEREO)) {
@@ -86,23 +82,22 @@ Buffer* Buffer::loadFromFile(const std::string& filename)
         stereo = false;
     } else {
         LOGE("Buffer::loadFromFile specified file %s has unknown extension.", filename.c_str());
-        return NULL;
+        return nullptr;
     }
     std::ifstream file(filename.c_str(),  std::ios::in | std::ios::binary |
             std::ios::ate);
     if (!file.is_open()) {
         LOGE("Buffer::loadFromFile cannot open file %s.", filename.c_str());
-        return NULL;
+        return nullptr;
     }
-    size_t size = file.tellg();
-    Buffer* buffer = new Buffer(size, size, stereo);
-    if (buffer == NULL) {
-        return NULL;
+    size_t size = static_cast<size_t>(file.tellg());
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(size, size, stereo);
+    if (!buffer) {
+        return nullptr;
     }
     file.seekg(0, std::ios::beg);
-    file.read(buffer->mData, size); //TODO handle read error
-    file.close();
-    return buffer;
+    file.read(buffer->mData.get(), static_cast<std::streamsize>(size));
+    return file.good() ? buffer : nullptr;
 }
 
 bool Buffer::saveToFile(const std::string& filename)
@@ -120,7 +115,7 @@ bool Buffer::saveToFile(const std::string& filename)
                 filenameWithExtension.c_str());
         return false;
     }
-    file.write(mData, mSize);
+    file.write(mData.get(), static_cast<std::streamsize>(mSize));
     bool writeOK = true;
     if (file.rdstate() != std::ios_base::goodbit) {
         LOGE("Got error while writing file %s %x", filenameWithExtension.c_str(), file.rdstate());

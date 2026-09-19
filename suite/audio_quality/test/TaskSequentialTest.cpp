@@ -50,16 +50,14 @@ TEST_F(TaskSequentialTest, AttributeTest) {
     ASSERT_TRUE(!mSequential->parseAttribute(NO_SUCH_THING, SHOULD_FAIL));
     mSequential->run();
     const std::string RE(".*");
-    std::list<TaskCase::IndexPair>* indices = mTestCase->findAllIndices(RE);
-    ASSERT_TRUE(indices != NULL);
+    auto indices = mTestCase->findAllIndices(RE);
+    ASSERT_TRUE(indices != nullptr);
     ASSERT_TRUE(indices->size() == 1);
     int index = -10;
 
     ASSERT_TRUE(mTestCase->findIndex(I, index));
     ASSERT_TRUE(index == 10);
-    delete indices;
 }
-
 
 
 

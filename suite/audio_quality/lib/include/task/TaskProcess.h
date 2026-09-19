@@ -68,7 +68,7 @@ private:
     };
     class Param {
     public:
-        Param(ParamType type, std::string& string);
+        Param(ParamType type, const std::string& string);
         Param(TaskCase::Value& val);
         ParamType getType();
         std::string& getParamString();

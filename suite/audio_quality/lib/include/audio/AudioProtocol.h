@@ -18,8 +18,8 @@
 #ifndef CTSAUDIO_AUDIOPROTOCOL_H
 #define CTSAUDIO_AUDIOPROTOCOL_H
 
-#include <stdint.h>
-
+#include <array>
+#include <cstdint>
 #include <memory>
 #include "Log.h"
 #include "audio/Buffer.h"
@@ -93,7 +93,7 @@ protected:
     };
 
 protected:
-    int mBuffer[8];
+    std::array<std::uint32_t, 8> mBuffer{};
 private:
     uint32_t mCommand;
     ClientSocket& mSocket;

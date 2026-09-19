@@ -83,7 +83,7 @@ TEST_F(ClientInterfaceTest, RecordTest) {
     const int maxPositive = 10000;
     const int signalFreq = AudioHardware::ESampleRate_44100 / 100;
     const int samples = 44100 * 4;
-    std::shared_ptr<Buffer> buffer(new Buffer(samples * 2, samples * 2, false));
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(samples * 2, samples * 2, false);
 
     ASSERT_TRUE(audio->startRecording(false, AudioHardware::ESampleRate_44100,
             AudioHardware::EModeVoice, 100, buffer));

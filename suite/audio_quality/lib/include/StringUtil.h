@@ -27,9 +27,8 @@
 class StringUtil {
 public:
     /// split the given string with given delimiter and return the vector of string
-    /// it may return nullptr if memory alloc fails.
-    /// If vector is not nullptr, there will be at least one string
-    static std::vector<std::string>* split(const std::string& str, char delimiter);
+    /// Empty fields are ignored, matching the legacy CTS parser behavior.
+    static std::vector<std::string> split(const std::string& str, char delimiter);
     /// This function will return zero length string if pos is invalid.
     static std::string substr(const std::string& str, size_t pos, size_t n);
     static int compare(const std::string& str, const char* other);

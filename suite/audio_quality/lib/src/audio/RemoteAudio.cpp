@@ -29,32 +29,27 @@
 RemoteAudio::RemoteAudio(ClientSocket& socket)
     : mExitRequested(false),
       mSocket(socket),
-      mDownloadHandler(new CommandHandler(*this, (int)AudioProtocol::ECmdDownload)),
-      mPlaybackHandler(new CommandHandler(*this, (int)AudioProtocol::ECmdStartPlayback)),
-      mRecordingHandler(new CommandHandler(*this, (int)AudioProtocol::ECmdStartRecording)),
-      mDeviceInfoHandler(new CommandHandler(*this, (int)AudioProtocol::ECmdGetDeviceInfo)),
+      mDownloadHandler(std::make_shared<CommandHandler>(*this, AudioProtocol::ECmdDownload)),
+      mPlaybackHandler(std::make_shared<CommandHandler>(*this, AudioProtocol::ECmdStartPlayback)),
+      mRecordingHandler(std::make_shared<CommandHandler>(*this, AudioProtocol::ECmdStartRecording)),
+      mDeviceInfoHandler(std::make_shared<CommandHandler>(*this, AudioProtocol::ECmdGetDeviceInfo)),
       mDownloadId(0)
 {
-    mCmds[AudioProtocol::ECmdDownload - AudioProtocol::ECmdStart] = new CmdDownload(socket);
+    mCmds[AudioProtocol::ECmdDownload - AudioProtocol::ECmdStart] =
+            std::make_unique<CmdDownload>(socket);
     mCmds[AudioProtocol::ECmdStartPlayback - AudioProtocol::ECmdStart] =
-            new CmdStartPlayback(socket);
+            std::make_unique<CmdStartPlayback>(socket);
     mCmds[AudioProtocol::ECmdStopPlayback - AudioProtocol::ECmdStart] =
-            new CmdStopPlayback(socket);
+            std::make_unique<CmdStopPlayback>(socket);
     mCmds[AudioProtocol::ECmdStartRecording - AudioProtocol::ECmdStart] =
-            new CmdStartRecording(socket);
+            std::make_unique<CmdStartRecording>(socket);
     mCmds[AudioProtocol::ECmdStopRecording - AudioProtocol::ECmdStart] =
-            new CmdStopRecording(socket);
+            std::make_unique<CmdStopRecording>(socket);
     mCmds[AudioProtocol::ECmdGetDeviceInfo - AudioProtocol::ECmdStart] =
-                new CmdGetDeviceInfo(socket);
+            std::make_unique<CmdGetDeviceInfo>(socket);
 }
 
-RemoteAudio::~RemoteAudio()
-{
-    for (int i = 0; i < (AudioProtocol::ECmdLast - AudioProtocol::ECmdStart); i++) {
-        delete mCmds[i];
-    }
-    //mBufferList.clear();
-}
+RemoteAudio::~RemoteAudio() = default;
 
 bool RemoteAudio::init(int port)
 {
@@ -187,7 +182,8 @@ void RemoteAudio::doStop(std::shared_ptr<android::MessageHandler>& commandHandle
     handler->mActive = false;
     handler->mNotifyOnReply = false;
     handler->mStateLock.unlock();
-    std::shared_ptr<android::MessageHandler> command(new CommandHandler(*this, (int)id));
+    std::shared_ptr<android::MessageHandler> command =
+            std::make_shared<CommandHandler>(*this, id);
     sendCommand(command);
     waitForCompletion(command, CLIENT_WAIT_TIMEOUT_MSEC);
 }
@@ -328,7 +324,8 @@ bool RemoteAudio::getDeviceInfo(std::string& data)
 /** should be called before RemoteAudio is destroyed */
 void RemoteAudio::release()
 {
-    std::shared_ptr<android::MessageHandler> command(new CommandHandler(*this, CommandHandler::EExit));
+    std::shared_ptr<android::MessageHandler> command =
+            std::make_shared<CommandHandler>(*this, CommandHandler::EExit);
     sendCommand(command);
     join(); // wait for exit
     mSocket.release();

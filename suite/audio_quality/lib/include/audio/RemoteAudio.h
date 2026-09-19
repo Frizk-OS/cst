@@ -18,6 +18,8 @@
 #ifndef CTSAUDIO_REMOTEAUDIO_H
 #define CTSAUDIO_REMOTEAUDIO_H
 
+#include <array>
+#include <atomic>
 #include <map>
 
 #include <utils/Looper.h>
@@ -88,7 +90,7 @@ private:
     };
 
 private:
-    bool mExitRequested;
+    std::atomic_bool mExitRequested{false};
     bool mInitResult;
     // used only for notifying successful init
     Semaphore mInitWait;
@@ -144,7 +146,8 @@ private:
     std::shared_ptr<android::MessageHandler> mRecordingHandler;
     std::shared_ptr<android::MessageHandler> mDeviceInfoHandler;
 
-    AudioProtocol* mCmds[AudioProtocol::ECmdLast - AudioProtocol::ECmdStart];
+    std::array<std::unique_ptr<AudioProtocol>,
+            AudioProtocol::ECmdLast - AudioProtocol::ECmdStart> mCmds;
     int mDownloadId;
     std::map<int, std::shared_ptr<Buffer> > mBufferList;
     std::map<std::string, int> mIdMap;

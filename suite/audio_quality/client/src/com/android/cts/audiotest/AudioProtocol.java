@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
     private static final String TAG = "AudioProtocol";
     private static final int PORT_NUMBER = 15001;
 
-    private final Thread mThread = new Thread(new ProtocolServer());
+    private Thread mThread;
     private volatile boolean mExitRequested = false;
 
     private static final int PROTOCOL_HEADER_SIZE = 8; // id + payload length
@@ -81,15 +81,19 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
     // map for playback data
     private HashMap<Integer, ByteBuffer> mDataMap = new HashMap<Integer, ByteBuffer>();
 
-    public boolean start() {
+    public synchronized boolean start() {
         Log.d(TAG, "start");
+        if (mThread != null && mThread.isAlive()) {
+            return true;
+        }
         mExitRequested = false;
+        mThread = new Thread(new ProtocolServer(), "cts-audio-protocol");
         mThread.start();
         //Log.d(TAG, "started");
         return true;
     }
 
-    public void stop() throws InterruptedException {
+    public synchronized void stop() throws InterruptedException {
         Log.d(TAG, "stop");
         mExitRequested = true;
         try {
@@ -105,8 +109,11 @@ public class AudioProtocol implements AudioTrack.OnPlaybackPositionUpdateListene
         } finally {
             mClientLock.unlock();
         }
-        mThread.interrupt(); // this does not bail out from socket in android
-        mThread.join();
+        if (mThread != null) {
+            mThread.interrupt(); // this does not bail out from socket in android
+            mThread.join();
+            mThread = null;
+        }
         reset();
         Log.d(TAG, "stopped");
     }

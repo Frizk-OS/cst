@@ -53,21 +53,16 @@ TEST_F(StringUtilTest, endsWithTest) {
 
 TEST_F(StringUtilTest, splitTest) {
     std::string str("hello:there:break:this:");
-    std::vector<std::string>* tokens = StringUtil::split(str, ':');
-    ASSERT_TRUE(tokens != NULL);
-    ASSERT_TRUE(tokens->size() == 4);
-    ASSERT_TRUE(StringUtil::compare(tokens->at(0), "hello") == 0);
-    ASSERT_TRUE(StringUtil::compare(tokens->at(1), "there") == 0);
-    ASSERT_TRUE(StringUtil::compare(tokens->at(2), "break") == 0);
-    ASSERT_TRUE(StringUtil::compare(tokens->at(3), "this") == 0);
-    delete tokens;
+    const std::vector<std::string> tokens = StringUtil::split(str, ':');
+    ASSERT_TRUE(tokens.size() == 4);
+    ASSERT_TRUE(StringUtil::compare(tokens.at(0), "hello") == 0);
+    ASSERT_TRUE(StringUtil::compare(tokens.at(1), "there") == 0);
+    ASSERT_TRUE(StringUtil::compare(tokens.at(2), "break") == 0);
+    ASSERT_TRUE(StringUtil::compare(tokens.at(3), "this") == 0);
 
     std::string str2("::::");
-    std::vector<std::string>* tokens2 = StringUtil::split(str2, ':');
-    ASSERT_TRUE(tokens2 != NULL);
-    ASSERT_TRUE(tokens2->size() == 0);
-    delete tokens2;
+    const std::vector<std::string> tokens2 = StringUtil::split(str2, ':');
+    ASSERT_TRUE(tokens2.empty());
 }
-
 
 

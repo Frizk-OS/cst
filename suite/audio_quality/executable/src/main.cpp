@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     ModelBuilder modelBuilder;
     UniquePtr<TaskGeneric> topTask(modelBuilder.parseTestDescriptionXml(xmlFile));
     if (topTask.get() == NULL) {
-        LOGE("Parsing of %x failed", xmlFile.c_str());
+        LOGE("Parsing of %s failed", xmlFile.c_str());
         return 1;
     }
     Settings::Instance()->addSetting(Settings::ETEST_XML, xmlFile);
@@ -141,4 +141,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

@@ -51,7 +51,7 @@ protected:
                 MAX_POSITIVE_AMPLITUDE, AudioHardware::ESampleRate_44100,
                 SIGNAL_FREQ, NUMBER_SAMPLES);
         ASSERT_TRUE(mBufferPlayback.get() != NULL);
-        mBufferRecording.reset(new Buffer(NUMBER_SAMPLES * 4, NUMBER_SAMPLES * 4));
+        mBufferRecording = std::make_shared<Buffer>(NUMBER_SAMPLES * 4, NUMBER_SAMPLES * 4);
         ASSERT_TRUE(mBufferRecording.get() != NULL);
     }
 

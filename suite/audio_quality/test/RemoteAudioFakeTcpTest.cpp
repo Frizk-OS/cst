@@ -260,7 +260,7 @@ TEST_F(RemoteAudioFakeTcpTest, RecordingTest) {
     int volume = 0;
     int noSamples = 44; // 1ms worth
 
-    std::shared_ptr<Buffer> buffer(new Buffer(100, noSamples*2, false));
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(100, noSamples*2, false);
 
     uint32_t startSend[] = {
             U32_ENDIAN_SWAP(AudioProtocol::ECmdStartRecording),

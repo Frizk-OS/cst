@@ -19,6 +19,7 @@
 #define CTSAUDIO_MODELBUILDER_H
 
 #include <string>
+#include <memory>
 #include "TaskAll.h"
 
 class TiXmlElement;
@@ -64,7 +65,7 @@ private:
     static const int PARSING_TABLE_SIZE = TaskGeneric::ETaskInvalidLast - 2;
     static ParsingInfo mParsingTable[PARSING_TABLE_SIZE];
 
-    GenericFactory* mFactory;
+    std::unique_ptr<GenericFactory> mFactory;
 
 };
 

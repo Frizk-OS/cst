@@ -30,8 +30,8 @@ public:
             int mode = AudioHardware::EModeVoice);
 
 protected:
-    AudioRemote(std::shared_ptr<RemoteAudio>& remote);
-    virtual ~AudioRemote() {};
+    AudioRemote(const std::shared_ptr<RemoteAudio>& remote);
+    virtual ~AudioRemote() = default;
 
 protected:
     std::shared_ptr<RemoteAudio> mRemote;
@@ -42,8 +42,8 @@ protected:
 
 class AudioRemotePlayback: public AudioRemote {
 public:
-    AudioRemotePlayback(std::shared_ptr<RemoteAudio>& remote);
-    virtual ~AudioRemotePlayback() {};
+    AudioRemotePlayback(const std::shared_ptr<RemoteAudio>& remote);
+    virtual ~AudioRemotePlayback() = default;
     virtual bool startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer, int numberRepetition = 1);
     virtual bool waitForCompletion();
     virtual void stopPlaybackOrRecord();
@@ -52,8 +52,8 @@ public:
 
 class AudioRemoteRecording: public AudioRemote {
 public:
-    AudioRemoteRecording(std::shared_ptr<RemoteAudio>& remote);
-    virtual ~AudioRemoteRecording() {};
+    AudioRemoteRecording(const std::shared_ptr<RemoteAudio>& remote);
+    virtual ~AudioRemoteRecording() = default;
     virtual bool startPlaybackOrRecord(std::shared_ptr<Buffer>& buffer, int numberRepetition = 1);
     virtual bool waitForCompletion();
     virtual void stopPlaybackOrRecord();

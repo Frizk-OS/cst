@@ -5,7 +5,7 @@ project(
   license: 'Apache-2.0',
   meson_version: '>=1.3.0',
   default_options: [
-    'c_std=c17',
+    'c_std=c23',
     'cpp_std=c++26',
     'warning_level=2',
     'buildtype=debugoptimized',
@@ -27,16 +27,47 @@ project_cpp_args = []
 # defaults unless a project-specific flag is required.
 add_project_arguments(project_cpp_args, language: 'cpp')
 
-lib_sources = run_command(
-  'find',
-  meson.current_source_dir() / 'lib/src',
-  '-type',
-  'f',
-  '-name',
-  '*.cpp',
-  check: true,
-).stdout().strip().split('\n')
-lib_sources = lib_sources[0] != '' ? lib_sources : []
+if host_machine.cpu_family() == 'arm'
+  add_project_arguments('-marm', language: ['c', 'cpp'])
+endif
+
+lib_sources = files(
+  'lib/src/Adb.cpp',
+  'lib/src/BuiltinProcessing.cpp',
+  'lib/src/ClientImpl.cpp',
+  'lib/src/ClientSocket.cpp',
+  'lib/src/FileUtil.cpp',
+  'lib/src/GenericFactory.cpp',
+  'lib/src/Log.cpp',
+  'lib/src/Report.cpp',
+  'lib/src/Semaphore.cpp',
+  'lib/src/Settings.cpp',
+  'lib/src/SignalProcessingImpl.cpp',
+  'lib/src/SimpleScriptExec.cpp',
+  'lib/src/StringUtil.cpp',
+  'lib/src/task/ModelBuilder.cpp',
+  'lib/src/task/TaskAsync.cpp',
+  'lib/src/task/TaskBatch.cpp',
+  'lib/src/task/TaskCase.cpp',
+  'lib/src/task/TaskDownload.cpp',
+  'lib/src/task/TaskGeneric.cpp',
+  'lib/src/task/TaskInput.cpp',
+  'lib/src/task/TaskMessage.cpp',
+  'lib/src/task/TaskOutput.cpp',
+  'lib/src/task/TaskProcess.cpp',
+  'lib/src/task/TaskSave.cpp',
+  'lib/src/task/TaskSequential.cpp',
+  'lib/src/task/TaskSound.cpp',
+  'lib/src/audio/AudioHardware.cpp',
+  'lib/src/audio/AudioLocal.cpp',
+  'lib/src/audio/AudioPlaybackLocal.cpp',
+  'lib/src/audio/AudioProtocol.cpp',
+  'lib/src/audio/AudioRecordingLocal.cpp',
+  'lib/src/audio/AudioRemote.cpp',
+  'lib/src/audio/AudioSignalFactory.cpp',
+  'lib/src/audio/Buffer.cpp',
+  'lib/src/audio/RemoteAudio.cpp',
+)
 
 lib_deps = [
   dependency('threads', required: true),
@@ -65,23 +96,35 @@ executable(
 )
 
 if get_option('tests')
-  test_sources = run_command(
-    'find',
-    meson.current_source_dir() / 'test',
-    '-type',
-    'f',
-    '-name',
-    '*.cpp',
-    check: true,
-  ).stdout().strip().split('\n')
-  test_sources = test_sources[0] != '' ? test_sources : []
+  test_sources = files(
+    'test/LogTest.cpp',
+    'test/FileUtilTest.cpp',
+    'test/ClientInterfaceTest.cpp',
+    'test/BufferTest.cpp',
+    'test/AudioSignalFactoryTest.cpp',
+    'test/AudioRecordingLocalTest.cpp',
+    'test/AudioRecordPlayLocalTest.cpp',
+    'test/AudioPlaybackLocalTest.cpp',
+    'test/AudioLocalTest.cpp',
+    'test/AudioHardwareTest.cpp',
+    'test/SimpleScriptExecTest.cpp',
+    'test/SignalProcessingInterfaceTest.cpp',
+    'test/RemoteAudioFakeTcpTest.cpp',
+    'test/ModelBuilderTest.cpp',
+    'test/MixerTest.cpp',
+    'test/TaskProcessTest.cpp',
+    'test/TaskCaseTest.cpp',
+    'test/StringUtilTest.cpp',
+    'test/TaskSequentialTest.cpp',
+    'test/TaskTest.cpp',
+  )
 
   gtest_dep = dependency('gtest_main', required: false)
   if not gtest_dep.found()
     gtest_dep = dependency('gtest', required: false)
   endif
 
-  if gtest_dep.found() and test_sources.length() > 0
+  if gtest_dep.found()
     executable(
       'cts_audio_quality_test',
       test_sources,

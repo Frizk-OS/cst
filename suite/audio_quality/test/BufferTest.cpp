@@ -38,7 +38,7 @@ public:
 TEST_F(BufferTest, saveLoadStereoTest) {
     const int BUFFER_SIZE = 32;
 
-    UniquePtr<Buffer> buffer(new Buffer(BUFFER_SIZE, BUFFER_SIZE, true));
+    UniquePtr<Buffer> buffer = std::make_unique<Buffer>(BUFFER_SIZE, BUFFER_SIZE, true);
     ASSERT_TRUE(buffer.get() != NULL);
     int16_t* data = (int16_t*)buffer->getData();
     ASSERT_TRUE(data != NULL);
@@ -49,7 +49,7 @@ TEST_F(BufferTest, saveLoadStereoTest) {
     std::string file("/tmp/cts_audio_temp");
     ASSERT_TRUE(buffer->saveToFile(file));
     file.append(".r2s");
-    UniquePtr<Buffer> bufferRead(Buffer::loadFromFile(file));
+    std::shared_ptr<Buffer> bufferRead = Buffer::loadFromFile(file);
     ASSERT_TRUE(bufferRead.get() != NULL);
     ASSERT_TRUE(bufferRead->getSize() == (size_t)BUFFER_SIZE);
     ASSERT_TRUE(bufferRead->isStereo());
@@ -63,14 +63,14 @@ TEST_F(BufferTest, saveLoadStereoTest) {
 TEST_F(BufferTest, monoLTest) {
     const int BUFFER_SIZE = 8;
 
-    UniquePtr<Buffer> buffer(new Buffer(BUFFER_SIZE, BUFFER_SIZE, true));
+    UniquePtr<Buffer> buffer = std::make_unique<Buffer>(BUFFER_SIZE, BUFFER_SIZE, true);
     ASSERT_TRUE(buffer.get() != NULL);
     int16_t* data = (int16_t*)buffer->getData();
     ASSERT_TRUE(data != NULL);
     for (int i = 0; i < BUFFER_SIZE/2; i++) {
         data[i] = i;
     }
-    UniquePtr<Buffer> bufferl(new Buffer(BUFFER_SIZE/2, BUFFER_SIZE/2, false));
+    UniquePtr<Buffer> bufferl = std::make_unique<Buffer>(BUFFER_SIZE/2, BUFFER_SIZE/2, false);
     ASSERT_TRUE(bufferl.get() != NULL);
     data = (int16_t*)bufferl->getData();
     ASSERT_TRUE(data != NULL);

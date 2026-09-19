@@ -50,12 +50,12 @@ TEST_F(SignalProcessingInterfaceTest, EchoTest) {
     bool inputTypes[4] = { true, true, false, false };
     bool outputTypes[4] = { true, true, false, false };
 
-    std::shared_ptr<Buffer> in0(new Buffer(160000, 160000, true));
+    std::shared_ptr<Buffer> in0 = std::make_shared<Buffer>(160000, 160000, true);
     char* data0 = in0->getData();
     for (size_t i = 0; i < in0->getSize(); i++) {
         data0[i] = i;
     }
-    std::shared_ptr<Buffer> in1(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> in1 = std::make_shared<Buffer>(8, 8, false);
     char* data1 = in1->getData();
     for (size_t i = 0; i < in1->getSize(); i++) {
         data1[i] = i;
@@ -64,12 +64,12 @@ TEST_F(SignalProcessingInterfaceTest, EchoTest) {
     TaskCase::Value in3((int64_t)100);
     void* inputs[4] = { &in0, &in1, &in2, &in3 };
 
-    std::shared_ptr<Buffer> out0(new Buffer(160000, 160000, true));
+    std::shared_ptr<Buffer> out0 = std::make_shared<Buffer>(160000, 160000, true);
     char* outdata0 = out0->getData();
     for (size_t i = 0; i < out0->getSize(); i++) {
         outdata0[i] = 0xaa;
     }
-    std::shared_ptr<Buffer> out1(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> out1 = std::make_shared<Buffer>(8, 8, false);
     char* outdata1 = out1->getData();
     for (size_t i = 0; i < out1->getSize(); i++) {
         outdata1[i] = 0xbb;
@@ -146,22 +146,22 @@ TEST_F(SignalProcessingInterfaceTest, exampleTest) {
     bool inputTypes[8] = { true, true, true, true, false, false, false, false };
     bool outputTypes[4] = { true, true, false, false };
 
-    std::shared_ptr<Buffer> in0(new Buffer(16, 16, true));
+    std::shared_ptr<Buffer> in0 = std::make_shared<Buffer>(16, 16, true);
     char* data0 = in0->getData();
     for (size_t i = 0; i < in0->getSize(); i++) {
         data0[i] = i;
     }
-    std::shared_ptr<Buffer> in1(new Buffer(16, 16, true));
+    std::shared_ptr<Buffer> in1 = std::make_shared<Buffer>(16, 16, true);
     char* data1 = in1->getData();
     for (size_t i = 0; i < in1->getSize(); i++) {
         data1[i] = i;
     }
-    std::shared_ptr<Buffer> in2(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> in2 = std::make_shared<Buffer>(8, 8, false);
     char* data2 = in2->getData();
     for (size_t i = 0; i < in2->getSize(); i++) {
         data2[i] = i;
     }
-    std::shared_ptr<Buffer> in3(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> in3 = std::make_shared<Buffer>(8, 8, false);
     char* data3 = in3->getData();
     for (size_t i = 0; i < in3->getSize(); i++) {
         data3[i] = i;
@@ -172,12 +172,12 @@ TEST_F(SignalProcessingInterfaceTest, exampleTest) {
     TaskCase::Value in7(1.0f);
     void* inputs[8] = { &in0, &in1, &in2, &in3, &in4, &in5, &in6, &in7 };
 
-    std::shared_ptr<Buffer> out0(new Buffer(16, 16, true));
+    std::shared_ptr<Buffer> out0 = std::make_shared<Buffer>(16, 16, true);
     char* outdata0 = out0->getData();
     for (size_t i = 0; i < out0->getSize(); i++) {
         outdata0[i] = 0xaa;
     }
-    std::shared_ptr<Buffer> out1(new Buffer(8, 8, false));
+    std::shared_ptr<Buffer> out1 = std::make_shared<Buffer>(8, 8, false);
     char* outdata1 = out1->getData();
     for (size_t i = 0; i < out1->getSize(); i++) {
         outdata1[i] = 0xbb;

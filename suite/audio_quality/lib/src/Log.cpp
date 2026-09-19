@@ -19,7 +19,7 @@
 #include "StringUtil.h"
 #include "Log.h"
 
-Log* Log::mInstance = NULL;
+Log* Log::mInstance = nullptr;
 
 #define ASSERT_PLAIN(cond) if(!(cond)) { fprintf(stderr, \
         "assertion failed %s %d", __FILE__, __LINE__); \
@@ -36,7 +36,7 @@ Log* Log::Instance(const char* dirName)
 void Log::Finalize()
 {
     delete mInstance;
-    mInstance = NULL;
+    mInstance = nullptr;
 }
 void Log::printf(LogLevel level, const char* fmt, ...)
 {
@@ -64,7 +64,7 @@ Log::~Log()
 
 bool Log::init(const char* dirName)
 {
-    if (dirName == NULL) {
+    if (dirName == nullptr) {
         return true;
     }
     char buf[1024];
@@ -73,6 +73,5 @@ bool Log::init(const char* dirName)
     }
     return FileUtil::init(buf);
 }
-
 
 

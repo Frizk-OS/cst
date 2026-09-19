@@ -45,7 +45,7 @@ BuiltinProcessing::BuiltinProcessing()
 // pass for 5 consecutive passes
 TaskGeneric::ExecutionResult BuiltinProcessing::rms_mva(void** inputs, void** outputs)
 {
-    LOGD("BuiltinProcessing::rms_mva in %x %x %x out %x",
+    LOGD("BuiltinProcessing::rms_mva in %p %p %p out %p",
             inputs[0], inputs[1], inputs[2], outputs[0]);
     std::shared_ptr<Buffer>& data(*reinterpret_cast<std::shared_ptr<Buffer>*>(inputs[0]));
 
@@ -63,17 +63,23 @@ TaskGeneric::ExecutionResult BuiltinProcessing::rms_mva(void** inputs, void** ou
 
     TaskGeneric::ExecutionResult result = TaskGeneric::EResultOK;
     if (rms < passMin) {
-        MSG("Volume %lld low compared to min %lld max %lld", rms, passMin, passMax);
+        MSG("Volume %lld low compared to min %lld max %lld",
+                static_cast<long long>(rms), static_cast<long long>(passMin),
+                static_cast<long long>(passMax));
         mRMSPasses = 0;
     } else if (rms <= passMax) {
-        MSG("Volume %lld OK compared to min %lld max %lld", rms, passMin, passMax);
+        MSG("Volume %lld OK compared to min %lld max %lld",
+                static_cast<long long>(rms), static_cast<long long>(passMin),
+                static_cast<long long>(passMax));
         mRMSPasses++;
         if (mRMSPasses >= RMS_CONTINUOUS_PASSES) {
             //mRMSPasses = 0;
             result = TaskGeneric::EResultPass;
         }
     } else {
-        LOGW("Volume %lld high compared to min %lld max %lld", rms, passMin, passMax);
+        LOGW("Volume %lld high compared to min %lld max %lld",
+                static_cast<long long>(rms), static_cast<long long>(passMin),
+                static_cast<long long>(passMax));
         mRMSPasses = 0;
     }
     TaskCase::Value* rmsVal = reinterpret_cast<TaskCase::Value*>(outputs[0]);
@@ -81,5 +87,3 @@ TaskGeneric::ExecutionResult BuiltinProcessing::rms_mva(void** inputs, void** ou
 
     return result;
 }
-
-

@@ -14,7 +14,6 @@
  * the License.
  */
 
-#include <UniquePtr.h>
 #include "Log.h"
 #include "audio/AudioSignalFactory.h"
 #include "audio/RemoteAudio.h"
@@ -61,34 +60,37 @@ TaskGeneric::ExecutionResult TaskSound::run()
         LOGE("TaskSound::run %s string not found", STR_TYPE.c_str());
         return TaskGeneric::EResultError;
     }
-    UniquePtr<std::vector<std::string> > tokens(StringUtil::split(type, ':'));
-    if (tokens.get() == NULL) {
-        LOGE("alloc failed");
+    const std::vector<std::string> tokens = StringUtil::split(type, ':');
+    if (tokens.empty()) {
+        LOGE("empty sound type");
         return TaskGeneric::EResultError;
     }
     std::shared_ptr<Buffer> buffer;
-    if (StringUtil::compare(tokens->at(0), "file") == 0) {
-        if (tokens->size() != 2) {
-            LOGE("Wrong number of parameters %d", tokens->size());
+    if (StringUtil::compare(tokens.at(0), "file") == 0) {
+        if (tokens.size() != 2) {
+            LOGE("Wrong number of parameters %d", tokens.size());
+            return TaskGeneric::EResultError;
         }
-        buffer.reset(Buffer::loadFromFile(tokens->at(1)));
-    } else if (StringUtil::compare(tokens->at(0), "sin") == 0) {
-        if (tokens->size() != 4) {
-            LOGE("Wrong number of parameters %d", tokens->size());
+        buffer = Buffer::loadFromFile(tokens.at(1));
+    } else if (StringUtil::compare(tokens.at(0), "sin") == 0) {
+        if (tokens.size() != 4) {
+            LOGE("Wrong number of parameters %d", tokens.size());
+            return TaskGeneric::EResultError;
         }
-        int amplitude = atoi(tokens->at(1).c_str());
-        int freq = atoi(tokens->at(2).c_str());
-        int time = atoi(tokens->at(3).c_str());
+        int amplitude = atoi(tokens.at(1).c_str());
+        int freq = atoi(tokens.at(2).c_str());
+        int time = atoi(tokens.at(3).c_str());
         int samples = time * AudioHardware::ESampleRate_44100 / 1000;
         buffer = AudioSignalFactory::generateSineWave(AudioHardware::E2BPS, amplitude,
                 AudioHardware::ESampleRate_44100, freq, samples, true);
-    } else if (StringUtil::compare(tokens->at(0), "random") == 0) {
+    } else if (StringUtil::compare(tokens.at(0), "random") == 0) {
         // TODO FIXME it does not seem to work well.
-        if (tokens->size() != 3) {
-            LOGE("Wrong number of parameters %d", tokens->size());
+        if (tokens.size() != 3) {
+            LOGE("Wrong number of parameters %d", tokens.size());
+            return TaskGeneric::EResultError;
         }
-        int amplitude = atoi(tokens->at(1).c_str());
-        int time = atoi(tokens->at(2).c_str());
+        int amplitude = atoi(tokens.at(1).c_str());
+        int time = atoi(tokens.at(2).c_str());
         int samples = time * AudioHardware::ESampleRate_44100 / 1000;
         buffer = AudioSignalFactory::generateWhiteNoise(AudioHardware::E2BPS, amplitude,
                 samples, true);
@@ -97,7 +99,7 @@ TaskGeneric::ExecutionResult TaskSound::run()
         // next buffer check will return
     }
 
-    if (buffer.get() == NULL) {
+    if (buffer == nullptr) {
         return TaskGeneric::EResultError;
     }
     if (!getTestCase()->registerBuffer(id, buffer)) {
@@ -113,6 +115,5 @@ TaskGeneric::ExecutionResult TaskSound::run()
     }
     return TaskGeneric::EResultOK;
 }
-
 
 

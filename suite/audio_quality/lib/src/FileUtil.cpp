@@ -78,21 +78,9 @@ bool FileUtil::prepare(std::string& dirPath)
 }
 
 FileUtil::FileUtil()
+    : mBuffer(DEFAULT_BUFFER_SIZE),
+      mBufferSize(DEFAULT_BUFFER_SIZE)
 {
-    mBuffer = new char[DEFAULT_BUFFER_SIZE];
-    if (mBuffer == NULL) {
-        // cannot use ASSERT here, just crash
-        *(char*)0 = 0;
-    }
-    mBufferSize = DEFAULT_BUFFER_SIZE;
-}
-
-FileUtil::~FileUtil()
-{
-    if (mFile.is_open()) {
-        mFile.close();
-    }
-    delete[] mBuffer;
 }
 
 bool FileUtil::init(const char* fileName)
@@ -111,29 +99,25 @@ bool FileUtil::init(const char* fileName)
 bool FileUtil::doVprintf(bool fileOnly, int logLevel, const char *fmt, va_list ap)
 {
     // prevent messed up log in multi-thread env. Still multi-line logs can be messed up.
-    android::Mutex::Autolock lock(mWriteLock);
+    std::lock_guard<std::mutex> lock(mWriteLock);
     while (1) {
         int start = 0;
         if (logLevel != -1) {
-            mBuffer[0] = '0' + logLevel;
+            mBuffer[0] = static_cast<char>('0' + logLevel);
             mBuffer[1] = '>';
             start = 2;
         }
-        int size;
-        size = vsnprintf(mBuffer + start, mBufferSize - start - 2, fmt, ap); // 2 for \n\0
+        va_list attempt;
+        va_copy(attempt, ap);
+        int size = vsnprintf(mBuffer.data() + start, mBufferSize - start - 2, fmt, attempt);
+        va_end(attempt);
         if (size < 0) {
             fprintf(stderr, "FileUtil::vprintf failed");
             return false;
         }
-        if ((size + start + 2) > mBufferSize) {
-            //default buffer does not fit, increase buffer size and retry
-            delete[] mBuffer;
-            mBuffer = new char[2 * size];
-            if (mBuffer == NULL) {
-                // cannot use ASSERT here, just crash
-                *(char*)0 = 0;
-            }
-            mBufferSize = 2 * size;
+        if (static_cast<size_t>(size + start + 2) > mBufferSize) {
+            mBufferSize = static_cast<size_t>(size + start + 2);
+            mBuffer.resize(mBufferSize);
             // re-try
             continue;
         }
@@ -143,10 +127,10 @@ bool FileUtil::doVprintf(bool fileOnly, int logLevel, const char *fmt, va_list a
         mBuffer[size] = 0;
 
         if (!fileOnly) {
-            fprintf(stdout, "%s", mBuffer);
+            fprintf(stdout, "%s", mBuffer.data());
         }
         if (mFile.is_open()) {
-            mFile<<mBuffer;
+            mFile << mBuffer.data();
         }
         return true;
     }

@@ -20,7 +20,7 @@
 
 bool AudioRemote::prepare(AudioHardware::SamplingRate samplingRate, int volume, int mode)
 {
-    if (mRemote == NULL) {
+    if (mRemote == nullptr) {
         LOGE("AudioRemote::prepare mRemote NULL");
         return false;
     }
@@ -30,13 +30,13 @@ bool AudioRemote::prepare(AudioHardware::SamplingRate samplingRate, int volume, 
     return true;
 }
 
-AudioRemote::AudioRemote(std::shared_ptr<RemoteAudio>& remote)
+AudioRemote::AudioRemote(const std::shared_ptr<RemoteAudio>& remote)
     : mRemote(remote)
 {
 
 }
 
-AudioRemotePlayback::AudioRemotePlayback(std::shared_ptr<RemoteAudio>& remote)
+AudioRemotePlayback::AudioRemotePlayback(const std::shared_ptr<RemoteAudio>& remote)
     : AudioRemote(remote)
 {
 
@@ -63,7 +63,7 @@ bool AudioRemotePlayback::startPlaybackForRemoteData(int id, bool stereo, int nu
     return mRemote->startPlayback(stereo, mSamplingRate, mMode, mVolume, id, numberRepetition);
 }
 
-AudioRemoteRecording::AudioRemoteRecording(std::shared_ptr<RemoteAudio>& remote)
+AudioRemoteRecording::AudioRemoteRecording(const std::shared_ptr<RemoteAudio>& remote)
     : AudioRemote(remote)
 {
 
@@ -85,6 +85,4 @@ void AudioRemoteRecording::stopPlaybackOrRecord()
 {
     mRemote->stopRecording();
 }
-
-
 

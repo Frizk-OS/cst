@@ -82,37 +82,32 @@ std::shared_ptr<AudioHardware> AudioHardware::createAudioHw(bool local, bool pla
             mHwId = detectAudioHw();
         }
         if (mHwId < 0) {
-            return NULL;
+            return nullptr;
         }
         if (playback) {
-            hw = std::shared_ptr<AudioHardware>(new AudioPlaybackLocal(mHwId));
+            hw = std::make_shared<AudioPlaybackLocal>(mHwId);
         } else {
-            hw = std::shared_ptr<AudioHardware>(new AudioRecordingLocal(mHwId));
+            hw = std::make_shared<AudioRecordingLocal>(mHwId);
         }
     } else {
-        if (testCase != NULL) {
+        if (testCase != nullptr) {
             if (playback) {
-                hw = std::shared_ptr<AudioHardware>(new AudioRemotePlayback(testCase->getRemoteAudio()));
+                hw = std::make_shared<AudioRemotePlayback>(testCase->getRemoteAudio());
             } else {
-                hw = std::shared_ptr<AudioHardware>(new AudioRemoteRecording(testCase->getRemoteAudio()));
+                hw = std::make_shared<AudioRemoteRecording>(testCase->getRemoteAudio());
             }
         }
     }
     return hw;
 }
 
-AudioHardware::~AudioHardware()
-{
-
-}
-
 bool AudioHardware::startPlaybackOrRecordById(const std::string& id, TaskCase* testCase)
 {
-    if (testCase == NULL) { // default implementation only handles local buffer.
+    if (testCase == nullptr) { // default implementation only handles local buffer.
         return false;
     }
     std::shared_ptr<Buffer> buffer = testCase->findBuffer(id);
-    if (buffer.get() == NULL) {
+    if (buffer == nullptr) {
         return false;
     }
     return startPlaybackOrRecord(buffer);

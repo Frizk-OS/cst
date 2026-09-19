@@ -13,14 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-#include <stdint.h>
+#include <cstdint>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <memory>
-#include <utils/UniquePtr.h>
 #include <string>
+#include <vector>
 
 #include "audio/Buffer.h"
 #include "Log.h"
@@ -31,7 +30,7 @@ bool AudioProtocol::sendCommand(AudioParam& param)
 {
     mBuffer[0] = htonl(mCommand);
     mBuffer[1] = 0;
-    return sendData((char*)mBuffer, 8);
+    return sendData(reinterpret_cast<const char*>(mBuffer.data()), 8);
 }
 
 bool AudioProtocol::handleReply(const uint32_t* data, AudioParam* param)
@@ -52,7 +51,7 @@ bool AudioProtocol::handleReply(const uint32_t* data, AudioParam* param)
 
 bool AudioProtocol::handleReplyHeader(ClientSocket& socket, uint32_t* data, CommandId& id)
 {
-    if (!socket.readData((char*)data, REPLY_HEADER_SIZE)) {
+    if (!socket.readData(reinterpret_cast<char*>(data), REPLY_HEADER_SIZE)) {
         LOGE("handleReplyHeader cannot read");
         return false;
     }
@@ -94,7 +93,7 @@ bool CmdDownload::sendCommand(AudioParam& param)
     mBuffer[0] = htonl(ECmdDownload);
     mBuffer[1] = htonl(4 + param.mBuffer->getSize());
     mBuffer[2] = htonl(param.mId);
-    if(!sendData((char*)mBuffer, 12)) {
+    if(!sendData(reinterpret_cast<const char*>(mBuffer.data()), 12)) {
         return false;
     }
     return sendData(param.mBuffer->getData(), param.mBuffer->getSize());
@@ -119,7 +118,7 @@ bool CmdStartPlayback::sendCommand(AudioParam& param)
     mBuffer[5] = htonl(param.mVolume);
     mBuffer[6] = htonl(param.mNumberRepetition);
 
-    return sendData((char*)mBuffer, 28);
+    return sendData(reinterpret_cast<const char*>(mBuffer.data()), 28);
 }
 
 
@@ -141,7 +140,7 @@ bool CmdStartRecording::sendCommand(AudioParam& param)
     uint32_t samples = param.mBuffer->getSize() / (param.mStereo ? 4 : 2);
     mBuffer[5] = htonl(samples);
 
-    return sendData((char*)mBuffer, 24);
+    return sendData(reinterpret_cast<const char*>(mBuffer.data()), 24);
 }
 
 /**
@@ -184,17 +183,16 @@ bool CmdGetDeviceInfo::handleReply(const uint32_t* data, AudioParam* param)
     }
     int len = ntohl(data[2]);
 
-    UniquePtr<char, DefaultDelete<char[]> > infoString(new char[len + 1]);
-    if (!readData(infoString.get(), len)) {
+    std::vector<char> infoString(static_cast<size_t>(len) + 1U);
+    if (!readData(infoString.data(), len)) {
         return false;
     }
-    (infoString.get())[len] = 0;
-    LOGI("received data %s from device", infoString.get());
+    infoString[static_cast<size_t>(len)] = 0;
+    LOGI("received data %s from device", infoString.data());
     std::string* string = reinterpret_cast<std::string*>(param->mExtra);
     if (string) {
-        string->assign(infoString.get(), len);
+        string->assign(infoString.data(), static_cast<size_t>(len));
     }
     return true;
 }
-
 

@@ -48,15 +48,32 @@ TEST_F(LogTest, logTest) {
     int64_t d = 3;
     int64_t e = 4;
     int64_t f = 5;
-    printf("printf %lld %lld %lld %lld %lld %lld\n", a, b, c, d, e, f);
-    LOGD(  "logd   %lld %lld %lld %lld %lld %lld", a, b, c, d, e, f);
-    LOGV(  "logv   %lld %lld %lld %lld %lld %lld", a, b, c, d, e, f);
-    LOGI(  "logi   %lld %lld %lld %lld %lld %lld", a, b, c, d, e, f);
-    LOGW(  "logw   %lld %lld %lld %lld %lld %lld", a, b, c, d, e, f);
-    LOGE(  "loge   %lld %lld %lld %lld %lld %lld", a, b, c, d, e, f);
+    printf("printf %lld %lld %lld %lld %lld %lld\n",
+            static_cast<long long>(a), static_cast<long long>(b),
+            static_cast<long long>(c), static_cast<long long>(d),
+            static_cast<long long>(e), static_cast<long long>(f));
+    LOGD("logd   %lld %lld %lld %lld %lld %lld",
+            static_cast<long long>(a), static_cast<long long>(b),
+            static_cast<long long>(c), static_cast<long long>(d),
+            static_cast<long long>(e), static_cast<long long>(f));
+    LOGV("logv   %lld %lld %lld %lld %lld %lld",
+            static_cast<long long>(a), static_cast<long long>(b),
+            static_cast<long long>(c), static_cast<long long>(d),
+            static_cast<long long>(e), static_cast<long long>(f));
+    LOGI("logi   %lld %lld %lld %lld %lld %lld",
+            static_cast<long long>(a), static_cast<long long>(b),
+            static_cast<long long>(c), static_cast<long long>(d),
+            static_cast<long long>(e), static_cast<long long>(f));
+    LOGW("logw   %lld %lld %lld %lld %lld %lld",
+            static_cast<long long>(a), static_cast<long long>(b),
+            static_cast<long long>(c), static_cast<long long>(d),
+            static_cast<long long>(e), static_cast<long long>(f));
+    LOGE("loge   %lld %lld %lld %lld %lld %lld",
+            static_cast<long long>(a), static_cast<long long>(b),
+            static_cast<long long>(c), static_cast<long long>(d),
+            static_cast<long long>(e), static_cast<long long>(f));
 
     Log::Instance()->setLogLevel(level);
 }
-
 
 

@@ -131,12 +131,12 @@ bool TaskProcess::prepareParams(std::vector<TaskProcess::Param>& list,
             if (list[i].getValue().getType() == TaskCase::Value::ETypeDouble) {
                 LOGD(" %f", list[i].getValue().getDouble());
             } else {
-                LOGD(" %lld", list[i].getValue().getInt64());
+                LOGD(" %lld", static_cast<long long>(list[i].getValue().getInt64()));
             }
         }
         break;
         }
-        LOGD("TaskProcess::prepareParams %d-th, const 0x%x", i, voidPtrs[i]);
+        LOGD("TaskProcess::prepareParams %d-th, const %p", i, voidPtrs[i]);
     }
     return true;
 }
@@ -245,23 +245,14 @@ bool TaskProcess::parseParams(std::vector<TaskProcess::Param>& list, const char*
 {
     LOGV("TaskProcess::parseParams will parse %s", str);
     std::string paramStr(str);
-    UniquePtr<std::vector<std::string> > paramTokens(StringUtil::split(paramStr, ','));
-    if (paramTokens.get() == NULL) {
-        LOGE("split failed");
-        return false;
-    }
-    std::vector<std::string>& tokens = *(paramTokens.get());
+    const std::vector<std::string> tokens = StringUtil::split(paramStr, ',');
     for (size_t i = 0; i < tokens.size(); i++) {
-        UniquePtr<std::vector<std::string> > itemTokens(StringUtil::split(tokens[i], ':'));
-        if (itemTokens.get() == NULL) {
-            LOGE("split failed");
+        const std::vector<std::string> itemTokens = StringUtil::split(tokens[i], ':');
+        if (itemTokens.size() != 2) {
+            LOGE("size mismatch %d", itemTokens.size());
             return false;
         }
-        if (itemTokens->size() != 2) {
-            LOGE("size mismatch %d", itemTokens->size());
-            return false;
-        }
-        std::vector<std::string>& item = *(itemTokens.get());
+        const std::vector<std::string>& item = itemTokens;
         if (StringUtil::compare(item[0], "id") == 0) {
             Param param(EId, item[1]);
             list.push_back(param);
@@ -275,7 +266,7 @@ bool TaskProcess::parseParams(std::vector<TaskProcess::Param>& list, const char*
            TaskCase::Value v(static_cast<int64_t>(value));
             Param param(v);
             list.push_back(param);
-            LOGD("consti %lld", value);
+            LOGD("consti %lld", static_cast<long long>(value));
         } else if (isInput && (StringUtil::compare(item[0], "constf") == 0)) {
             double value = atof(item[1].c_str());
             TaskCase::Value v(value);
@@ -294,25 +285,20 @@ bool TaskProcess::parseParams(std::vector<TaskProcess::Param>& list, const char*
 bool TaskProcess::parseAttribute(const std::string& name, const std::string& value)
 {
     if (StringUtil::compare(name, "method") == 0) {
-        UniquePtr<std::vector<std::string> > tokenPtr(StringUtil::split(value, ':'));
-        std::vector<std::string>* tokens = tokenPtr.get();
-        if (tokens == NULL) {
-            LOGE("split failed");
-            return false;
-        }
-        if (tokens->size() != 2) {
+        const std::vector<std::string> tokens = StringUtil::split(value, ':');
+        if (tokens.size() != 2) {
             LOGE("cannot parse attr %s %s", name.c_str(), value.c_str());
             return false;
         }
-        if (StringUtil::compare(tokens->at(0), "builtin") == 0) {
+        if (StringUtil::compare(tokens.at(0), "builtin") == 0) {
             mType = EBuiltin;
-        } else if (StringUtil::compare(tokens->at(0), "script") == 0) {
+        } else if (StringUtil::compare(tokens.at(0), "script") == 0) {
             mType = EScript;
         } else {
             LOGE("cannot parse attr %s %s", name.c_str(), value.c_str());
             return false;
         }
-        mName.append(tokens->at(1));
+        mName.append(tokens.at(1));
         return true;
     } else if (StringUtil::compare(name, "input") == 0) {
         return parseParams(mInput, value.c_str(), true);
@@ -324,7 +310,7 @@ bool TaskProcess::parseAttribute(const std::string& name, const std::string& val
     }
 }
 
-TaskProcess::Param::Param(TaskProcess::ParamType type, std::string& string)
+TaskProcess::Param::Param(TaskProcess::ParamType type, const std::string& string)
     : mType(type),
       mString(string)
 {

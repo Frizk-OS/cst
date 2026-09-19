@@ -18,14 +18,13 @@
 #define CTSAUDIO_AUDIOHARDWARE_H
 
 #include <memory>
-#include <utils/RefBase.h>
 #include "Buffer.h"
 
 class TaskCase;
 /**
  * Utility class for H/W detection
  */
-class AudioHardware : virtual public android::RefBase {
+class AudioHardware {
 public:
     /** audio length should be multiple of this */
     static const int SAMPLES_PER_ONE_GO = 4096;
@@ -55,9 +54,9 @@ public:
      * can return NULL(sp.get() == NULL) if H/W not found
      */
     static std::shared_ptr<AudioHardware> createAudioHw(bool local, bool playback,
-            TaskCase* testCase = NULL);
+            TaskCase* testCase = nullptr);
 
-    virtual ~AudioHardware();
+    virtual ~AudioHardware() = default;
     /**
      * prepare playback or recording
      */

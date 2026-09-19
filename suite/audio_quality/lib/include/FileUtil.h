@@ -18,14 +18,11 @@
 #ifndef CTSAUDIO_FILEUTIL_H
 #define CTSAUDIO_FILEUTIL_H
 
-#include <stdarg.h>
-
-#include <string>
-#include <iostream>
-#include <fstream>
 #include <cstdarg>
-
-#include "utils/threads.h"
+#include <fstream>
+#include <mutex>
+#include <string>
+#include <vector>
 
 /**
  * Class to write to file and stdout at the same time.
@@ -41,7 +38,7 @@ public:
 
 protected:
     FileUtil();
-    virtual ~FileUtil();
+    virtual ~FileUtil() = default;
 
     /**
      * if fileName is NULL, only stdout output will be supproted
@@ -59,9 +56,9 @@ private:
     std::ofstream mFile;
     static const int DEFAULT_BUFFER_SIZE = 1024;
     // buffer for printf. one line longer than this will be truncated.
-    char* mBuffer;
-    int mBufferSize;
-    android::Mutex mWriteLock;
+    std::vector<char> mBuffer;
+    size_t mBufferSize;
+    std::mutex mWriteLock;
 };
 
 

@@ -18,7 +18,9 @@
 #ifndef CTSAUDIO_RWBUFFER_H
 #define CTSAUDIO_RWBUFFER_H
 
-#include <stdint.h>
+#include <cstdint>
+#include <cstring>
+#include <vector>
 #include <string>
 #include "Log.h"
 
@@ -29,12 +31,10 @@ public:
         : mCapacity(capacity),
           mWrPoint(0),
           mRdPoint(0) {
-        mBuffer = new char[capacity];
+        mBuffer.resize(static_cast<size_t>(capacity));
     }
 
-    ~RWBuffer() {
-        delete[] mBuffer;
-    }
+    ~RWBuffer() = default;
 
     void reset() {
         mWrPoint = 0;
@@ -50,10 +50,10 @@ public:
     }
 
     const char* getBuffer() {
-        return mBuffer;
+        return mBuffer.data();
     }
     char* getUnwrittenBuffer() {
-        return mBuffer + mWrPoint;
+        return mBuffer.data() + mWrPoint;
     }
 
     inline void assertWriteCapacity(int sizeToWrite) {
@@ -75,27 +75,28 @@ public:
     template <typename T> void write(T v) {
         char* src = (char*)&v;
         assertWriteCapacity(sizeof(T));
-        memcpy(mBuffer + mWrPoint, src, sizeof(T));
+        std::memcpy(mBuffer.data() + mWrPoint, &v, sizeof(T));
         mWrPoint += sizeof(T);
     }
     void writeStr(const std::string& str) {
         size_t len = str.length();
         assertWriteCapacity(len);
-        memcpy(mBuffer + mWrPoint, str.c_str(), len);
+        std::memcpy(mBuffer.data() + mWrPoint, str.data(), len);
         mWrPoint += len;
     }
     template <typename T> T read() {
         T v;
         ASSERT((mRdPoint + sizeof(T)) <= mWrPoint);
-        memcpy(&v, mBuffer + mRdPoint, sizeof(T));
+        std::memcpy(&v, mBuffer.data() + mRdPoint, sizeof(T));
         mRdPoint += sizeof(T);
+        return v;
     }
 
 private:
     int mCapacity;
     int mWrPoint;
     int mRdPoint;
-    char* mBuffer;
+    std::vector<char> mBuffer;
 };
 
 

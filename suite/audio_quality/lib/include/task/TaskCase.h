@@ -47,7 +47,7 @@ public:
     std::shared_ptr<Buffer> findBuffer(const std::string& name);
     typedef std::pair<std::string, std::shared_ptr<Buffer> > BufferPair;
     /// find all buffers with given regular expression. returns NULL if not found
-    std::list<BufferPair>*  findAllBuffers(const std::string& re);
+    std::unique_ptr<std::list<BufferPair>> findAllBuffers(const std::string& re);
 
     std::shared_ptr<RemoteAudio>& getRemoteAudio();
 
@@ -57,8 +57,8 @@ public:
             ETypeDouble,
             ETypeI64
         };
-        inline Value(): mType(ETypeDouble) {};
-        inline Value(Type type): mType(type) {};
+        inline Value(): mValue(), mType(ETypeDouble) {};
+        inline Value(Type type): mValue(), mType(type) {};
         inline Value(double val): mType(ETypeDouble) {
             setDouble(val);
         };
@@ -72,34 +72,37 @@ public:
             mType = type;
         };
         inline void setDouble(double val) {
-            mValue[0] = val;
+            mValue.asDouble = val;
             mType = ETypeDouble;
             //LOGD("Value set %f 0x%x", val, this);
         };
         inline double getDouble() {
             //LOGD("Value get %f 0x%x", mValue[0], this);
-            return mValue[0];
+            return mValue.asDouble;
         };
         inline void setInt64(int64_t val) {
-            int64_t* data = reinterpret_cast<int64_t*>(mValue);
-            data[0] = val;
+            mValue.asInt64 = val;
             mType = ETypeI64;
             //LOGD("Value set %lld 0x%x", val, this);
         }
         inline int64_t getInt64() {
-            int64_t* data = reinterpret_cast<int64_t*>(mValue);
-            //LOGD("Value get %lld 0x%x", data[0], this);
-            return data[0];
+            return mValue.asInt64;
         }
         void* getPtr() {
-            return mValue;
+            return &mValue;
         }
         bool operator ==(const Value& b) const {
-            return ((mValue[0] == b.mValue[0]) && (mType == b.mType));
+            return mType == b.mType &&
+                    (mType == ETypeDouble ? mValue.asDouble == b.mValue.asDouble
+                                           : mValue.asInt64 == b.mValue.asInt64);
         };
 
     private:
-        double mValue[1];
+        union ValueStorage {
+            constexpr ValueStorage() : asDouble(0.0) {}
+            double asDouble;
+            int64_t asInt64;
+        } mValue;
         Type mType;
     };
 
@@ -108,14 +111,14 @@ public:
     bool findValue(const std::string& name, Value& val);
     typedef std::pair<std::string, Value> ValuePair;
     /// find all Values with given regular expression. returns NULL if not found
-    std::list<ValuePair>*  findAllValues(const std::string& re);
+    std::unique_ptr<std::list<ValuePair>> findAllValues(const std::string& re);
 
     bool registerIndex(const std::string& name, int value = -1);
     bool updateIndex(const std::string& name, int value);
     bool findIndex(const std::string& name, int& val);
     typedef std::pair<std::string, int> IndexPair;
     /// find all Indices with given regular expression. returns NULL if not found
-    std::list<IndexPair>*  findAllIndices(const std::string& re);
+    std::unique_ptr<std::list<IndexPair>> findAllIndices(const std::string& re);
 
     /**
      * Translate variable name like $i into index variable

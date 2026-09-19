@@ -66,6 +66,6 @@ TaskGeneric* GenericFactory::createTask(TaskGeneric::TaskType type)
         LOGE("GenericFactory::createTask unsupported type %d", type);
         return NULL;
     }
-    LOGD("GenericFactory::createTask 0x%x, type %d", task, type);
+    LOGD("GenericFactory::createTask %p, type %d", static_cast<void*>(task), type);
     return task;
 }

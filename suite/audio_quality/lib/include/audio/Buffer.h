@@ -17,11 +17,10 @@
 #ifndef CTSAUDIO_BUFFER_H
 #define CTSAUDIO_BUFFER_H
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstddef>
+#include <cstring>
+#include <memory>
 #include <string>
-
-#include <utils/RefBase.h>
 
 #include <Log.h>
 
@@ -30,11 +29,11 @@
  * The buffer is supposed to be used with sp to guarantee that audio thread can
  * access it even if the client thread is dead.
  */
-class Buffer: public virtual android::RefBase {
+class Buffer {
 public:
     Buffer(size_t capacity, size_t size = 0, bool stereo = true);
 
-    virtual ~Buffer();
+    ~Buffer() = default;
 
     inline size_t getCapacity() {
         return mCapacity;
@@ -56,17 +55,17 @@ public:
         mSize += size;
     }
     inline char* getData() {
-        return mData;
+        return mData.get();
     };
 
     inline void setData(char* data, size_t len) {
         ASSERT(len <= mCapacity);
-        memcpy(mData, data, len);
+        std::memcpy(mData.get(), data, len);
         mSize = len;
     };
 
     inline char* getUnhanledData() {
-        return mData + mHandled;
+        return mData.get() + mHandled;
     };
 
     inline bool bufferHandled() {
@@ -117,7 +116,7 @@ public:
     /// data format is decided by extension
     /// .r2s: 16 bps, stereo
     /// .r2m: 16bps, mono
-    static Buffer* loadFromFile(const std::string& filename);
+    static std::shared_ptr<Buffer> loadFromFile(const std::string& filename);
 private:
     // max data that can be hold
     size_t mCapacity;
@@ -128,7 +127,7 @@ private:
     // stereo or mono
     bool mStereo;
     // payload
-    char* mData;
+    std::unique_ptr<char[]> mData;
 };
 
 

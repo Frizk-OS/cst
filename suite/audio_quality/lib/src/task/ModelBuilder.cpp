@@ -17,8 +17,6 @@
 #include <filesystem>
 #include <tinyxml.h>
 
-#include <UniquePtr.h>
-
 #include "Log.h"
 #include "GenericFactory.h"
 #include "task/ModelBuilder.h"
@@ -66,7 +64,7 @@ ModelBuilder::ParsingInfo ModelBuilder::mParsingTable[ModelBuilder::PARSING_TABL
 
 
 ModelBuilder::ModelBuilder()
-    : mFactory(new GenericFactory())
+    : mFactory(std::make_unique<GenericFactory>())
 {
 
 }
@@ -76,10 +74,7 @@ ModelBuilder::ModelBuilder(GenericFactory* factory)
 {
 
 }
-ModelBuilder::~ModelBuilder()
-{
-    delete mFactory;
-}
+ModelBuilder::~ModelBuilder() = default;
 
 TaskGeneric* ModelBuilder::parseTestDescriptionXml(const std::string& xmlFileName,
         bool caseOnly)
@@ -104,11 +99,11 @@ TaskGeneric* ModelBuilder::parseGeneric(const TiXmlElement& self, int tableIndex
 {
     TaskGeneric::TaskType typeSelf(mParsingTable[tableIndex].type);
     int Nchildren = mParsingTable[tableIndex].Nchildren;
-    UniquePtr<TaskGeneric> taskSelf(mFactory->createTask(typeSelf));
-    if (taskSelf.get() == NULL) {
+    std::unique_ptr<TaskGeneric> taskSelf(mFactory->createTask(typeSelf));
+    if (taskSelf == nullptr) {
         return NULL;
     }
-    if (!parseAttributes(self, *taskSelf.get())) {
+    if (!parseAttributes(self, *taskSelf)) {
         return NULL;
     }
     // copy mandatory flags, and will be cleared once the item is found
@@ -149,18 +144,18 @@ TaskGeneric* ModelBuilder::parseGeneric(const TiXmlElement& self, int tableIndex
                     typeSelf);
             return NULL;
         }
-        UniquePtr<TaskGeneric> taskChild(parseGeneric(*child, i));
-        if (taskChild.get() == NULL) {
+        std::unique_ptr<TaskGeneric> taskChild(parseGeneric(*child, i));
+        if (taskChild == nullptr) {
             LOGE("ModelBuilder::parseGeneric failed in parsing child type %d for type %d",
                     childType, typeSelf);
             return NULL;
         }
-        if (!taskSelf.get()->addChild(taskChild.get())) {
+        if (!taskSelf->addChild(taskChild.get())) {
             LOGE("ModelBuilder::parseGeneric cannot add child type %d to type %d", childType,
                     typeSelf);
             return NULL;
         }
-        TaskGeneric* donotuse = taskChild.release();
+        taskChild.release();
 
         child = child->NextSiblingElement();
     }
@@ -179,19 +174,19 @@ TaskGeneric* ModelBuilder::parseGeneric(const TiXmlElement& self, int tableIndex
 TaskCase* ModelBuilder::parseCase(const TiXmlElement& root)
 {
     // position 0 of mParsingTable should be "case"
-    return reinterpret_cast<TaskCase*>(parseGeneric(root, 0));
+    return static_cast<TaskCase*>(parseGeneric(root, 0));
 }
 
 
 TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const std::string& xmlFileName)
 {
-    UniquePtr<TaskBatch> batch(
-            reinterpret_cast<TaskBatch*>(mFactory->createTask(TaskGeneric::ETaskBatch)));
-    if (batch.get() == NULL) {
+    std::unique_ptr<TaskBatch> batch(
+            static_cast<TaskBatch*>(mFactory->createTask(TaskGeneric::ETaskBatch)));
+    if (batch == nullptr) {
         LOGE("ModelBuilder::handleBatch cannot create TaskBatch");
         return NULL;
     }
-    if (!parseAttributes(root, *batch.get())) {
+    if (!parseAttributes(root, *batch)) {
         return NULL;
     }
 
@@ -203,7 +198,7 @@ TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const std::string&
     std::filesystem::path xmlPath(xmlFileName);
     std::string path = xmlPath.parent_path().string();
 
-    UniquePtr<TaskCase> testCase;
+    std::unique_ptr<TaskCase> testCase;
     int i = 0;
     while (1) {
         if (inc == NULL) {
@@ -213,14 +208,14 @@ TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const std::string&
             LOGE("ModelBuilder::handleBatch invalid element %s", inc->Value());
         }
         testCase.reset(parseInclude(*inc, path));
-        if (testCase.get() == NULL) {
+        if (testCase == nullptr) {
             LOGE("ModelBuilder::handleBatch cannot create test case from include");
             return NULL;
         }
-        if (!batch.get()->addChild(testCase.get())) {
+        if (!batch->addChild(testCase.get())) {
             return NULL;
         }
-        TaskGeneric* donotuse = testCase.release(); // parent will take care of destruction.
+        testCase.release(); // parent will take care of destruction.
         inc = inc->NextSiblingElement();
         i++;
     }

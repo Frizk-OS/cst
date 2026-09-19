@@ -17,7 +17,7 @@
 #ifndef CTSAUDIO_LOG_H
 #define CTSAUDIO_LOG_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 
@@ -33,7 +33,7 @@ public:
         ELogE = 4
     };
 
-    static Log* Instance(const char* dirName = NULL);
+    static Log* Instance(const char* dirName = nullptr);
     static void Finalize();
 
 

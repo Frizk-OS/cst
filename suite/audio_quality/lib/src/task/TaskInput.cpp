@@ -61,7 +61,7 @@ TaskGeneric::ExecutionResult TaskInput::start()
     // local : stereo only, remote : mono only
     size_t bufferSize = mRecordingTimeInMs * AudioHardware::ESampleRate_44100 / 1000 *
             (localDevice ? 4 : 2);
-    std::shared_ptr<Buffer> buffer(new Buffer(bufferSize, bufferSize, localDevice));
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(bufferSize, bufferSize, localDevice);
     if (buffer.get() == NULL) {
         LOGE("buffer alloc failed");
         return TaskGeneric::EResultError;

@@ -29,12 +29,14 @@ public class CtsAudioClientActivity extends Activity {
     int mVolumeVoice;
     @Override
     protected void onPause() {
-        try {
-            mProtocol.stop();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (mProtocol != null) {
+            try {
+                mProtocol.stop();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            mProtocol = null;
         }
-        mProtocol = null;
         setVolume(AudioManager.STREAM_MUSIC, mVolumeMusic);
         setVolume(AudioManager.STREAM_VOICE_CALL, mVolumeVoice);
         super.onPause();
@@ -68,7 +70,7 @@ public class CtsAudioClientActivity extends Activity {
     int setVolume(int stream, int level) {
         AudioManager mgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mgr.setStreamMute(stream, false);
-        int original = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int original = mgr.getStreamVolume(stream);
         int targetLevel = level;
         if (level == -1) {
             targetLevel = mgr.getStreamMaxVolume(stream);

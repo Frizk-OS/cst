@@ -22,20 +22,20 @@
 #include "StringUtil.h"
 #include <cstring>
 
-std::vector<std::string>* StringUtil::split(const std::string& str, char delimiter)
+std::vector<std::string> StringUtil::split(const std::string& str, char delimiter)
 {
-    auto tokens = new std::vector<std::string>();
+    std::vector<std::string> tokens;
     size_t lastTokenEnd = 0;
     for (size_t i = 0; i < str.size(); i++) {
         if (str[i] == delimiter) {
             if ((i - lastTokenEnd) > 0) {
-                tokens->push_back(substr(str, lastTokenEnd, i - lastTokenEnd));
+                tokens.push_back(substr(str, lastTokenEnd, i - lastTokenEnd));
             }
             lastTokenEnd = i + 1; // 1 for skipping delimiter
         }
     }
     if (lastTokenEnd < str.size()) {
-        tokens->push_back(substr(str, lastTokenEnd, str.size() - lastTokenEnd));
+        tokens.push_back(substr(str, lastTokenEnd, str.size() - lastTokenEnd));
     }
     return tokens;
 }

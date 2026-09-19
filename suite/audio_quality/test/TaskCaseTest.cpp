@@ -37,10 +37,10 @@ public:
 
 
 TEST_F(TaskCaseTest, DataMapTest) {
-    std::shared_ptr<Buffer> buffer1(new Buffer(4, 4, true));
-    std::shared_ptr<Buffer> buffer2(new Buffer(4, 4, true));
-    std::shared_ptr<Buffer> buffer3(new Buffer(4, 4, true));
-    std::shared_ptr<Buffer> buffer4(new Buffer(4, 4, true));
+    std::shared_ptr<Buffer> buffer1 = std::make_shared<Buffer>(4, 4, true);
+    std::shared_ptr<Buffer> buffer2 = std::make_shared<Buffer>(4, 4, true);
+    std::shared_ptr<Buffer> buffer3 = std::make_shared<Buffer>(4, 4, true);
+    std::shared_ptr<Buffer> buffer4 = std::make_shared<Buffer>(4, 4, true);
 
     const std::string BUFFER1("buffer1");
     const std::string BUFFER2("buffer2");
@@ -58,13 +58,12 @@ TEST_F(TaskCaseTest, DataMapTest) {
     buffer1f = mTaskCase->findBuffer(NO_SUCH_BUFFER);
     ASSERT_TRUE(buffer1f.get() == NULL);
     const std::string RE("buffer[1-2]");
-    std::list<TaskCase::BufferPair>* list = mTaskCase->findAllBuffers(RE);
-    ASSERT_TRUE(list != NULL);
+    auto list = mTaskCase->findAllBuffers(RE);
+    ASSERT_TRUE(list != nullptr);
     ASSERT_TRUE(((list->front().second.get() == buffer1.get()) &&
                     (list->back().second.get() == buffer2.get())) ||
                 ((list->front().second.get() == buffer2.get()) &&
                     (list->back().second.get() == buffer1.get())));
-    delete list;
 }
 
 TEST_F(TaskCaseTest, ValueMapTest) {
@@ -99,11 +98,10 @@ TEST_F(TaskCaseTest, ValueMapTest) {
     ASSERT_TRUE(!mTaskCase->findValue(V5, valRead));
 
     const std::string RE("v[2-3]");
-    std::list<TaskCase::ValuePair>* list = mTaskCase->findAllValues(RE);
-    ASSERT_TRUE(list != NULL);
+    auto list = mTaskCase->findAllValues(RE);
+    ASSERT_TRUE(list != nullptr);
     ASSERT_TRUE(((list->front().second == val2) && (list->back().second == val3)) ||
                 ((list->front().second == val3) && (list->back().second == val4)));
-    delete list;
 }
 
 TEST_F(TaskCaseTest, IndexMapTest) {
