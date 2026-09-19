@@ -15,7 +15,7 @@
  */
 
 #include <filesystem>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 #include "Log.h"
 #include "GenericFactory.h"
@@ -79,12 +79,12 @@ ModelBuilder::~ModelBuilder() = default;
 TaskGeneric* ModelBuilder::parseTestDescriptionXml(const std::string& xmlFileName,
         bool caseOnly)
 {
-    TiXmlDocument doc(xmlFileName.c_str());
-    if (!doc.LoadFile()) {
+    tinyxml2::XMLDocument doc;
+    if (doc.LoadFile(xmlFileName.c_str()) != tinyxml2::XML_SUCCESS) {
         LOGE("ModelBuilder::parseTestDescriptionXml cannot load file %s", xmlFileName.c_str());
         return NULL;
     }
-    const TiXmlElement* root;
+    const tinyxml2::XMLElement* root;
     if ((root = doc.FirstChildElement("case")) != NULL) {
         return parseCase(*root);
     } else if (!caseOnly && ((root = doc.FirstChildElement("batch")) != NULL)) {
@@ -95,7 +95,7 @@ TaskGeneric* ModelBuilder::parseTestDescriptionXml(const std::string& xmlFileNam
     }
 }
 
-TaskGeneric* ModelBuilder::parseGeneric(const TiXmlElement& self, int tableIndex)
+TaskGeneric* ModelBuilder::parseGeneric(const tinyxml2::XMLElement& self, int tableIndex)
 {
     TaskGeneric::TaskType typeSelf(mParsingTable[tableIndex].type);
     int Nchildren = mParsingTable[tableIndex].Nchildren;
@@ -114,7 +114,7 @@ TaskGeneric* ModelBuilder::parseGeneric(const TiXmlElement& self, int tableIndex
     }
 
     // handle children
-    const TiXmlElement* child = self.FirstChildElement();
+    const tinyxml2::XMLElement* child = self.FirstChildElement();
     while (child != NULL) {
         TaskGeneric::TaskType childType(TaskGeneric::ETaskInvalid);
         int i;
@@ -171,14 +171,14 @@ TaskGeneric* ModelBuilder::parseGeneric(const TiXmlElement& self, int tableIndex
 }
 
 
-TaskCase* ModelBuilder::parseCase(const TiXmlElement& root)
+TaskCase* ModelBuilder::parseCase(const tinyxml2::XMLElement& root)
 {
     // position 0 of mParsingTable should be "case"
     return static_cast<TaskCase*>(parseGeneric(root, 0));
 }
 
 
-TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const std::string& xmlFileName)
+TaskBatch* ModelBuilder::parseBatch(const tinyxml2::XMLElement& root, const std::string& xmlFileName)
 {
     std::unique_ptr<TaskBatch> batch(
             static_cast<TaskBatch*>(mFactory->createTask(TaskGeneric::ETaskBatch)));
@@ -190,7 +190,7 @@ TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const std::string&
         return NULL;
     }
 
-    const TiXmlElement* inc = root.FirstChildElement("include");
+    const tinyxml2::XMLElement* inc = root.FirstChildElement("include");
     if (inc == NULL) {
         LOGE("ModelBuilder::handleBatch no include inside batch");
         return NULL;
@@ -228,7 +228,7 @@ TaskBatch* ModelBuilder::parseBatch(const TiXmlElement& root, const std::string&
     return batch.release();
 }
 
-TaskCase* ModelBuilder::parseInclude(const TiXmlElement& elem, const std::string& path)
+TaskCase* ModelBuilder::parseInclude(const tinyxml2::XMLElement& elem, const std::string& path)
 {
     const char* fileName = elem.Attribute("file");
     if (fileName == NULL) {
@@ -241,9 +241,9 @@ TaskCase* ModelBuilder::parseInclude(const TiXmlElement& elem, const std::string
     return reinterpret_cast<TaskCase*>(parseTestDescriptionXml(incFile.string(), true));
 }
 
-bool ModelBuilder::parseAttributes(const TiXmlElement& elem, TaskGeneric& task)
+bool ModelBuilder::parseAttributes(const tinyxml2::XMLElement& elem, TaskGeneric& task)
 {
-    const TiXmlAttribute* attr = elem.FirstAttribute();
+    const tinyxml2::XMLAttribute* attr = elem.FirstAttribute();
     while (1) {
         if (attr == NULL) {
             break;

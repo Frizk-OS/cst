@@ -75,7 +75,7 @@ lib_deps = [
   cpp.find_library('rt', required: false),
   cpp.find_library('m', required: false),
   dependency('tinyalsa', required: false),
-  dependency('tinyxml', required: true),
+  dependency('tinyxml2', fallback: ['tinyxml2', 'tinyxml2_dep']),
 ]
 
 cts_audio_quality_lib = static_library(

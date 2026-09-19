@@ -34,10 +34,10 @@ checkPath() {
 checkPath adb
 checkPath java
 
-# check java version
-JAVA_VERSION=$(java -version 2>&1 | head -n 1 | grep '[ "]1\.6[\. "$$]')
-if [ "${JAVA_VERSION}" == "" ]; then
-    echo "Wrong java version. 1.6 is required."
+# check java version. Host tools require JDK 17 or newer.
+JAVA_MAJOR_VERSION=$(java -version 2>&1 | awk -F '[".]' '/version/ { if ($2 == 1) print $3; else print $2; exit }')
+if [[ -z "${JAVA_MAJOR_VERSION}" || "${JAVA_MAJOR_VERSION}" -lt 17 ]]; then
+    echo "Wrong java version. JDK 17 or newer is required."
     exit
 fi
 
