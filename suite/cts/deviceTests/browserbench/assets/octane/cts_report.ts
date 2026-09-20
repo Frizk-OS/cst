@@ -7,6 +7,12 @@
 
 export {};
 
+declare global {
+  interface Window {
+    CtsReport: (message: string, score: number | string, isFinal: boolean) => void;
+  }
+}
+
 /** Reports a benchmark result to the CTS test server. */
 function CtsReport(message: string, score: number | string, isFinal: boolean): void {
   const request = new XMLHttpRequest();
