@@ -1,0 +1,3 @@
+com.android.cts.audiotest
+layout main
+string app_name

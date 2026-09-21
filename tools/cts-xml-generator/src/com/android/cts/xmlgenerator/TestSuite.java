@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,57 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.android.cts.xmlgenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-class TestSuite implements Comparable<TestSuite> {
+final class TestSuite implements Comparable<TestSuite> {
 
-    private final String mName;
-
-    private final Map<String, TestSuite> mSuites = new HashMap<String, TestSuite>();
-
-    private final List<TestCase> mCases = new ArrayList<TestCase>();
+    private final String name;
+    private final Map<String, TestSuite> suites = new LinkedHashMap<>();
+    private final List<TestCase> cases = new ArrayList<>();
 
     public TestSuite(String name) {
-        mName = name;
+        this.name = Objects.requireNonNull(name, "TestSuite name must not be null");
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
-    public boolean hasSuite(String name) {
-        return mSuites.containsKey(name);
+    public boolean hasSuite(String suiteName) {
+        return suites.containsKey(suiteName);
     }
 
-    public TestSuite getSuite(String name) {
-        return mSuites.get(name);
+    public TestSuite getSuite(String suiteName) {
+        return suites.get(suiteName);
     }
 
     public void addSuite(TestSuite suite) {
-        mSuites.put(suite.mName, suite);
+        suites.put(suite.getName(), suite);
     }
 
     public Collection<TestSuite> getSuites() {
-        return Collections.unmodifiableCollection(mSuites.values());
+        return Collections.unmodifiableCollection(suites.values());
     }
 
     public void addCase(TestCase testCase) {
-        mCases.add(testCase);
+        cases.add(testCase);
     }
 
     public Collection<TestCase> getCases() {
-        return Collections.unmodifiableCollection(mCases);
+        return Collections.unmodifiableCollection(cases);
     }
 
     @Override
     public int compareTo(TestSuite another) {
-        return getName().compareTo(another.getName());
+        return name.compareTo(another.name);
     }
 }

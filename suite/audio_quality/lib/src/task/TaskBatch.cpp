@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,19 +14,22 @@
  * the License.
  */
 
-#include "Log.h"
-#include "Report.h"
-
 #include "task/TaskBatch.h"
+#include "Log.h"
 
 static const std::string STR_NAME("name");
 static const std::string STR_VERSION("version");
 static const std::string STR_DESCRIPTION("description");
 
 TaskBatch::TaskBatch()
-    :TaskGeneric(TaskGeneric::ETaskBatch)
+    : TaskGeneric(TaskGeneric::ETaskBatch)
 {
-    const std::string* list[] = {&STR_NAME, &STR_VERSION, &STR_DESCRIPTION, NULL};
+    const std::string* list[] = {
+            &STR_NAME,
+            &STR_VERSION,
+            &STR_DESCRIPTION,
+            nullptr
+    };
     registerSupportedStringAttributes(list);
 }
 
@@ -44,7 +47,7 @@ bool TaskBatch::addChild(TaskGeneric* child)
     return TaskGeneric::addChild(child);
 }
 
-bool runAlways(TaskGeneric* child, void* data)
+static bool runAlways(TaskGeneric* child, [[maybe_unused]] void* data)
 {
     child->run();
     return true;
@@ -60,9 +63,7 @@ TaskGeneric::ExecutionResult TaskBatch::run()
     }
     MSG("= Test batch %s version %s started. =", name.c_str(),
             version.c_str());
-    bool result = TaskGeneric::forEachChild(runAlways, NULL);
+    TaskGeneric::forEachChild(runAlways, nullptr);
     MSG("= Finished Test batch =");
     return TaskGeneric::EResultOK;
 }
-
-

@@ -1,0 +1,8 @@
+com.android.cts.audiotest-pngs-0 /home/vptr/cm11/cts/suite/audio_quality/client/build/generated/res/pngs/debug
+com.android.cts.audiotest-updated_navigation_xml-1 /home/vptr/cm11/cts/suite/audio_quality/client/build/generated/updated_navigation_xml/debug
+com.android.cts.audiotest-packageDebugResources-2 /home/vptr/cm11/cts/suite/audio_quality/client/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.android.cts.audiotest-packageDebugResources-3 /home/vptr/cm11/cts/suite/audio_quality/client/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.android.cts.audiotest-debug-4 /home/vptr/cm11/cts/suite/audio_quality/client/build/intermediates/merged_res/debug/mergeDebugResources
+com.android.cts.audiotest-client-5 /home/vptr/cm11/cts/suite/audio_quality/client/res
+com.android.cts.audiotest-debug-6 /home/vptr/cm11/cts/suite/audio_quality/client/src/debug/res
+gradleHome-0 /home/vptr/.gradle

@@ -1,0 +1,57 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Use an AGP version that is reasonably modern. Adjust if needed.
+        classpath 'com.android.tools.build:gradle:9.3.3'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.android.cts.audiotest"
+        // Galaxy S3/S3 Mini firmware ranges include Android 4.1 (API 16).
+        minSdkVersion 16
+        targetSdkVersion 19
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        // JDK 21 runs Gradle/AGP, while Android 4.4.4 needs Java 8-compatible
+        // bytecode and language features.
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // Namespace for modern AGP
+    namespace 'com.android.cts.audiotest'
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
+    packagingOptions {
+        // avoid accidental META-INF collisions
+        exclude 'META-INF/*'
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    // No extra dependencies required for the simple client source.
+}

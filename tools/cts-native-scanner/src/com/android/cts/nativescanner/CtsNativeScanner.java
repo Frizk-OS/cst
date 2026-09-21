@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.android.cts.nativescanner;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Class that searches a source directory for native gTests and outputs a
  * list of test classes and methods.
  */
-public class CtsNativeScanner {
+public final class CtsNativeScanner {
 
     private static void usage(String[] args) {
         System.err.println("Arguments: " + Arrays.asList(args));
-        System.err.println("Usage: cts-native-scanner -t TEST_SUITE");
-        System.err.println("  This code reads from stdin the list of tests.");
-        System.err.println("  The format expected:");
-        System.err.println("    TEST_CASE_NAME.");
-        System.err.println("      TEST_NAME");
+        System.err.println("""
+            Usage: cts-native-scanner -t TEST_SUITE
+              This code reads from stdin the list of tests.
+              The format expected:
+                TEST_CASE_NAME.
+                  TEST_NAME""");
         System.exit(1);
     }
 
@@ -52,10 +55,11 @@ public class CtsNativeScanner {
             usage(args);
         }
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        TestScanner scanner = new TestScanner(reader, testSuite);
-        for (String name : scanner.getTestNames()) {
-            System.out.println(name);
+        try (var reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
+            var scanner = new TestScanner(reader, testSuite);
+            for (var name : scanner.getTestNames()) {
+                System.out.println(name);
+            }
         }
     }
 

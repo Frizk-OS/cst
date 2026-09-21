@@ -1,0 +1,6 @@
+[
+    {
+        "merged": "com.android.cts.audiotest-debug-3:/layout_main.xml.flat",
+        "source": "com.android.cts.audiotest-client-4:/layout/main.xml"
+    }
+]

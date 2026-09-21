@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +17,25 @@
 
 package com.android.cts.xmlgenerator;
 
-public class Test implements Comparable<Test> {
-    private String mName;
-    private int mTimeout;
+import java.util.Objects;
 
-    public Test(String name, int timeout) {
-        mName = name;
-        mTimeout = timeout;
+/** Immutable representation of a test method and optional timeout. */
+public record Test(String name, int timeout) implements Comparable<Test> {
+
+    public Test {
+        Objects.requireNonNull(name, "name must not be null");
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public int getTimeout() {
-        return mTimeout;
+        return timeout;
     }
 
     @Override
     public int compareTo(Test another) {
-        return getName().compareTo(another.getName());
+        return name.compareTo(another.name);
     }
 }

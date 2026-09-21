@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,8 +17,11 @@
 
 #include <sys/types.h>
 #include <regex.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <memory>
+#include <string>
+#include <utility>
 
 #include "Log.h"
 #include "audio/RemoteAudio.h"
@@ -33,9 +37,9 @@ static const std::string STR_DESCRIPTION("description");
 
 TaskCase::TaskCase()
     : TaskGeneric(TaskGeneric::ETaskCase),
-      mClient(NULL)
+      mClient(nullptr)
 {
-    const std::string* list[] = {&STR_NAME, &STR_VERSION, &STR_DESCRIPTION, NULL};
+    const std::string* list[] = {&STR_NAME, &STR_VERSION, &STR_DESCRIPTION, nullptr};
     registerSupportedStringAttributes(list);
 }
 
@@ -64,12 +68,10 @@ bool TaskCase::addChild(TaskGeneric* child)
     return TaskGeneric::addChild(child);
 }
 
-template <typename T> bool registerGeneric(
-        typename std::map<std::string, T>& map,
-        const std::string& name, T& data)
+template <typename T>
+static bool registerGeneric(std::map<std::string, T>& map, const std::string& name, T& data)
 {
-    typename std::map<std::string, T>::iterator it;
-    it = map.find(name);
+    auto it = map.find(name);
     if (it != map.end()) {
         LOGV("registerGeneric key %s already registered", name.c_str());
         return false;
@@ -79,12 +81,11 @@ template <typename T> bool registerGeneric(
     return true;
 }
 
-template <typename T> bool findGeneric(typename std::map<std::string, T>& map,
-        const std::string& name, T& data)
+template <typename T>
+static bool findGeneric(const std::map<std::string, T>& map, const std::string& name, T& data)
 {
     LOGD("findGeneric key %s", name.c_str());
-    typename std::map<std::string, T>::iterator it;
-    it = map.find(name);
+    auto it = map.find(name);
     if (it == map.end()) {
         return false;
     }
@@ -92,12 +93,11 @@ template <typename T> bool findGeneric(typename std::map<std::string, T>& map,
     return true;
 }
 
-template <typename T> bool updateGeneric(typename std::map<std::string, T>& map,
-        const std::string& name, T& data)
+template <typename T>
+static bool updateGeneric(std::map<std::string, T>& map, const std::string& name, T& data)
 {
     LOGD("updateGeneric key %s", name.c_str());
-    typename std::map<std::string, T>::iterator it;
-    it = map.find(name);
+    auto it = map.find(name);
     if (it == map.end()) {
         return false;
     }
@@ -107,20 +107,19 @@ template <typename T> bool updateGeneric(typename std::map<std::string, T>& map,
 
 // return all the matches for the given regular expression.
 // name string and the data itself is copied.
-template <typename T> std::unique_ptr<std::list<std::pair<std::string, T> > > findAllGeneric(
-        typename std::map<std::string, T>& map, const char* re)
+template <typename T>
+static std::unique_ptr<std::list<std::pair<std::string, T>>> findAllGeneric(
+        const std::map<std::string, T>& map, const char* re)
 {
     regex_t regex;
     if (regcomp(&regex, re, REG_EXTENDED | REG_NOSUB) != 0) {
         LOGE("regcomp failed");
         return nullptr;
     }
-    typename std::map<std::string, T>::iterator it;
     auto list = std::make_unique<std::list<std::pair<std::string, T>>>();
-    for (it = map.begin(); it != map.end(); it++) {
-        if (regexec(&regex, it->first.c_str(), 0, NULL, 0) == 0) {
-            typename std::pair<std::string, T> match(it->first, it->second);
-            list->push_back(match);
+    for (const auto& [key, val] : map) {
+        if (regexec(&regex, key.c_str(), 0, nullptr, 0) == 0) {
+            list->emplace_back(key, val);
         }
     }
     regfree(&regex);
@@ -134,7 +133,7 @@ bool TaskCase::registerBuffer(const std::string& orig, std::shared_ptr<Buffer>& 
     if (!translateVarName(orig, translated)) {
         return false;
     }
-    return registerGeneric<std::shared_ptr<Buffer> >(mBufferList, translated, buffer);
+    return registerGeneric<std::shared_ptr<Buffer>>(mBufferList, translated, buffer);
 }
 
 bool TaskCase::updateBuffer(const std::string& orig, std::shared_ptr<Buffer>& buffer)
@@ -143,7 +142,7 @@ bool TaskCase::updateBuffer(const std::string& orig, std::shared_ptr<Buffer>& bu
     if (!translateVarName(orig, translated)) {
         return false;
     }
-    return updateGeneric<std::shared_ptr<Buffer> >(mBufferList, translated, buffer);
+    return updateGeneric<std::shared_ptr<Buffer>>(mBufferList, translated, buffer);
 }
 
 std::shared_ptr<Buffer> TaskCase::findBuffer(const std::string& orig)
@@ -153,7 +152,7 @@ std::shared_ptr<Buffer> TaskCase::findBuffer(const std::string& orig)
     if (!translateVarName(orig, translated)) {
         return result;
     }
-    findGeneric<std::shared_ptr<Buffer> >(mBufferList, translated, result);
+    findGeneric<std::shared_ptr<Buffer>>(mBufferList, translated, result);
     return result;
 }
 
@@ -163,7 +162,7 @@ std::unique_ptr<std::list<TaskCase::BufferPair>> TaskCase::findAllBuffers(const 
     if (!translateVarName(re, translated)) {
         return nullptr;
     }
-    return findAllGeneric<std::shared_ptr<Buffer> >(mBufferList, translated.c_str());
+    return findAllGeneric<std::shared_ptr<Buffer>>(mBufferList, translated.c_str());
 }
 
 
@@ -231,7 +230,7 @@ std::unique_ptr<std::list<TaskCase::IndexPair>> TaskCase::findAllIndices(const s
 bool TaskCase::translateVarName(const std::string& orig, std::string& translated)
 {
     const char* src = orig.c_str();
-    const int nmatch = 2;
+    constexpr int nmatch = 2;
     regmatch_t pmatch[nmatch];
     regex_t re;
     size_t strStart = 0;
@@ -240,26 +239,25 @@ bool TaskCase::translateVarName(const std::string& orig, std::string& translated
         LOGE("regcomp failed");
         return false;
     }
-    bool result = false;
     size_t matchStart = 0;
     size_t matchEnd = 0;
     while (regexec(&re, src, nmatch, pmatch, 0) == 0) {
-        matchStart = strStart + pmatch[1].rm_so;
-        matchEnd = strStart + pmatch[1].rm_eo;
-        translated.append(StringUtil::substr(orig, strStart, pmatch[1].rm_so - 1)); //-1 for $
+        matchStart = strStart + static_cast<size_t>(pmatch[1].rm_so);
+        matchEnd = strStart + static_cast<size_t>(pmatch[1].rm_eo);
+        translated.append(StringUtil::substr(orig, strStart, static_cast<size_t>(pmatch[1].rm_so - 1))); //-1 for $
         std::string indexName;
         indexName.append(StringUtil::substr(orig, matchStart, matchEnd - matchStart));
-        int val;
+        int val = 0;
         if (!findIndex(indexName, val)) {
             LOGE("TaskCase::translateVarName no index with name %s", indexName.c_str());
             regfree(&re);
             return false;
         }
         translated += std::to_string(val);
-        LOGD("match found strStart %d, matchStart %d, matchEnd %d, converted str %s",
+        LOGD("match found strStart %zu, matchStart %zu, matchEnd %zu, converted str %s",
                 strStart, matchStart, matchEnd, translated.c_str());
         src += pmatch[1].rm_eo;
-        strStart += pmatch[1].rm_eo;
+        strStart += static_cast<size_t>(pmatch[1].rm_eo);
     }
     if (matchEnd < orig.length()) {
         //LOGD("%d %d", matchEnd, orig.length());
@@ -272,7 +270,7 @@ bool TaskCase::translateVarName(const std::string& orig, std::string& translated
 
 std::shared_ptr<RemoteAudio>& TaskCase::getRemoteAudio()
 {
-    if (mClient == NULL) {
+    if (mClient == nullptr) {
         mClient = new ClientImpl();
         ASSERT(mClient->init(Settings::Instance()->getSetting(Settings::EADB)));
     }
@@ -282,12 +280,12 @@ std::shared_ptr<RemoteAudio>& TaskCase::getRemoteAudio()
 void TaskCase::releaseRemoteAudio()
 {
     delete mClient;
-    mClient = NULL;
+    mClient = nullptr;
 }
 
 void TaskCase::setDetails(std::string details)
 {
-    mDetails = details;
+    mDetails = std::move(details);
 }
 
 const std::string& TaskCase::getDetails() const
@@ -305,14 +303,14 @@ TaskGeneric::ExecutionResult TaskCase::run()
         LOGW("TaskCase::run no name or version information");
     }
     MSG("== Test case %s version %s started ==", name.c_str(), version.c_str());
-    std::list<TaskGeneric*>::iterator i = getChildren().begin();
-    std::list<TaskGeneric*>::iterator end = getChildren().end();
+    auto i = getChildren().begin();
+    auto end = getChildren().end();
     TaskGeneric* setup = *i;
     i++;
     TaskGeneric* action = *i;
     i++;
-    TaskGeneric* save = (i == end)? NULL : *i;
-    if (save == NULL) {
+    TaskGeneric* save = (i == end) ? nullptr : *i;
+    if (save == nullptr) {
         LOGW("No save stage in test case");
     }
     bool testPassed = true;
@@ -328,7 +326,7 @@ TaskGeneric::ExecutionResult TaskCase::run()
             testPassed = false;
         }
         // save done even for failure if possible
-        if (save != NULL) {
+        if (save != nullptr) {
             result = save->run();
         }
         if (result != TaskGeneric::EResultOK) {

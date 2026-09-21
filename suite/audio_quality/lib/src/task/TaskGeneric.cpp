@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,18 +16,17 @@
  */
 
 #include "Log.h"
-
 #include "task/TaskAll.h"
 
 
-TaskGeneric::TaskGeneric(TaskType type):
-    mType(type),
-    mParent(NULL)
+TaskGeneric::TaskGeneric(TaskType type)
+    : mType(type),
+      mParent(nullptr)
 {
 
 }
 
-bool deleteChildInstance(TaskGeneric* child, void* /*data*/)
+static bool deleteChildInstance(TaskGeneric* child, [[maybe_unused]] void* data)
 {
     delete child;
     return true;
@@ -34,8 +34,7 @@ bool deleteChildInstance(TaskGeneric* child, void* /*data*/)
 
 TaskGeneric::~TaskGeneric()
 {
-    forEachChild(deleteChildInstance, NULL);
-    //mChildren.clear();
+    forEachChild(deleteChildInstance, nullptr);
 }
 
 bool TaskGeneric::addChild(TaskGeneric* child)
@@ -47,10 +46,8 @@ bool TaskGeneric::addChild(TaskGeneric* child)
 
 bool TaskGeneric::forEachChild(bool (*runForEachChild)(TaskGeneric* child, void* data), void* data)
 {
-    std::list<TaskGeneric*>::iterator i = mChildren.begin();
-    std::list<TaskGeneric*>::iterator end = mChildren.end();
-    for (; i != end; i++) {
-        if (!(*runForEachChild)(*i, data)) {
+    for (auto* child : mChildren) {
+        if (!(*runForEachChild)(child, data)) {
             return false;
         }
     }
@@ -66,7 +63,7 @@ TaskCase* TaskGeneric::getTestCase()
 {
     TaskGeneric* task = this;
 
-    while (task != NULL) {
+    while (task != nullptr) {
         if (task->getType() == ETaskCase) {
             // do not use dynamic_cast intentionally
             return reinterpret_cast<TaskCase*>(task);
@@ -74,7 +71,7 @@ TaskCase* TaskGeneric::getTestCase()
         task = task->getParent();
     }
     LOGE("TaskGeneric::getTestCase no TaskCase found!");
-    return NULL;
+    return nullptr;
 }
 
 void TaskGeneric::setParent(TaskGeneric* parent)
@@ -84,9 +81,9 @@ void TaskGeneric::setParent(TaskGeneric* parent)
     mParent = parent;
 }
 
-bool runChild(TaskGeneric* child, void* data)
+static bool runChild(TaskGeneric* child, void* data)
 {
-    TaskGeneric::ExecutionResult* result = reinterpret_cast<TaskGeneric::ExecutionResult*>(data);
+    auto* result = reinterpret_cast<TaskGeneric::ExecutionResult*>(data);
     *result = child->run();
     if (*result != TaskGeneric::EResultOK) {
         LOGE("child type %d returned %d", child->getType(), *result);
@@ -113,11 +110,10 @@ bool TaskGeneric::parseAttribute(const std::string& name, const std::string& val
     return true;
 }
 
-
 void TaskGeneric::registerSupportedStringAttributes(const std::string* keys[])
 {
     int i = 0;
-    while (keys[i] != NULL) {
+    while (keys[i] != nullptr) {
         mAllowedStringAttributes.insert(*keys[i]);
         i++;
     }
@@ -125,8 +121,7 @@ void TaskGeneric::registerSupportedStringAttributes(const std::string* keys[])
 
 bool TaskGeneric::addStringAttribute(const std::string& key, const std::string& value)
 {
-    std::set<std::string, std::string>::iterator it = mAllowedStringAttributes.find(key);
-    if (it == mAllowedStringAttributes.end()) {
+    if (!mAllowedStringAttributes.contains(key)) {
         return false; // not allowed
     }
     mStringAttributes[key] = value;
@@ -135,7 +130,7 @@ bool TaskGeneric::addStringAttribute(const std::string& key, const std::string& 
 
 bool TaskGeneric::findStringAttribute(const std::string& key, std::string& value) const
 {
-    std::map<std::string, std::string>::const_iterator it = mStringAttributes.find(key);
+    auto it = mStringAttributes.find(key);
     if (it == mStringAttributes.end()) {
         return false; // not found
     }

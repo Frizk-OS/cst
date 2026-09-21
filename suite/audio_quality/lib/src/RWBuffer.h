@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -27,7 +28,7 @@
 /// utility for R/W buffer
 class RWBuffer {
 public:
-    RWBuffer(int capacity)
+    explicit RWBuffer(int capacity)
         : mCapacity(capacity),
           mWrPoint(0),
           mRdPoint(0) {
@@ -49,10 +50,10 @@ public:
         mRdPoint = 0;
     }
 
-    const char* getBuffer() {
+    [[nodiscard]] const char* getBuffer() const {
         return mBuffer.data();
     }
-    char* getUnwrittenBuffer() {
+    [[nodiscard]] char* getUnwrittenBuffer() {
         return mBuffer.data() + mWrPoint;
     }
 
@@ -64,29 +65,28 @@ public:
         mWrPoint += size;
     }
 
-    int getSizeWritten() {
+    [[nodiscard]] int getSizeWritten() const {
         return mWrPoint;
     }
 
-    int getSizeRead() {
+    [[nodiscard]] int getSizeRead() const {
         return mRdPoint;
     }
 
     template <typename T> void write(T v) {
-        char* src = (char*)&v;
         assertWriteCapacity(sizeof(T));
         std::memcpy(mBuffer.data() + mWrPoint, &v, sizeof(T));
         mWrPoint += sizeof(T);
     }
     void writeStr(const std::string& str) {
         size_t len = str.length();
-        assertWriteCapacity(len);
+        assertWriteCapacity(static_cast<int>(len));
         std::memcpy(mBuffer.data() + mWrPoint, str.data(), len);
         mWrPoint += len;
     }
-    template <typename T> T read() {
+    template <typename T> [[nodiscard]] T read() {
         T v;
-        ASSERT((mRdPoint + sizeof(T)) <= mWrPoint);
+        ASSERT((mRdPoint + sizeof(T)) <= static_cast<size_t>(mWrPoint));
         std::memcpy(&v, mBuffer.data() + mRdPoint, sizeof(T));
         mRdPoint += sizeof(T);
         return v;

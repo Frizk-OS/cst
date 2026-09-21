@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.android.cts.xmlgenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-class TestCase implements Comparable<TestCase> {
+final class TestCase implements Comparable<TestCase> {
 
-    private final String mName;
-
-    private final List<Test> mTests = new ArrayList<Test>();
+    private final String name;
+    private final List<Test> tests = new ArrayList<>();
 
     public TestCase(String name) {
-        mName = name;
+        this.name = Objects.requireNonNull(name, "TestCase name must not be null");
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void addTest(String testName, int timeout) {
-        mTests.add(new Test(testName, timeout));
+        tests.add(new Test(testName, timeout));
     }
 
     public Collection<Test> getTests() {
-        return Collections.unmodifiableCollection(mTests);
+        return Collections.unmodifiableCollection(tests);
     }
 
     @Override
     public int compareTo(TestCase another) {
-        return getName().compareTo(another.getName());
+        return name.compareTo(another.name);
     }
 }

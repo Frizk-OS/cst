@@ -1,18 +1,3 @@
-project(
-  'android-cts-audio-quality',
-  ['c', 'cpp'],
-  version: '1.0.0',
-  license: 'Apache-2.0',
-  meson_version: '>=1.3.0',
-  default_options: [
-    'c_std=c23',
-    'cpp_std=c++26',
-    'warning_level=2',
-    'buildtype=debugoptimized',
-    'b_ndebug=if-release',
-  ],
-)
-
 cpp = meson.get_compiler('cpp')
 
 common_includes = include_directories(
@@ -95,7 +80,7 @@ executable(
   install: true,
 )
 
-if get_option('tests')
+if get_option('audio_quality_tests')
   test_sources = files(
     'test/LogTest.cpp',
     'test/FileUtilTest.cpp',
@@ -138,5 +123,5 @@ endif
 
 install_subdir(
   'test_description',
-  install_dir: join_paths(get_option('datadir'), 'android-cts-audio-quality'),
+  install_dir: get_option('datadir') / 'android-cts-audio-quality',
 )

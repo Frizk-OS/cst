@@ -1,0 +1,26 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.android.cts.audiotest-mergeDebugResources-1:/values/values.xml",
+            "map": [
+                {
+                    "source": "/home/vptr/cm11/cts/suite/audio_quality/client/res/values/strings.xml",
+                    "from": {
+                        "startLines": "18",
+                        "startColumns": "4",
+                        "startOffsets": "688",
+                        "endColumns": "51",
+                        "endOffsets": "735"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "51",
+                        "endOffsets": "102"
+                    }
+                }
+            ]
+        }
+    ]
+}

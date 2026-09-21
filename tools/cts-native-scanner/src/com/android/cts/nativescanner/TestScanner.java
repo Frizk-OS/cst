@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +19,9 @@ package com.android.cts.nativescanner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Read from the BufferedReader a list of test case names and test cases.
@@ -36,40 +37,40 @@ import java.util.List;
  *   test:TEST_NAME1
  *   test:TEST_NAME2
  */
-class TestScanner {
+final class TestScanner {
 
-    private final String mTestSuite;
-
-    private final BufferedReader mReader;
+    private final String testSuite;
+    private final BufferedReader reader;
 
     TestScanner(BufferedReader reader, String testSuite) {
-        mTestSuite = testSuite;
-        mReader = reader;
+        this.testSuite = Objects.requireNonNull(testSuite, "testSuite must not be null");
+        this.reader = Objects.requireNonNull(reader, "reader must not be null");
     }
 
     public List<String> getTestNames() throws IOException {
-        List<String> testNames = new ArrayList<String>();
-
+        final var testNames = new ArrayList<String>();
         String testCaseName = null;
         String line;
-        while ((line = mReader.readLine()) != null) {
-          if (line.length() > 0) {
-            if (line.charAt(0) == ' ') {
-              if (testCaseName != null) {
-                testNames.add("test:" + line.trim());
-              } else {
-                throw new IOException("TEST_CASE_NAME not defined before first test.");
-              }
-            } else {
-              testCaseName = line.trim();
-              if (testCaseName.endsWith(".")) {
-                testCaseName = testCaseName.substring(0, testCaseName.length()-1);
-              }
-              testNames.add("suite:" + mTestSuite);
-              testNames.add("case:" + testCaseName);
+
+        while ((line = reader.readLine()) != null) {
+            if (line.isEmpty()) {
+                continue;
             }
-          }
+
+            if (line.startsWith(" ")) {
+                if (testCaseName == null) {
+                    throw new IOException("TEST_CASE_NAME not defined before first test.");
+                }
+                testNames.add("test:" + line.strip());
+            } else {
+                testCaseName = line.strip();
+                if (testCaseName.endsWith(".")) {
+                    testCaseName = testCaseName.substring(0, testCaseName.length() - 1);
+                }
+                testNames.add("suite:" + testSuite);
+                testNames.add("case:" + testCaseName);
+            }
         }
-        return testNames;
+        return List.copyOf(testNames);
     }
 }

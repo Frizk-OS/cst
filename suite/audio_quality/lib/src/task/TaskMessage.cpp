@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,16 +21,16 @@
 TaskMessage::TaskMessage()
     : TaskGeneric(TaskGeneric::ETaskMessage)
 {}
-TaskMessage::~TaskMessage()
-{
 
-}
+TaskMessage::~TaskMessage() = default;
+
 TaskGeneric::ExecutionResult TaskMessage::run()
 {
     //TODO
     return TaskGeneric::EResultError;
 }
-bool TaskMessage::parseAttribute(const std::string& name, const std::string& value)
+
+bool TaskMessage::parseAttribute([[maybe_unused]] const std::string& name, [[maybe_unused]] const std::string& value)
 {
     //TODO
     return false;
