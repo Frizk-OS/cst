@@ -32,3 +32,10 @@ option(
   value: true,
   description: 'Build BrowserBench TypeScript assets into JavaScript',
 )
+
+option(
+  'enable_rust_jni',
+  type: 'boolean',
+  value: true,
+  description: 'Build JNI components rewritten in Rust',
+)

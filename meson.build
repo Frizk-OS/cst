@@ -115,3 +115,9 @@ if get_option('android_build')
 else
   message('Android APK/JNI targets are disabled; configure with -Dandroid_build=true to build the audio client APK.')
 endif
+
+if get_option('enable_rust_jni')
+  subdir('tests/tests/jni')
+  subdir('suite/cts/deviceTests/dram/jni')
+  subdir('suite/cts/deviceTests/simplecpu/jni')
+endif
