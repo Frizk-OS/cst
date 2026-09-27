@@ -9,6 +9,7 @@
 # Meson build outputs
 build/
 build-clang/
+subprojects/.wraplock
 
 # Generated keys and downloaded tool binaries
 tools/bin/
