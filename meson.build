@@ -31,6 +31,7 @@ message('Selected C compiler: ' + c_comp.get_id() + ' (' + c_comp.version() + ')
 message('Selected C++ compiler: ' + cpp_comp.get_id() + ' (' + cpp_comp.version() + ')')
 
 python = import('python').find_installation(required: true)
+cargo = find_program('cargo', required: false)
 
 subdir('libs')
 
