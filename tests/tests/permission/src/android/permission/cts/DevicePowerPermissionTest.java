@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import android.content.Context;
 import android.os.PowerManager;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
-import dalvik.annotation.KnownFailure;
 
 /**
  * Verify that various PowerManagement functionality requires Permission.

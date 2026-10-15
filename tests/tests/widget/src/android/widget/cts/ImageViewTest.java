@@ -90,7 +90,7 @@ public class ImageViewTest extends ActivityInstrumentationTestCase<ImageViewStub
                 if (target != null) {
                     target.close();
                 }
-            } catch (IOException _) {
+            } catch (IOException ignored) {
                 // Ignore the IOException.
             }
         }

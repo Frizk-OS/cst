@@ -22,7 +22,75 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ac0ae9ff-ffe9-4bda-9995-a71b2ab51103" name="Changes" comment="" />
+    <list default="true" id="ac0ae9ff-ffe9-4bda-9995-a71b2ab51103" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/CtsVerifier/jni/verifier/CtsVerifierJniOnLoad.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/CtsVerifier/jni/verifier/com_android_cts_verifier_os_FileUtils.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hostsidetests/holo/app/src/android/holo/app/DisplayInfoActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/hostsidetests/holo/app/src/android/holo/app/DisplayInfoActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hostsidetests/meson.build" beforeDir="false" afterPath="$PROJECT_DIR$/hostsidetests/meson.build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/meson.build" beforeDir="false" afterPath="$PROJECT_DIR$/libs/meson.build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/base.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/box2d.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/code-load.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/crypto.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/cts_report.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/deltablue.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/earley-boyer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/gbemu.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/js/bootstrap-collapse.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/js/bootstrap-transition.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/js/jquery.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/mandreel.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/navier-stokes.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/pdfjs.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/raytrace.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/regexp.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/richards.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/run.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/assets/octane/splay.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/src/com/android/cts/browser/BrowserBenchTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/suite/cts/deviceTests/browserbench/src/com/android/cts/browser/BrowserBenchTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/dram/jni/MemoryNativeJni.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/meson.build" beforeDir="false" afterPath="$PROJECT_DIR$/suite/cts/deviceTests/meson.build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/suite/cts/deviceTests/simplecpu/jni/CpuNativeJni.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/jni/CtsJniOnLoad.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/jni/android_net_cts_NetlinkSocket.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/jni/android_net_cts_NetlinkSocket.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/jni/android_os_cts_CpuFeatures.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/jni/android_os_cts_FileUtils.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/jni/android_os_cts_OSFeatures.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/drm/jni/CtsDrmJniOnLoad.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/drm/jni/android_drm_cts_NativeCodeTest.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/libjnitest/android_jni_cts_InstanceNonce.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/libjnitest/android_jni_cts_JniCTest.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/libjnitest/android_jni_cts_JniCppTest.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/libjnitest/android_jni_cts_StaticNonce.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/libjnitest/helper.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/libjnitest/helper.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/libjnitest/macroized_tests.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/libjnitest/register.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/jni/meson.build" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/jni/meson.build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/mediastress/jni/native-media-jni.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/meson.build" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/meson.build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/net/jni/NativeDnsJni.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/openglperf/jni/OpenGlPerfNativeJni.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/permission/jni/CtsPermissionsJniOnLoad.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/permission/jni/android_permission_cts_FileUtils.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/permission/src/android/permission/cts/AppWidgetManagerPermissionTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/permission/src/android/permission/cts/AppWidgetManagerPermissionTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/permission/src/android/permission/cts/DevicePowerPermissionTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/permission/src/android/permission/cts/DevicePowerPermissionTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/permission/src/android/permission/cts/NoLocationPermissionTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/permission/src/android/permission/cts/NoLocationPermissionTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/security/jni/CtsSecurityJniOnLoad.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/security/jni/android_security_cts_CharDeviceTest.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/security/jni/android_security_cts_KernelSettingsTest.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/security/jni/android_security_cts_LinuxRngTest.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/security/jni/android_security_cts_LoadEffectLibraryTest.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/security/jni/android_security_cts_NativeCodeTest.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/widget/src/android/widget/cts/ImageSwitcherTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/widget/src/android/widget/cts/ImageSwitcherTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/widget/src/android/widget/cts/ImageViewTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/widget/src/android/widget/cts/ImageViewTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/widget/src/android/widget/cts/MediaControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/widget/src/android/widget/cts/MediaControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/tests/widget/src/android/widget/cts/RemoteViewsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/tests/tests/widget/src/android/widget/cts/RemoteViewsTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/meson/build_apk.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/meson/build_apk.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/meson/cts_build.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/meson/cts_build.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,10 +98,6 @@
   </component>
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
-  </component>
-  <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="74397" />
-    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$/suite/audio_quality">
@@ -59,23 +123,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0937959392705237" />
-      <entry key="MS500" value="2.186620424668063" />
-      <entry key="S2" value="4.584083656966071" />
-      <entry key="S5" value="6.552897817640216" />
-      <entry key="S10" value="7.616789176753227" />
-      <entry key="S30" value="8.649424436161024" />
-      <entry key="S60" value="9.134777974177526" />
-      <entry key="M2" value="9.49635107400997" />
-      <entry key="M5" value="9.777057516414668" />
-      <entry key="M10" value="9.884496665034316" />
-      <entry key="M15" value="9.922064841529982" />
-      <entry key="M30" value="9.960556362059808" />
-      <entry key="H1" value="9.98015733285758" />
-      <entry key="H2" value="9.990048222069275" />
-      <entry key="H4" value="9.995016470707325" />
-      <entry key="D1" value="9.999168348137156" />
-      <entry key="W1" value="9.99988116650997" />
+      <entry key="MS100" value="1.3759248244063897" />
+      <entry key="MS500" value="3.1870223344456523" />
+      <entry key="S2" value="5.3887400756360515" />
+      <entry key="S5" value="6.2711107112217075" />
+      <entry key="S10" value="6.9329103140521005" />
+      <entry key="S30" value="11.699158426514666" />
+      <entry key="S60" value="16.512077431282886" />
+      <entry key="M2" value="20.651541988530504" />
+      <entry key="M5" value="26.27838285385692" />
+      <entry key="M10" value="38.10806141745973" />
+      <entry key="M15" value="57.77654607624872" />
+      <entry key="M30" value="138.60562142642036" />
+      <entry key="H1" value="270.88487672660057" />
+      <entry key="H2" value="400.7582765925007" />
+      <entry key="H4" value="493.9349794505772" />
+      <entry key="D1" value="591.7832925520247" />
+      <entry key="W1" value="610.7670320785027" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -97,23 +161,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8793831700360218" />
-      <entry key="MS500" value="1.9651074368094599" />
-      <entry key="S2" value="4.439500485600322" />
-      <entry key="S5" value="6.469007459616615" />
-      <entry key="S10" value="7.568048702255062" />
-      <entry key="S30" value="8.630987060783275" />
-      <entry key="S60" value="9.125030364380898" />
-      <entry key="M2" value="9.491277410967633" />
-      <entry key="M5" value="9.774965540974021" />
-      <entry key="M10" value="9.883438675498875" />
-      <entry key="M15" value="9.921356714471198" />
-      <entry key="M30" value="9.960200863023484" />
-      <entry key="H1" value="9.97997921769993" />
-      <entry key="H2" value="9.989959072219948" />
-      <entry key="H4" value="9.994971872606488" />
-      <entry key="D1" value="9.99916091189218" />
-      <entry key="W1" value="9.999880104110083" />
+      <entry key="MS100" value="1.3077838087007247" />
+      <entry key="MS500" value="3.079496471804316" />
+      <entry key="S2" value="5.331080676926575" />
+      <entry key="S5" value="6.243536853855922" />
+      <entry key="S10" value="6.917686132240348" />
+      <entry key="S30" value="11.691047642911572" />
+      <entry key="S60" value="16.506478918506744" />
+      <entry key="M2" value="20.648089905142815" />
+      <entry key="M5" value="26.276589455676664" />
+      <entry key="M10" value="38.1065320222201" />
+      <entry key="M15" value="57.77500832480101" />
+      <entry key="M30" value="138.60413586307607" />
+      <entry key="H1" value="270.8836668814858" />
+      <entry key="H2" value="400.75745542335034" />
+      <entry key="H4" value="493.93449120313" />
+      <entry key="D1" value="591.7831973604153" />
+      <entry key="W1" value="610.7670180915925" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -125,38 +189,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "CidrDebugProfileConversion": "true",
-    "Git.Working.Tree.Tab.closed.by.user": "closed",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "last_opened_file_path": "/home/vptr/cm11/cts/suite/audio_quality/meson.build",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
-    "org.rust.hideNoCargoProjectNotifications/home/vptr/cm11/cts/tools/dasm-rs/src/main.rs": "true",
-    "settings.editor.selected.configurable": "language.rust",
-    "ts.external.directory.path": "/home/vptr/Downloads/CLion-2026.2.1/clion-2026.2.1/plugins/javascript-plugin/jsLanguageServicesImpl/external"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;CidrDebugProfileConversion&quot;: &quot;true&quot;,
+    &quot;Git.Working.Tree.Tab.closed.by.user&quot;: &quot;closed&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/vptr/cm11/packages&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.hideNoCargoProjectNotifications/home/vptr/cm11/cts/tools/dasm-rs/src/main.rs&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;language.rust&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/vptr/Downloads/CLion-2026.2.1/clion-2026.2.1/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;
   }
-}]]></component>
+}</component>
   <component name="PyDebuggerOptionsProvider">
     <option name="myDebuggerBackend" value="DEBUGPY" />
   </component>
-  <component name="RunManager" selected="Native Application.cts_audio_quality">
+  <component name="RunManager" selected="Native Application.all">
     <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cts" TARGET_NAME="all" CONFIG_NAME="Default" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
@@ -168,8 +233,8 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Native Application.cts_audio_quality" />
       <item itemvalue="Native Application.all" />
+      <item itemvalue="Native Application.cts_audio_quality" />
     </list>
   </component>
   <component name="RustProjectSettings">
@@ -181,10 +246,16 @@
       &quot;first&quot;: {
         &quot;##RUN_CONFIGURATION##&quot;: &quot;Native Application.cts_audio_quality&quot;
       },
-      &quot;second&quot;: &quot;30c022ba-635f-4a68-951b-a07b899e3034&quot;
+      &quot;second&quot;: &quot;6d57ee84-c927-48cf-9208-e246f4f7e8f3&quot;
+    },
+    {
+      &quot;first&quot;: {
+        &quot;##RUN_CONFIGURATION##&quot;: &quot;Native Application.all&quot;
+      },
+      &quot;second&quot;: &quot;6d57ee84-c927-48cf-9208-e246f4f7e8f3&quot;
     }
   ],
-  &quot;modificationCount&quot;: 2
+  &quot;modificationCount&quot;: 8
 }</component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -198,6 +269,12 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+    <isAutomaticBootstrapAfterUpdate value="false" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">

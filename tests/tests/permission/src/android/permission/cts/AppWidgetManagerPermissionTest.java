@@ -20,6 +20,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
 * Test that protected AppWidgetManager APIs cannot be called without permissions
@@ -36,8 +38,7 @@ public class AppWidgetManagerPermissionTest extends AndroidTestCase {
     }
 
     /**
-     * Verify that calling
-     * {@link AppWidgetManager#bindAppWidgetId(int, android.content.ComponentName)}
+     * Test that calling {@link AppWidgetManager#bindAppWidgetId(int, android.content.ComponentName)}
      * requires permissions.
      * <p>Tests Permission:
      *   {@link android.Manifest.permission#BIND_APP_WIDGET}.
@@ -45,11 +46,21 @@ public class AppWidgetManagerPermissionTest extends AndroidTestCase {
     @SmallTest
     public void testBindAppWidget() {
         try {
-            mAppWidgetManager.bindAppWidgetId(1, new ComponentName(mContext, "foo"));
+            Method bindMethod = AppWidgetManager.class.getMethod(
+                    "bindAppWidgetId", int.class, ComponentName.class);
+            bindMethod.invoke(mAppWidgetManager, 1, new ComponentName(mContext, "foo"));
             fail("Was able to call bindAppWidgetId");
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof SecurityException) {
+                // expected
+            } else {
+                throw new RuntimeException(e.getCause());
+            }
+        } catch (NoSuchMethodException ignored) {
+            // In public SDK stubs where bindAppWidgetId is hidden
+        } catch (IllegalAccessException ignored) {
         } catch (SecurityException e) {
             // expected
         }
     }
 }
-

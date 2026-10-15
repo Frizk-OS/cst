@@ -46,11 +46,6 @@ def main():
         build_dir / "libs/ctsdeviceutil.jar",
         build_dir / "libs/ctstestserver.jar",
         build_dir / "libs/wrappedgtest.jar",
-        # Android APK packages
-        build_dir / "apps/CtsVerifier/CtsVerifier.apk",
-        build_dir / "tools/device-setup/TestDeviceSetup.apk",
-        build_dir / "suite/cts/deviceTests/dram/CtsDeviceDram.apk",
-        build_dir / "suite/cts/deviceTests/simplecpu/CtsDeviceSimpleCpu.apk",
         # Host side test JARs
         build_dir / "hostsidetests/CtsUsbTests.jar",
         build_dir / "hostsidetests/CtsMonkeyTestCases.jar",
@@ -69,15 +64,28 @@ def main():
         build_dir / "apps/CtsVerifier/jni/libctsverifier_jni.so",
         build_dir / "suite/cts/deviceTests/dram/jni/libctsdram_jni.so",
         build_dir / "suite/cts/deviceTests/simplecpu/jni/libctscpu_jni.so",
+        build_dir / "tests/tests/drm/libctsdrm_jni.so",
+        build_dir / "tests/tests/net/libnativedns_jni.so",
+        build_dir / "tests/tests/permission/libctspermission_jni.so",
+        build_dir / "tests/tests/security/libctssecurity_jni.so",
+        build_dir / "tests/tests/openglperf/libctsopenglperf_jni.so",
+        build_dir / "tests/tests/mediastress/libctsmediastress_jni.so",
     ]
 
+    # Automatically collect all generated APKs across the build tree (excluding dest_dir)
+    for apk_path in build_dir.rglob("*.apk"):
+        if dest_dir not in apk_path.parents and apk_path != dest_dir:
+            artifacts.append(apk_path)
+
     copied = 0
+    seen = set()
     for art in artifacts:
-        if art.is_file():
+        if art.is_file() and art.name not in seen:
             target_path = dest_dir / art.name
             shutil.copy2(art, target_path)
             print(f"  [COLLECT] {art.name} -> {target_path}")
             copied += 1
+            seen.add(art.name)
 
     print(f"Collected {copied} artifacts into {dest_dir}")
     return 0

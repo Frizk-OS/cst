@@ -29,6 +29,8 @@ import android.widget.TextView;
  */
 public class DisplayInfoActivity extends Activity {
 
+    private static final int DENSITY_400 = 400;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +64,7 @@ public class DisplayInfoActivity extends Activity {
             case DisplayMetrics.DENSITY_XHIGH:
                 return "xhdpi";
 
-            case DisplayMetrics.DENSITY_400:
+            case DENSITY_400:
                 return "400dpi";
 
             case DisplayMetrics.DENSITY_XXHIGH:

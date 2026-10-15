@@ -31,4 +31,23 @@ if cargo.found()
     args: ['test', '--manifest-path', jnitest_manifest],
     workdir: meson.current_source_dir(),
   )
+
+  cts_jni_apk = custom_target(
+    'CtsJniTestCases-apk',
+    output: 'CtsJniTestCases.apk',
+    input: [jnitest_so, ctsdeviceutil_jar, ctscommonutil_jar],
+    command: [
+      python,
+      meson.project_source_root() / 'tools/meson/build_apk.py',
+      '--output', '@OUTPUT@',
+      '--manifest', meson.current_source_dir() / 'AndroidManifest.xml',
+      '--source-root', meson.current_source_dir() / 'src',
+      '--dependency-jar', '@INPUT1@',
+      '--dependency-jar', '@INPUT2@',
+      '--dependency-jar', meson.project_source_root() / 'tools/vm-tests-tf/lib/junit.jar',
+      '--jni-lib', '@INPUT0@',
+    ],
+    build_by_default: true,
+    install: false,
+  )
 endif

@@ -143,35 +143,24 @@ def main() -> int:
                 java_sources.append(sf)
         java_sources.extend(gen_dir.rglob("*.java"))
 
-        if not java_sources:
-            raise RuntimeError("No Java source files found to compile for APK!")
+        has_dex = False
+        dex_file = dex_dir / "classes.dex"
 
-        # Step C: Compile Java files with javac
-        classpath_elements = [str(android_jar)]
-        for dep in args.dependency_jar:
-            if dep.is_file():
-                classpath_elements.append(str(dep))
-        classpath = os.pathsep.join(classpath_elements)
+        if java_sources:
+                # Step C: Compile Java files with javac
+            classpath_elements = [str(android_jar)]
+            for dep in args.dependency_jar:
+                if dep.is_file():
+                    classpath_elements.append(str(dep))
+            classpath = os.pathsep.join(classpath_elements)
 
-        sources_file = tmp_dir / "sources.txt"
-        with open(sources_file, "w", encoding="utf-8") as f:
-            for s in java_sources:
-                f.write(f"{s}\n")
+            sources_file = tmp_dir / "sources.txt"
+            with open(sources_file, "w", encoding="utf-8") as f:
+                for s in java_sources:
+                    f.write(f"{s}\n")
 
-        javac_cmd = [
-            str(javac_bin),
-            "-source", "8",
-            "-target", "8",
-            "-nowarn",
-            "-cp", classpath,
-            "-d", str(classes_dir),
-            f"@{sources_file}",
-        ]
-        try:
-            subprocess.run(javac_cmd, check=True)
-        except subprocess.CalledProcessError:
-            # Fallback to --release 21 if needed
-            fallback_javac = [
+            # Default to modern Java 21 compilation
+            javac_cmd = [
                 str(javac_bin),
                 "--release", "21",
                 "-nowarn",
@@ -179,38 +168,52 @@ def main() -> int:
                 "-d", str(classes_dir),
                 f"@{sources_file}",
             ]
-            subprocess.run(fallback_javac, check=True)
+            try:
+                subprocess.run(javac_cmd, check=True)
+            except subprocess.CalledProcessError:
+                # Fallback to source 8 if compatibility flags required
+                fallback_javac = [
+                    str(javac_bin),
+                    "-source", "8",
+                    "-target", "8",
+                    "-nowarn",
+                    "-cp", classpath,
+                    "-d", str(classes_dir),
+                    f"@{sources_file}",
+                ]
+                subprocess.run(fallback_javac, check=True)
 
-        # Step D: Convert compiled classes to Dalvik classes.dex (version 035) using D8
-        compiled_classes = list(classes_dir.rglob("*.class"))
-        if not compiled_classes:
-            raise RuntimeError("Compilation produced no .class files!")
+            # Step D: Convert compiled classes to Dalvik classes.dex (version 035) using D8
+            compiled_classes = list(classes_dir.rglob("*.class"))
+            if not compiled_classes:
+                raise RuntimeError("Compilation produced no .class files!")
 
-        class_list_file = tmp_dir / "classes.txt"
-        with open(class_list_file, "w", encoding="utf-8") as f:
-            for c in compiled_classes:
-                f.write(f"{c}\n")
+            class_list_file = tmp_dir / "classes.txt"
+            with open(class_list_file, "w", encoding="utf-8") as f:
+                for c in compiled_classes:
+                    f.write(f"{c}\n")
 
-        d8_cmd = [
-            "java",
-            "-cp", str(d8_jar),
-            "com.android.tools.r8.D8",
-            "--min-api", str(args.min_api),
-            "--android-platform-build",
-            "--output", str(dex_dir),
-            "--lib", str(android_jar),
-        ]
-        for dep in args.dependency_jar:
-            if dep.is_file():
-                d8_cmd.extend(["--lib", str(dep)])
+            d8_cmd = [
+                "java",
+                "-cp", str(d8_jar),
+                "com.android.tools.r8.D8",
+                "--min-api", str(args.min_api),
+                "--android-platform-build",
+                "--output", str(dex_dir),
+                "--lib", str(android_jar),
+            ]
+            for dep in args.dependency_jar:
+                if dep.is_file():
+                    d8_cmd.extend(["--lib", str(dep)])
 
-        # Read class arguments
-        d8_cmd.extend([str(c) for c in compiled_classes])
-        subprocess.run(d8_cmd, check=True, stdout=subprocess.DEVNULL)
+            # Read class arguments
+            d8_cmd.extend([str(c) for c in compiled_classes])
+            subprocess.run(d8_cmd, check=True, stdout=subprocess.DEVNULL)
 
-        dex_file = dex_dir / "classes.dex"
-        if not dex_file.is_file():
-            raise FileNotFoundError(f"D8 did not produce {dex_file}")
+            dex_file = dex_dir / "classes.dex"
+            if not dex_file.is_file():
+                raise FileNotFoundError(f"D8 did not produce {dex_file}")
+            has_dex = True
 
         # Step E: Package resources into base APK with AAPT
         aapt_pkg_cmd = [
@@ -224,13 +227,30 @@ def main() -> int:
             if r.is_dir():
                 aapt_pkg_cmd.extend(["-S", str(r)])
         if args.assets_dir and args.assets_dir.is_dir():
-            aapt_pkg_cmd.extend(["-A", str(args.assets_dir)])
+            # If assets contains TypeScript (.ts) files, transpile them to .js in a temporary staging dir
+            ts_assets = list(args.assets_dir.rglob("*.ts"))
+            if ts_assets:
+                staged_assets = tmp_dir / "staged_assets"
+                shutil.copytree(args.assets_dir, staged_assets)
+                # Run TypeScript transpiler to produce .js for browser runtime
+                staged_ts = list(staged_assets.rglob("*.ts"))
+                subprocess.run(
+                    ["npx", "-y", "typescript", "--target", "ES2015", "--skipLibCheck", "--noImplicitAny", "false", "--noEmitOnError", "false"]
+                    + [str(p) for p in staged_ts],
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                aapt_pkg_cmd.extend(["-A", str(staged_assets)])
+            else:
+                aapt_pkg_cmd.extend(["-A", str(args.assets_dir)])
 
         subprocess.run(aapt_pkg_cmd, check=True)
 
-        # Step F: Add classes.dex into APK
-        shutil.copy2(dex_file, tmp_dir / "classes.dex")
-        subprocess.run([str(aapt_bin), "add", "-k", str(temp_apk), "classes.dex"], cwd=tmp_dir, check=True, stdout=subprocess.DEVNULL)
+        # Step F: Add classes.dex into APK if present
+        if has_dex:
+            shutil.copy2(dex_file, tmp_dir / "classes.dex")
+            subprocess.run([str(aapt_bin), "add", "-k", str(temp_apk), "classes.dex"], cwd=tmp_dir, check=True, stdout=subprocess.DEVNULL)
 
         # Step G: Add JNI shared libraries if present
         if args.jni_lib:

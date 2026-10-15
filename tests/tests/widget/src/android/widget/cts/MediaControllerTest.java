@@ -176,7 +176,7 @@ public class MediaControllerTest extends
                 if (target != null) {
                     target.close();
                 }
-            } catch (final IOException _) {
+            } catch (final IOException ignored) {
                 // Ignore the IOException.
             }
         }

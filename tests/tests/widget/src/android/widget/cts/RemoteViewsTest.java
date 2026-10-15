@@ -599,7 +599,7 @@ public class RemoteViewsTest extends ActivityInstrumentationTestCase2<RemoteView
                 if (target != null) {
                     target.close();
                 }
-            } catch (IOException _) {
+            } catch (IOException ignored) {
                 // Ignore the IOException.
             }
         }

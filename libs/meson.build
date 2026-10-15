@@ -86,3 +86,6 @@ wrappedgtest_jar = custom_target(
   build_by_default: true,
   install: false,
 )
+
+guava_jar = meson.project_source_root() / 'libs/external-jars/guava.jar'
+mockito_jar = meson.project_source_root() / 'libs/external-jars/mockito.jar'

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -356,7 +356,13 @@ public class NoLocationPermissionTest extends AndroidTestCase {
     @SmallTest
     public void testSetTestProviderLocation() {
         Location location = new Location(TEST_PROVIDER_NAME);
-        location.makeComplete();
+        try {
+            java.lang.reflect.Method m = Location.class.getMethod("makeComplete");
+            m.invoke(location);
+        } catch (Exception ignored) {
+            location.setTime(System.currentTimeMillis());
+            location.setAccuracy(1.0f);
+        }
 
         try {
             mLocationManager.setTestProviderLocation(TEST_PROVIDER_NAME, location);

@@ -49,6 +49,14 @@ public class BrowserBenchTest extends CtsAndroidTestCase {
     private static final boolean DEBUG = false;
     private static final String OCTANE_START_FILE = "octane/index.html";
     private static final String ROBOHORNET_START_FILE = "robohornet/robohornet.html";
+
+    @TimeoutReq(minutes = 60)
+    public void testRoboHornet() throws InterruptedException {
+        String url = mWebServer.getAssetUrl(ROBOHORNET_START_FILE) + "?auto=1";
+        final int kRepeat = 1;
+        doTest(url, ResultType.LOWER_BETTER, ResultUnit.MS,
+                ResultType.HIGHER_BETTER, ResultUnit.SCORE, kRepeat);
+    }
     private static final String HOST_COMPLETION_BROADCAST = "com.android.cts.browser.completion";
     // time-out for watch-dog. POST should happen within this time.
     private static long BROWSER_POST_TIMEOUT_IN_MS = 10 * 60 * 1000L;
