@@ -1,0 +1,10 @@
+[package]
+name = "ctsmediastress_jni"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "ctsmediastress_jni"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
