@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2013 The Android Open Source Project
 #
@@ -23,10 +23,8 @@ from xml.dom import minidom
 
 def getChildrenWithTag(parent, tagName):
   children = []
-  for child in  parent.childNodes:
+  for child in parent.childNodes:
     if (child.nodeType == Node.ELEMENT_NODE) and (child.tagName == tagName):
-      #print "parent " + parent.getAttribute("name") + " " + tagName +\
-      #  " " + child.getAttribute("name")
       children.append(child)
   return children
 
@@ -104,7 +102,7 @@ class Result(object):
       boardName = buildInfo.getAttribute("build_board")
       partitions = buildInfo.getAttribute("partitions")
       m = re.search(r'.*;/data\s+([\w\.]+)\s+([\w\.]+)\s+([\w\.]+)\s+([\w\.]+);', partitions)
-      dataPartitionSize = m.group(1)
+      dataPartitionSize = m.group(1) if m else "0"
       self.addKV("device", deviceName)
       self.addKV("board", boardName)
       self.addKV("serial", deviceId)
@@ -114,7 +112,6 @@ class Result(object):
     for package in packages:
       casesFromChild = parseSuite(package, "")
       self.results.update(casesFromChild)
-    #print self.results.keys()
 
   def addKV(self, key, value):
     self.infoKeys.append(key)
@@ -141,61 +138,58 @@ class Result(object):
 def executeWithResult(command):
   p = subprocess.Popen(command.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   out, err = p.communicate()
-  return out
+  return out.decode('utf-8', 'replace')
 
 def parseReports(path):
   deviceResults = []
   xmls = executeWithResult("find " + path + " -name testResult.xml -print")
-  print "xml files found :"
-  print xmls
+  print("xml files found :")
+  print(xmls)
   for xml in xmls.splitlines():
-    result = Result(xml)
-    deviceResults.append(result)
+    xml = xml.strip()
+    if xml and os.path.isfile(xml):
+      result = Result(xml)
+      deviceResults.append(result)
   reportInfo = {}
   keys = ["device", "board", "serial", "build", "data size"]
   numDevices = len(deviceResults)
-  for i in xrange(len(keys)):
+  for i in range(len(keys)):
     values = []
-    for j in xrange(numDevices):
+    for j in range(numDevices):
       values.append(str(deviceResults[j].getInfoV(keys[i])))
     reportInfo[keys[i]] = values
-  #print reportInfo
 
   tests = []
   for deviceResult in deviceResults:
     for key in deviceResult.getResults().keys():
       if not key in tests:
         tests.append(key)
-  #print tests
 
   reportTests = {}
-  for i in xrange(len(tests)):
+  for i in range(len(tests)):
     test = tests[i]
     reportTests[test] = []
-    for j in xrange(numDevices):
+    for j in range(numDevices):
       values = {}
-      if deviceResults[j].getResults().has_key(test):
+      if test in deviceResults[j].getResults():
         result = deviceResults[j].getResults()[test]
         values["result"] = result.getResult()
         values["summary"] = result.getSummary()
         values["details"] = result.getDetails()
         values["device"] = deviceResults[j].getDeviceName()
-      # even if report does not have test, put empty dict
-      # otherwise, there is no way to distinguish results from the same device
       reportTests[test].append(values)
-  #print reportTests
   return (reportInfo, reportTests)
 
 def main(argv):
   if len(argv) < 3:
-    print "get_csv_report.py cts_report_dir output_file"
+    print("get_csv_report.py cts_report_dir output_file")
     sys.exit(1)
   reportPath = os.path.abspath(argv[1])
   outputCsv = os.path.abspath(argv[2])
 
   (reportInfo, reportTests) = parseReports(reportPath)
 
-  with open(outputCsv, 'w') as f:
+  with open(outputCsv, 'w', encoding='utf-8') as f:
     for key in reportInfo:
       f.write(key)
       for value in reportInfo[key]:
@@ -208,11 +202,9 @@ def main(argv):
       for report in reportTests[test]:
         f.write(',')
         if 'summary' in report:
-          summaryValues = report['summary'].values()
+          summaryValues = list(report['summary'].values())
           if len(summaryValues) > 0:
             f.write(summaryValues[0])
-        # else: no data printed but just empty cell
-      # close a test with line
       f.write('\n')
 
 if __name__ == '__main__':

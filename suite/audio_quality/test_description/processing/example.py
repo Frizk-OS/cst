@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -41,14 +41,12 @@ def example(inputData, inputTypes):
     output = []
     outputData = []
     outputTypes = []
-    stereoInt = (inputData[0].astype(int) + inputData[1].astype(int))/2
+    stereoInt = (inputData[0].astype(int) + inputData[1].astype(int)) // 2
     stereo = stereoInt.astype(np.int16)
-    #print len(inputData[0]), len(inputData[1]), len(stereoInt), len(stereo)
-    monoInt = (inputData[2].astype(int) + inputData[3].astype(int))/2
+    monoInt = (inputData[2].astype(int) + inputData[3].astype(int)) // 2
     mono = monoInt.astype(np.int16)
-    #print len(inputData[2]), len(inputData[3]), len(monoInt), len(mono)
-    i64Val = (inputData[4] + inputData[5])/2
-    doubleVal = (inputData[6] + inputData[7])/2
+    i64Val = int((inputData[4] + inputData[5]) // 2)
+    doubleVal = float((inputData[6] + inputData[7]) / 2.0)
     outputData.append(stereo)
     outputTypes.append(TYPE_STEREO)
     outputData.append(mono)

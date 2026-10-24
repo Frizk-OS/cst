@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -59,12 +59,12 @@ def recording_thd(inputData, inputTypes):
     thdPassPercentile = inputData[3]
     samplingRate = 44100
 
-    delay = calc_delay.calc_delay(hostRecording, deviceRecording)
+    delay = int(calc_delay.calc_delay(hostRecording, deviceRecording))
     N = len(deviceRecording)
-    print "delay ", delay, "deviceRecording samples ", N
+    print("delay ", delay, "deviceRecording samples ", N)
     thdHost = calc_thd(hostRecording[delay:delay+N], signalFrequency, samplingRate, 0.02) * 100
     thdDevice = calc_thd(deviceRecording, signalFrequency, samplingRate, 0.02) * 100
-    print "THD Host %", thdHost, "THD device %", thdDevice, "Margain % ", thdPassPercentile
+    print("THD Host %", thdHost, "THD device %", thdDevice, "Margain % ", thdPassPercentile)
     if (thdDevice < (thdHost + thdPassPercentile)) and (thdHost < thdPassPercentile):
         output.append(RESULT_PASS)
     else:

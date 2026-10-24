@@ -22,7 +22,7 @@
 
 #include "SimpleScriptExec.h"
 
-const char* SimpleScriptExec::PYTHON_PATH = "/usr/bin/python";
+const char* SimpleScriptExec::PYTHON_PATH = "/usr/bin/python3";
 const char* PASS_MAGIC_WORD = "___CTS_AUDIO_PASS___";
 
 bool SimpleScriptExec::checkPythonEnv()
@@ -84,6 +84,3 @@ bool SimpleScriptExec::runScript(const std::string& script, const std::string& p
 
     return true;
 }
-
-
-

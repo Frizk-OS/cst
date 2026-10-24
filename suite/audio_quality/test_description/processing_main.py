@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -38,7 +38,7 @@ CMD_RESULT = 0x10
 
 def echo(inputData, inputTypes):
     output = []
-    print "echo received ", inputData
+    print("echo received ", inputData)
     output.append(RESULT_OK)
     output.append(inputData)
     output.append(inputTypes)
@@ -47,10 +47,10 @@ def echo(inputData, inputTypes):
 def intsum(inputData, inputTypes):
     output = []
     output.append(RESULT_OK)
-    sum = inputData[0] + inputData[1]
-    print "intsum sum is ", sum
+    total = inputData[0] + inputData[1]
+    print("intsum sum is ", total)
     outputData = []
-    outputData.append(sum)
+    outputData.append(total)
     outputTypes = []
     outputTypes.append(TYPE_I64)
     output.append(outputData)
@@ -63,36 +63,39 @@ class CommandHandler(object):
     def __init__(self, conn):
         self.conn = conn
     def __del__(self):
-        self.conn.close()
+        try:
+            self.conn.close()
+        except Exception:
+            pass
     def run(self):
         header = self.readI32()
         if header == CMD_TERMINATE:
-            print "terminate cmd, will exit"
+            print("terminate cmd, will exit")
             sys.exit(0)
         nParam = 0
         if header == CMD_HEADER:
             nParam = self.readI32()
             if nParam < 1:
-                protocolError("wrong number of params")
+                self.protocolError("wrong number of params")
             cmdFunction = self.readI32()
             if cmdFunction != CMD_FUNCTION:
-                protocolError("not function")
+                self.protocolError("not function")
             nameLen = self.readI32()
-            self.functionName = self.readRaw(nameLen)
-            print "Processing function:", self.functionName
+            self.functionName = self.readRaw(nameLen).decode('utf-8')
+            print("Processing function:", self.functionName)
             inputData = []
             inputTypes = []
             for i in range(nParam - 1):
                 cmd = self.readI32()
                 if (cmd == CMD_AUDIO_STEREO) or (cmd == CMD_AUDIO_MONO):
                     dataLen = self.readI32()
-                    data = self.readI16Array(dataLen / 2)
+                    data = self.readI16Array(dataLen // 2)
                     inputData.append(data)
                     if (cmd == CMD_AUDIO_STEREO):
                         inputTypes.append(TYPE_STEREO)
                     else:
                         inputTypes.append(TYPE_MONO)
-                    print i, "-th input received audio data ", dataLen, cmd
+                    print(i, "-th input received audio data ", dataLen, cmd)
                 elif cmd == CMD_INT64:
                     i64 = self.readI64()
                     inputData.append(i64)
@@ -103,7 +106,7 @@ class CommandHandler(object):
                     inputTypes.append(TYPE_DOUBLE)
                 else:
                     self.protocolError("unknown command " + str(cmd))
-            print "inputTypes ", inputTypes
+            print("inputTypes ", inputTypes)
             # length 3 list
             # output[0]: int, execution result, RESULT_XXX values
             # output[1]: output data list
@@ -121,7 +124,7 @@ class CommandHandler(object):
             self.sendI32(output[0])
             outputData = output[1]
             outputTypes = output[2]
-            print "outputTypes ", outputTypes
+            print("outputTypes ", outputTypes)
             for i in range(nOutputParams):
                 if (outputTypes[i] == TYPE_I64):
                     self.sendI32(CMD_INT64)
@@ -138,12 +141,12 @@ class CommandHandler(object):
                     self.sendI32(len(outputData[i]) * 2)
                     self.sendI16Array(outputData[i])
                 else:
-                    print "unknown type ", outputTypes[i], \
-                        " returned from funcion ", self.functionName
+                    print("unknown type ", outputTypes[i], \
+                        " returned from function ", self.functionName)
                     sys.exit(1)
 
     def readRaw(self, length):
-        result = []
+        chunks = []
         totalRead = 0
         while totalRead < length:
             raw = self.conn.recv(length - totalRead)
@@ -151,8 +154,8 @@ class CommandHandler(object):
             if justRead == 0: # socket closed
                 sys.exit(1)
             totalRead += justRead
-            result.append(raw)
-        return ''.join(result)
+            chunks.append(raw)
+        return b''.join(chunks)
 
     def readI32(self):
         raw = self.readRaw(4)
@@ -170,35 +173,37 @@ class CommandHandler(object):
         return val[0]
 
     def readI16Array(self, length):
-        raw = self.readRaw(length * 2)
-        data = np.fromstring(raw, dtype=np.int16)
+        raw = self.readRaw(int(length) * 2)
+        data = np.frombuffer(raw, dtype=np.int16)
         return data
 
     def sendI32(self, i32):
-        raw = struct.pack("<i", i32)
+        raw = struct.pack("<i", int(i32))
         self.sendRaw(raw)
 
     def sendI64(self, i64):
-        raw = struct.pack("<q", i64)
+        raw = struct.pack("<q", int(i64))
         self.sendRaw(raw)
 
     def sendDouble(self, val):
-        raw = struct.pack("<d", val)
+        raw = struct.pack("<d", float(val))
         self.sendRaw(raw)
 
     def sendI16Array(self, arry):
-        raw = arry.tostring()
+        raw = np.asarray(arry, dtype=np.int16).tobytes()
         self.sendRaw(raw)
 
-    def sendRaw(self, rawString):
+    def sendRaw(self, rawBytes):
         totalSent = 0
-        stringLen = len(rawString)
+        stringLen = len(rawBytes)
         while totalSent < stringLen:
-            sent = self.conn.send(rawString[totalSent:])
+            sent = self.conn.send(rawBytes[totalSent:])
+            if sent == 0:
+                sys.exit(1)
             totalSent += sent
 
     def protocolError(self, message):
-        print message
+        print(message)
         sys.exit(1)
 
 
@@ -211,7 +216,7 @@ if __name__=="__main__":
     s.listen(1)
 
     conn, addr = s.accept()
-    print "client connected"
+    print("client connected")
     # close the server socket to allow other instance to run
     s.close()
     handler = CommandHandler(conn)

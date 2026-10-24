@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -40,21 +40,23 @@ def calc_delay(data0, data1):
     len0 = len(data0)
     len1 = len(data1)
     if len1 > len0:
-        print "data1 longer than data0"
+        print("data1 longer than data0")
         return -1
     searchLen = len0 - len1
     data1reverse = data1[::-1]
 
     # This is faster than signal.correlate as there is no need to process
     # full data, but still it is slow. about 18 secs for data0 of 4 secs with data1 of 1 secs
-    print "***Caluclating delay, may take some time***"
+    print("***Caluclating delay, may take some time***")
     gData0 = data0
     gData1 = data1reverse
     pool = Pool(processes = 4)
     TASK = [(data0, data1reverse, i) for i in range(searchLen)]
     result = pool.map(convolutionstar, TASK)
+    pool.close()
+    pool.join()
 
-    return np.argmax(result)
+    return int(np.argmax(result))
 
 
 # test code
@@ -64,14 +66,12 @@ if __name__=="__main__":
     if len(sys.argv) > 1:
         durationInSec = float(sys.argv[1])
     signalFrequency = 1000
-    samples = float(samplingRate) * float(durationInSec)
+    samples = int(float(samplingRate) * float(durationInSec))
     index = np.linspace(0.0, samples, num=samples, endpoint=False)
     time = index / samplingRate
     multiplier = 2.0 * np.pi * signalFrequency / float(samplingRate)
     data0 = np.sin(index * multiplier)
-    DELAY = durationInSec / 2.0 * samplingRate
+    DELAY = int(durationInSec / 2.0 * samplingRate)
     data1 = data0[DELAY:]
     delay = calc_delay(data0, data1)
-    print "calc_delay returned", delay, " while expecting ", DELAY
-
-
+    print("calc_delay returned", delay, " while expecting ", DELAY)

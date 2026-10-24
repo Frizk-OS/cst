@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -21,10 +21,8 @@ from xml.dom import minidom
 
 def getChildrenWithTag(parent, tagName):
     children = []
-    for child in  parent.childNodes:
+    for child in parent.childNodes:
         if (child.nodeType == Node.ELEMENT_NODE) and (child.tagName == tagName):
-            #print "parent " + parent.getAttribute("name") + " " + tagName +\
-            #    " " + child.getAttribute("name")
             children.append(child)
     return children
 
@@ -43,8 +41,6 @@ def parseSuite(suite, parentName):
             if test.getAttribute("result") != "pass":
                 failureName = className + "#" + test.getAttribute("name")
                 failedCases.append(failureName)
-    #if len(failedCases) > 0:
-    #    print failedCases
     return failedCases
 
 def getFailedCases(resultXml):
@@ -62,8 +58,8 @@ def getFailedCases(resultXml):
 
 def main(argv):
     if len(argv) < 3:
-        print "rerun.py cts_path result_xml [-s serial]"
-        print " cts_path should end with android-cts"
+        print("rerun.py cts_path result_xml [-s serial]")
+        print(" cts_path should end with android-cts")
         sys.exit(1)
     ctsPath = os.path.abspath(argv[1])
     resultXml = os.path.abspath(argv[2])
@@ -73,16 +69,16 @@ def main(argv):
             deviceSerial = argv[4]
 
     failedCases = getFailedCases(resultXml)
-    print "Re-run follwong cases:"
+    print("Re-run following cases:")
     for failure in failedCases:
-        print " " + failure
+        print(" " + failure)
     for failure in failedCases:
         [className, methodName] = failure.split('#')
         command = ctsPath + "/tools/cts-tradefed run singleCommand cts"
         if deviceSerial != "":
             command += " --serial " + deviceSerial
         command += " --class " + className + " --method " + methodName
-        print command
+        print(command)
         os.system(command)
 
 if __name__ == '__main__':

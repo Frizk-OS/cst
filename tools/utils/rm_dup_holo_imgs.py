@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2014 The Android Open Source Project
 #
@@ -9,7 +9,7 @@
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an 'AS IS' BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
@@ -42,17 +42,19 @@ def run(sw):
   for density in densities:
     portDir = getDirName(density, sw, False)
     landDir = getDirName(density, sw, True)
-    portrait = getAllHashes(portDir)
-    landscape = getAllHashes(landDir)
-    for f in portrait:
-      if f in landscape and landscape[f] == portrait[f]:
-        subprocess.call(["rm", landDir + "/" + f])
+    if os.path.isdir(portDir) and os.path.isdir(landDir):
+      portrait = getAllHashes(portDir)
+      landscape = getAllHashes(landDir)
+      for f in portrait:
+        if f in landscape and landscape[f] == portrait[f]:
+          subprocess.call(["rm", os.path.join(landDir, f)])
 
 def getAllHashes(dirName):
   files = {}
   for f in os.listdir(dirName):
     if f.endswith(".png"):
-      files[f] = getHash(open(dirName + "/" + f, 'rb'))
+      with open(os.path.join(dirName, f), 'rb') as fp:
+        files[f] = getHash(fp)
   return files
 
 def getHash(f):

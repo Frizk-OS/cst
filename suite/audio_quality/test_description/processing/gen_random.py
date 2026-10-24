@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -28,34 +28,29 @@ import matplotlib.pyplot as plt
 # Output: generated sound (stereo)
 
 def do_gen_random(peakAmpl, durationInMSec, samplingRate, fHigh, stereo=True):
-    samples = durationInMSec * samplingRate / 1000
+    samples = int(durationInMSec * samplingRate // 1000)
     result = np.zeros(samples * 2 if stereo else samples, dtype=np.int16)
     randomSignal = np.random.normal(scale = peakAmpl * 2 / 3, size=samples)
     fftData = fft.rfft(randomSignal)
-    freqSamples = samples/2
-    iHigh = freqSamples * fHigh * 2 / samplingRate + 1
-    #print len(randomSignal), len(fftData), fLow, fHigh, iHigh
+    freqSamples = samples // 2
+    iHigh = int(freqSamples * fHigh * 2 / samplingRate + 1)
     if iHigh > freqSamples - 1:
         iHigh = freqSamples - 1
     fftData[0] = 0 # DC
     for i in range(iHigh, freqSamples - 1):
         fftData[ 2 * i + 1 ] = 0
         fftData[ 2 * i + 2 ] = 0
-    if (samples - 2 *freqSamples) != 0:
+    if (samples - 2 * freqSamples) != 0:
         fftData[samples - 1] = 0
 
     filteredData = fft.irfft(fftData)
-    #freq = np.linspace(0.0, samplingRate, num=len(fftData), endpoint=False)
-    #plt.plot(freq, abs(fft.fft(filteredData)))
-    #plt.plot(filteredData)
-    #plt.show()
     if stereo:
         for i in range(len(filteredData)):
-            result[2 * i] = filteredData[i]
-            result[2 * i + 1] = filteredData[i]
+            result[2 * i] = int(filteredData[i])
+            result[2 * i + 1] = int(filteredData[i])
     else:
         for i in range(len(filteredData)):
-            result[i] = filteredData[i]
+            result[i] = int(filteredData[i])
     return result
 
 
@@ -93,7 +88,6 @@ if __name__=="__main__":
     peakAmplitude = 10000
     samplingRate = 44100
     durationInMSec = 10000
-    #fLow = 500
     fHigh = 15000
     result = do_gen_random(peakAmplitude, durationInMSec, samplingRate, fHigh)
     plt.plot(result)

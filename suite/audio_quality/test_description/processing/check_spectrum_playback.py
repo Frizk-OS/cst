@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -38,32 +38,32 @@ import calc_delay
 def do_check_spectrum_playback(hostData, samplingRate, fLow, fHigh, margainLow, margainHigh):
     # reduce FFT resolution to have averaging effects
     N = 512 if (len(hostData) > 512) else len(hostData)
-    iLow = N * fLow / samplingRate + 1 # 1 for DC
-    if iLow > (N / 2 - 1):
-        iLow = (N / 2 - 1)
-    iHigh = N * fHigh / samplingRate + 1 # 1 for DC
-    if iHigh > (N / 2 + 1):
-        iHigh = N / 2 + 1
-    print fLow, iLow, fHigh, iHigh, samplingRate
+    iLow = int(N * fLow / samplingRate + 1) # 1 for DC
+    if iLow > int(N / 2 - 1):
+        iLow = int(N / 2 - 1)
+    iHigh = int(N * fHigh / samplingRate + 1) # 1 for DC
+    if iHigh > int(N / 2 + 1):
+        iHigh = int(N / 2 + 1)
+    print(fLow, iLow, fHigh, iHigh, samplingRate)
 
     Phh, freqs = plt.psd(hostData, NFFT=N, Fs=samplingRate, Fc=0, detrend=plt.mlab.detrend_none,\
         window=plt.mlab.window_hanning, noverlap=0, pad_to=None, sides='onesided',\
         scale_by_freq=False)
-    print len(Phh)
-    print "Phh", abs(Phh[iLow:iHigh])
+    print(len(Phh))
+    print("Phh", abs(Phh[iLow:iHigh]))
     spectrum = np.sqrt(abs(Phh[iLow:iHigh]))
     spectrumMean = np.mean(spectrum)
     spectrum = spectrum / spectrumMean
-    print "Mean ", spectrumMean
-    print "Normalized spectrum", spectrum
-    positiveMax = abs(max(spectrum))
-    negativeMin = abs(min(spectrum))
+    print("Mean ", spectrumMean)
+    print("Normalized spectrum", spectrum)
+    positiveMax = float(abs(max(spectrum)))
+    negativeMin = float(abs(min(spectrum)))
     passFail = True if (positiveMax < (margainHigh / 100.0 + 1.0)) and\
         ((1.0 - negativeMin) < margainLow / 100.0) else False
     spectrumResult = np.zeros(len(spectrum), dtype=np.int16)
     for i in range(len(spectrum)):
-        spectrumResult[i] = spectrum[i] * 1024 # make fixed point
-    print "positiveMax", positiveMax, "negativeMin", negativeMin
+        spectrumResult[i] = int(spectrum[i] * 1024) # make fixed point
+    print("positiveMax", positiveMax, "negativeMin", negativeMin)
     return (passFail, negativeMin, positiveMax, spectrumResult)
 
 def check_spectrum_playback(inputData, inputTypes):
@@ -123,7 +123,7 @@ if __name__=="__main__":
     fHigh = 15000
     data = getattr(mod, "do_gen_random")(peakAmpl, durationInMSec, samplingRate, fHigh,\
         stereo=False)
-    print len(data)
+    print(len(data))
     (passFail, minVal, maxVal, amp) = do_check_spectrum_playback(data, samplingRate, fLow,\
         fHigh, 1.0, 1.0)
     plt.plot(amp)

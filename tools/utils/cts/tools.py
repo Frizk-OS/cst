@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4
+#!/usr/bin/env python3
 
 # Copyright (C) 2009 The Android Open Source Project
 #
@@ -52,13 +52,13 @@ class TestPackage(object):
 
     def WriteDescription(self, doc, parent):
       """Recursively append all suites and testcases to the parent tag."""
-      for (suite_name, suite) in self.test_suites.iteritems():
+      for (suite_name, suite) in self.test_suites.items():
         child = doc.createElement('TestSuite')
         child.setAttribute('name', suite_name)
         parent.appendChild(child)
         # recurse into child suites
         suite.WriteDescription(doc, child)
-      for (case_name, test_list) in self.test_cases.iteritems():
+      for (case_name, test_list) in self.test_cases.items():
         child = doc.createElement('TestCase')
         child.setAttribute('name', case_name)
         parent.appendChild(child)
@@ -94,7 +94,7 @@ class TestPackage(object):
     """Returns a minidom Document representing the test package structure."""
     doc = minidom.Document()
     package = doc.createElement('TestPackage')
-    for (attr, value) in self.attributes.iteritems():
+    for (attr, value) in self.attributes.items():
       package.setAttribute(attr, value)
     self.root_suite.WriteDescription(doc, package)
     doc.appendChild(package)
@@ -168,9 +168,8 @@ class TestPlan(object):
         entry = doc.createElement('Entry')
         entry.setAttribute('uri', package)
         plan.appendChild(entry)
-    stream = open(file_name, 'w')
-    doc.writexml(stream, addindent='  ', newl='\n', encoding='UTF-8')
-    stream.close()
+    with open(file_name, 'w', encoding='utf-8') as stream:
+      doc.writexml(stream, addindent='  ', newl='\n', encoding='UTF-8')
 
 
 class XmlFile(object):

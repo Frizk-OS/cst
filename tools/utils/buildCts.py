@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2009 The Android Open Source Project
 #
@@ -42,11 +42,10 @@ def GetMakeFileVars(makefile_path):
   """
   result = {}
   pattern = re.compile(r'^\s*([^:#=\s]+)\s*:=\s*(.*?[^\\])$', re.MULTILINE + re.DOTALL)
-  stream = open(makefile_path, 'r')
-  content = stream.read()
+  with open(makefile_path, 'r', encoding='utf-8', errors='ignore') as stream:
+    content = stream.read()
   for match in pattern.finditer(content):
     result[match.group(1)] = match.group(2)
-  stream.close()
   return result
 
 
@@ -56,13 +55,13 @@ class CtsBuilder(object):
   def __init__(self, argv):
     """Initialize the CtsBuilder from command line arguments."""
     if len(argv) != 6:
-      print 'Usage: %s <testRoot> <ctsOutputDir> <tempDir> <androidRootDir> <docletPath>' % argv[0]
-      print ''
-      print 'testRoot:       Directory under which to search for CTS tests.'
-      print 'ctsOutputDir:   Directory in which the CTS repository should be created.'
-      print 'tempDir:        Directory to use for storing temporary files.'
-      print 'androidRootDir: Root directory of the Android source tree.'
-      print 'docletPath:     Class path where the DescriptionGenerator doclet can be found.'
+      print('Usage: %s <testRoot> <ctsOutputDir> <tempDir> <androidRootDir> <docletPath>' % argv[0])
+      print('')
+      print('testRoot:       Directory under which to search for CTS tests.')
+      print('ctsOutputDir:   Directory in which the CTS repository should be created.')
+      print('tempDir:        Directory to use for storing temporary files.')
+      print('androidRootDir: Root directory of the Android source tree.')
+      print('docletPath:     Class path where the DescriptionGenerator doclet can be found.')
       sys.exit(1)
     self.test_root = sys.argv[1]
     self.out_dir = sys.argv[2]
@@ -87,10 +86,10 @@ class CtsBuilder(object):
     results = []
     pool.close()
     pool.join()
-    return sum(map(lambda result: result.get(), results))
+    return sum([result.get() for result in results])
 
   def __WritePlan(self, plan, plan_name):
-    print 'Generating test plan %s' % plan_name
+    print('Generating test plan %s' % plan_name)
     plan.Write(os.path.join(self.plan_repository, plan_name + '.xml'))
 
   def GenerateTestPlans(self):
@@ -106,18 +105,18 @@ class CtsBuilder(object):
     packages.sort()
 
     plan = tools.TestPlan(packages)
-    plan.Exclude('android\.performance.*')
+    plan.Exclude('android\\.performance.*')
     self.__WritePlan(plan, 'CTS')
     self.__WritePlan(plan, 'CTS-TF')
 
     plan = tools.TestPlan(packages)
-    plan.Exclude('android\.performance.*')
-    plan.Exclude('android\.media\.cts\.StreamingMediaPlayerTest.*')
+    plan.Exclude('android\\.performance.*')
+    plan.Exclude('android\\.media\\.cts\\.StreamingMediaPlayerTest.*')
     # Test plan to not include media streaming tests
     self.__WritePlan(plan, 'CTS-No-Media-Stream')
 
     plan = tools.TestPlan(packages)
-    plan.Exclude('android\.performance.*')
+    plan.Exclude('android\\.performance.*')
     self.__WritePlan(plan, 'SDK')
 
     plan.Exclude(r'android\.tests\.sigtest')
@@ -142,29 +141,30 @@ class CtsBuilder(object):
 
     # hard-coded white list for PDK plan
     plan.Exclude('.*')
-    plan.Include('android\.aadb')
-    plan.Include('android\.bluetooth')
-    plan.Include('android\.graphics.*')
-    plan.Include('android\.hardware')
-    plan.Include('android\.media')
-    plan.Exclude('android\.mediastress')
-    plan.Include('android\.net')
-    plan.Include('android\.opengl.*')
-    plan.Include('android\.renderscript')
-    plan.Include('android\.telephony')
-    plan.Include('android\.nativemedia.*')
-    plan.Include('com\.android\.cts\..*')#TODO(stuartscott): Should PDK have all these?
+    plan.Include('android\\.aadb')
+    plan.Include('android\\.bluetooth')
+    plan.Include('android\\.graphics.*')
+    plan.Include('android\\.hardware')
+    plan.Include('android\\.media')
+    plan.Exclude('android\\.mediastress')
+    plan.Include('android\\.net')
+    plan.Include('android\\.opengl.*')
+    plan.Include('android\\.renderscript')
+    plan.Include('android\\.telephony')
+    plan.Include('android\\.nativemedia.*')
+    plan.Include('com\\.android\\.cts\\..*')#TODO(stuartscott): Should PDK have all these?
     #TODO(stuartscott): Maybe move away from com.android.* to android.* - less typing
     self.__WritePlan(plan, 'PDK')
 
     #dirty hack to copy over pre-populated CTS plans - flaky vs stable - to streamline autoCTS
-    shutil.copyfile(os.path.join(self.definedplans_repository, 'CTS-flaky.xml'),
-        os.path.join(self.plan_repository, 'CTS-flaky.xml'))
-    shutil.copyfile(os.path.join(self.definedplans_repository, 'CTS-stable.xml'),
-        os.path.join(self.plan_repository, 'CTS-stable.xml'))
+    if os.path.isdir(self.definedplans_repository):
+      shutil.copyfile(os.path.join(self.definedplans_repository, 'CTS-flaky.xml'),
+          os.path.join(self.plan_repository, 'CTS-flaky.xml'))
+      shutil.copyfile(os.path.join(self.definedplans_repository, 'CTS-stable.xml'),
+          os.path.join(self.plan_repository, 'CTS-stable.xml'))
 
 def LogGenerateDescription(name):
-  print 'Generating test description for package %s' % name
+  print('Generating test description for package %s' % name)
 
 def GenerateSignatureCheckDescription(test_repository):
   """Generate the test description for the signature check."""
@@ -174,9 +174,8 @@ def GenerateSignatureCheckDescription(test_repository):
   package.AddAttribute('signatureCheck', 'true')
   package.AddAttribute('runner', '.InstrumentationRunner')
   package.AddTest('android.tests.sigtest.SignatureTest.testSignature')
-  description = open(os.path.join(test_repository, 'SignatureTest.xml'), 'w')
-  package.WriteDescription(description)
-  description.close()
+  with open(os.path.join(test_repository, 'SignatureTest.xml'), 'w', encoding='utf-8') as description:
+    package.WriteDescription(description)
 
 if __name__ == '__main__':
   builder = CtsBuilder(sys.argv)
@@ -184,4 +183,3 @@ if __name__ == '__main__':
   if result != 0:
     sys.exit(result)
   builder.GenerateTestPlans()
-

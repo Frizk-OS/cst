@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -24,36 +24,35 @@ def calc_thd(data, signalFrequency, samplingRate, frequencyMargin):
     # only care about magnitude
     fftData = abs(fft.fft(data * np.hanning(len(data))))
     fftData[0] = 0 # ignore DC
-    fftLen = len(fftData)/2
-    baseI = fftLen * signalFrequency * 2 / samplingRate
-    iMargain = baseI * frequencyMargin
-    baseSignalLoc = baseI - iMargain / 2 + \
-        np.argmax(fftData[baseI - iMargain /2: baseI + iMargain/2])
-    peakLoc = np.argmax(fftData[:fftLen])
+    fftLen = len(fftData) // 2
+    baseI = int(fftLen * signalFrequency * 2 / samplingRate)
+    iMargain = int(baseI * frequencyMargin)
+    baseSignalLoc = baseI - iMargain // 2 + \
+        int(np.argmax(fftData[baseI - iMargain // 2 : baseI + iMargain // 2]))
+    peakLoc = int(np.argmax(fftData[:fftLen]))
     if peakLoc != baseSignalLoc:
-        print "**ERROR Wrong peak signal", peakLoc, baseSignalLoc
+        print("**ERROR Wrong peak signal", peakLoc, baseSignalLoc)
         return 1.0
-    print baseI, baseSignalLoc
-    P0 = math.pow(la.norm(fftData[baseSignalLoc - iMargain/2: baseSignalLoc + iMargain/2]), 2)
+    print(baseI, baseSignalLoc)
+    P0 = math.pow(float(la.norm(fftData[int(baseSignalLoc - iMargain // 2) : int(baseSignalLoc + iMargain // 2)])), 2)
     i = baseSignalLoc * 2
     Pothers = 0.0
     while i < fftLen:
-        Pothers += math.pow(la.norm(fftData[i - iMargain/2: i + iMargain/2]), 2)
+        Pothers += math.pow(float(la.norm(fftData[int(i - iMargain // 2) : int(i + iMargain // 2)])), 2)
         i += baseSignalLoc
-    print "P0", P0, "Pothers", Pothers
+    print("P0", P0, "Pothers", Pothers)
 
-    return Pothers / P0
+    return float(Pothers / P0)
 
 # test code
 if __name__=="__main__":
     samplingRate = 44100
     durationInSec = 10
     signalFrequency = 1000
-    samples = float(samplingRate) * float(durationInSec)
+    samples = int(float(samplingRate) * float(durationInSec))
     index = np.linspace(0.0, samples, num=samples, endpoint=False)
     time = index / samplingRate
     multiplier = 2.0 * np.pi * signalFrequency / float(samplingRate)
     data = np.sin(index * multiplier)
     thd = calc_thd(data, signalFrequency, samplingRate, 0.02)
-    print "THD", thd
-
+    print("THD", thd)

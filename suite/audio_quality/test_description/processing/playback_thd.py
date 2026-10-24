@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -50,7 +50,7 @@ def playback_thd(inputData, inputTypes):
     samplingRate = 44100
 
     thd = calc_thd(hostRecording, signalFrequency, samplingRate, 0.02) * 100
-    print "THD %", thd, "Margain % ", thdPassPercentile
+    print("THD %", thd, "Margain % ", thdPassPercentile)
     if (thd < thdPassPercentile):
         output.append(RESULT_PASS)
     else:

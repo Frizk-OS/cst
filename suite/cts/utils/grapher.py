@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2013 The Android Open Source Project
 #
@@ -22,8 +22,8 @@ import matplotlib.cbook as cbook
 import matplotlib.ticker as ticker
 """
 A simple script to render the data from the benchmark as a graph.
-This uses MatPlotLib (http://matplotlib.org/) to plot which can be installed on linux with;
-  sudo apt-get install python-matplotlib
+This uses MatPlotLib (http://matplotlib.org/) to plot which can be installed on linux with:
+  pip install matplotlib
 """
 
 colors = {
@@ -35,7 +35,7 @@ colors = {
 
 def main(argv):
   if len(argv) != 2:
-    print "grapher.py cts_report_dir"
+    print("grapher.py cts_report_dir")
     sys.exit(1)
 
   (_, tests) = psr.parseReports(os.path.abspath(argv[1]))
@@ -56,7 +56,7 @@ def main(argv):
         y = []
         if score == 'pass':
           y = r['details']['Fps Values']
-          x = range(1, len(y) + 1)
+          x = list(range(1, len(y) + 1))
           # Get the score, then trim it to 2 decimal places
           score = r['summary']['Average Frames Per Second']
           score = score[0:score.index('.') + 3]
@@ -69,7 +69,9 @@ def main(argv):
           # Plot the workload vs the values
           ax.plot(x, y, 'o-', label=lbl, color=clr)
           # Add a legend
-          ax.legend(loc='upper right').get_frame().set_fill(False)
+          leg = ax.legend(loc='upper right')
+          if leg:
+            leg.get_frame().set_facecolor('none')
       (ymin, ymax) = plt.ylim()
       if ymax < 90:# So that on screen tests are easier to compare
         plt.ylim(0, 90)

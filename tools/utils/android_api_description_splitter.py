@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/env python3
 #
 # Copyright 2008, The Android Open Source Project
 #
@@ -24,60 +24,8 @@
 #    1. Read the xml file and generate DOM tree
 #    2. Generate xml file for each tagname.
 #
-# Example:
-# xml source:
-#    <Root>
-#        <A name="i">
-#            <B>1</B>
-#            <B>2</B>
-#        </A>
-#        <A name="ii">
-#            <B>3</B>
-#        </A>
-#    </Root>
-# 
-# when the tagname is specified as A, it will generate two xml files:
-# first one's source:
-#    <Root>
-#        <A name="i">
-#            <B>1</B>
-#            <B>2</B>
-#        </A>
-#    </Root>
-# second one's source:
-#    <Root>
-#        <A name="ii">
-#            <B>3</B>
-#        </A>
-#    </Root>
-#
-# when the tagname is specified as B, it will generated three xml files:
-# first one's source:
-#    <Root>
-#        <A name="i">
-#            <B>1</B>
-#        </A>
-#    </Root>
-# second one's source:
-#    <Root>
-#        <A name="i">
-#            <B>2</B>
-#        </A>
-#    </Root>
-# third one's source:
-#    <Root>
-#        <A name="ii">
-#            <B>3</B>
-#        </A>
-#    </Root>
-#
-# NOTE: 
-#    1. Currently just suppor the top level element
-#    2. Use the name attribute of the specified element as the file name
-#    3. Currently will remove all the doc element. - workaround for jdiff xml
-#
-import os, sys;
-import xml.dom.minidom;
+import os, sys
+import xml.dom.minidom
 
 """Split the jdiff xml into several smaller xml files by specified tag.
 """
@@ -91,13 +39,10 @@ class XMLSplitter:
         return
 
     def split(self, tag):
-
         elemlist = self.doc.getElementsByTagName(tag)
-
         for elem in elemlist:
             elem = self.__trimElem(elem)
             self.__generateFile(elem)
-
         return
 
     def __trimElem(self, elem):
@@ -106,7 +51,7 @@ class XMLSplitter:
             if child.nodeType == xml.dom.minidom.Node.ELEMENT_NODE:
                 children.append(child)
 
-        for child in children:
+        for child in list(children):
             if child.nodeName == "doc":
                 elem.removeChild(child)
                 children.remove(child)
@@ -116,39 +61,26 @@ class XMLSplitter:
 
         return elem
 
-
     def __generateFile(self, elem):
         self.__removeAllChild(self.root)
-
         filename = os.path.join(self.out, elem.getAttribute("name").replace(".", "_").lower() + ".xml")
-
         doc = xml.dom.minidom.Document()
         doc.appendChild(self.root)
-
         self.root.appendChild(elem)
-
-        fd = open(filename, "w")
-        fd.write(doc.toxml())
-        fd.close
-
+        with open(filename, "w", encoding="utf-8") as fd:
+            fd.write(doc.toxml())
         return
 
     def __removeAllChild(self, elem):
-        children = []
-        for child in elem.childNodes:
-            children.append(child)
-
+        children = list(elem.childNodes)
         for child in children:
             elem.removeChild(child)
-
         return
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
-        print "Usage: splitxml.py xmlfile outpath tagname"
+        print("Usage: splitxml.py xmlfile outpath tagname")
         sys.exit(1)
 
     xmlsplitter = XMLSplitter(sys.argv[1], sys.argv[2])
-
     xmlsplitter.split(sys.argv[3])
-

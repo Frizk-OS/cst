@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -39,13 +39,13 @@ import calc_delay
 def do_check_spectrum(hostData, DUTData, samplingRate, fLow, fHigh, margainLow, margainHigh):
     # reduce FFT resolution to have averaging effects
     N = 512 if (len(hostData) > 512) else len(hostData)
-    iLow = N * fLow / samplingRate + 1 # 1 for DC
-    if iLow > (N / 2 - 1):
-        iLow = (N / 2 - 1)
-    iHigh = N * fHigh / samplingRate + 1 # 1 for DC
-    if iHigh > (N / 2 + 1):
-        iHigh = N / 2 + 1
-    print fLow, iLow, fHigh, iHigh, samplingRate
+    iLow = int(N * fLow / samplingRate + 1) # 1 for DC
+    if iLow > int(N / 2 - 1):
+        iLow = int(N / 2 - 1)
+    iHigh = int(N * fHigh / samplingRate + 1) # 1 for DC
+    if iHigh > int(N / 2 + 1):
+        iHigh = int(N / 2 + 1)
+    print(fLow, iLow, fHigh, iHigh, samplingRate)
 
     Phh, freqs = plt.psd(hostData, NFFT=N, Fs=samplingRate, Fc=0, detrend=plt.mlab.detrend_none,\
         window=plt.mlab.window_hanning, noverlap=0, pad_to=None, sides='onesided',\
@@ -53,26 +53,26 @@ def do_check_spectrum(hostData, DUTData, samplingRate, fLow, fHigh, margainLow, 
     Pdd, freqs = plt.psd(DUTData, NFFT=N, Fs=samplingRate, Fc=0, detrend=plt.mlab.detrend_none,\
         window=plt.mlab.window_hanning, noverlap=0, pad_to=None, sides='onesided',\
         scale_by_freq=False)
-    print len(Phh), len(Pdd)
-    print "Phh", abs(Phh[iLow:iHigh])
-    print "Pdd", abs(Pdd[iLow:iHigh])
+    print(len(Phh), len(Pdd))
+    print("Phh", abs(Phh[iLow:iHigh]))
+    print("Pdd", abs(Pdd[iLow:iHigh]))
     amplitudeRatio = np.sqrt(abs(Pdd[iLow:iHigh]/Phh[iLow:iHigh]))
     ratioMean = np.mean(amplitudeRatio)
     amplitudeRatio = amplitudeRatio / ratioMean
-    print "Normialized ratio", amplitudeRatio
-    print "ratio mean for normalization", ratioMean
-    positiveMax = abs(max(amplitudeRatio))
-    negativeMin = abs(min(amplitudeRatio))
+    print("Normialized ratio", amplitudeRatio)
+    print("ratio mean for normalization", ratioMean)
+    positiveMax = float(abs(max(amplitudeRatio)))
+    negativeMin = float(abs(min(amplitudeRatio)))
     passFail = True if (positiveMax < (margainHigh / 100.0 + 1.0)) and\
         ((1.0 - negativeMin) < margainLow / 100.0) else False
     RatioResult = np.zeros(len(amplitudeRatio), dtype=np.int16)
     for i in range(len(amplitudeRatio)):
-        RatioResult[i] = amplitudeRatio[i] * 1024 # make fixed point
-    print "positiveMax", positiveMax, "negativeMin", negativeMin
+        RatioResult[i] = int(amplitudeRatio[i] * 1024) # make fixed point
+    print("positiveMax", positiveMax, "negativeMin", negativeMin)
     return (passFail, negativeMin, positiveMax, RatioResult)
 
 def toMono(stereoData):
-    n = len(stereoData)/2
+    n = len(stereoData) // 2
     monoData = np.zeros(n)
     for i in range(n):
         monoData[i] = stereoData[2 * i]
@@ -99,7 +99,7 @@ def check_spectrum(inputData, inputTypes):
     if (inputTypes[6] != TYPE_DOUBLE):
         inputError = True
     if inputError:
-        print "input error"
+        print("input error")
         output.append(RESULT_ERROR)
         output.append(outputData)
         output.append(outputTypes)
@@ -128,7 +128,7 @@ def check_spectrum(inputData, inputTypes):
         N = len(hostData)
         dutData_ = dutData[delay:delay+N]
 
-    print "delay ", delay, "deviceRecording samples ", N
+    print("delay ", delay, "deviceRecording samples ", N)
     (passFail, minError, maxError, TF) = do_check_spectrum(hostData_, dutData_,\
         samplingRate, fLow, fHigh, margainLow, margainHigh)
 
@@ -157,7 +157,7 @@ if __name__=="__main__":
     fHigh = 15000
     data = getattr(mod, "do_gen_random")(peakAmpl, durationInMSec, samplingRate, fHigh,\
         stereo=False)
-    print len(data)
+    print(len(data))
     (passFail, minVal, maxVal, ampRatio) = do_check_spectrum(data, data, samplingRate, fLow, fHigh,\
         1.0, 1.0)
     plt.plot(ampRatio)

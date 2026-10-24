@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -15,35 +15,38 @@
 # limitations under the License.
 #
 
-#detect USB sound card from sound card lists under sys/class/sound/soundX
+# detect USB sound card from sound card lists under sys/class/sound/soundX
 
-import os, re, sys
+import os
+import re
+import sys
 
 AUDIO_CLASS_DIR = "/sys/class/sound"
 
 def main(argv):
   if len(argv) < 2:
-    print "Usage: detect_usb_audio.py (product)+"
-    print "   ex: detect_usb_audio.py MobilePre"
+    print("Usage: detect_usb_audio.py (product)+")
+    print("   ex: detect_usb_audio.py MobilePre")
     sys.exit(1)
   current_argv = 1
   product_list = []
   while current_argv < len(argv):
     product_list.append(argv[current_argv])
     current_argv = current_argv + 1
-  #print product_list
-  sound_dev_list = os.listdir(AUDIO_CLASS_DIR)
-  for sound_dev in sound_dev_list:
-    m = re.search("card(\d+)$", sound_dev)
-    if m != None:
-      card_full_path = os.path.realpath(AUDIO_CLASS_DIR + "/" + sound_dev)
-      if "usb" in card_full_path:
-        f = open(card_full_path + "/id")
-        line = f.readline().strip()
-        if line in product_list:
-          print "___CTS_AUDIO_PASS___ " + line + " " + m.group(1)
-          sys.exit(0)
-        f.close()
+  if os.path.exists(AUDIO_CLASS_DIR):
+    sound_dev_list = os.listdir(AUDIO_CLASS_DIR)
+    for sound_dev in sound_dev_list:
+      m = re.search(r"card(\d+)$", sound_dev)
+      if m is not None:
+        card_full_path = os.path.realpath(AUDIO_CLASS_DIR + "/" + sound_dev)
+        if "usb" in card_full_path:
+          id_file = os.path.join(card_full_path, "id")
+          if os.path.exists(id_file):
+            with open(id_file, "r") as f:
+              line = f.readline().strip()
+              if line in product_list:
+                print("___CTS_AUDIO_PASS___ " + line + " " + m.group(1))
+                sys.exit(0)
   # card not found
   sys.exit(1)
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -17,10 +17,10 @@
 import sys
 import numpy as np
 import scipy as sp
-from numpy import *
-if __name__=="__main__":
-    if(sys.version_info < (2,6,0)):
-        print "Wrong Python version ", sys.version_info
+
+if __name__ == "__main__":
+    if sys.version_info < (3, 0, 0):
+        print("Wrong Python version ", sys.version_info)
         sys.exit(1)
-    a = np.array([1,2,3])
-    print "___CTS_AUDIO_PASS___"
+    a = np.array([1, 2, 3])
+    print("___CTS_AUDIO_PASS___")
