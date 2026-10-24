@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "None",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": false,
+    "strict": false,
+    "lib": ["DOM", "ES5", "ScriptHost"],
+    "skipLibCheck": true,
+    "outFile": "assets/octane/bundle.js"
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

@@ -1,0 +1,10 @@
+[package]
+name = "ctspermission_jni"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "ctspermission_jni"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
