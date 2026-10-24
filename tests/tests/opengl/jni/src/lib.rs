@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
  * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//! Complete modern Rust implementation of `opengltest_jni` for Android CTS OpenGL tests.
-//!
-//! Replaces legacy C++ files:
-//! - attach_shader_one.cpp through attach_shader_eleven.cpp
-//! - color_one.cpp
-//! - common.cpp
-//! - gl2_jni_libone.cpp
-//!
-//! Provides dynamic GLESv2 loading with deterministic headless fallback and unit test suite.
 
 #![allow(non_snake_case, non_camel_case_types, non_upper_case_globals, dead_code, unsafe_op_in_unsafe_fn)]
 
