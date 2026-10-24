@@ -7,6 +7,7 @@ Uses AAPT, OpenJDK javac, Google D8/R8 Dex compiler, Android platform SignApk, a
 """
 
 from __future__ import annotations
+import zipfile
 
 import argparse
 import os
@@ -56,7 +57,7 @@ def main() -> int:
     parser.add_argument("--source-file", type=Path, action="append", default=[], help="Single Java source file")
     parser.add_argument("--dependency-jar", type=Path, action="append", default=[], help="Classpath dependency JAR")
     parser.add_argument("--jni-lib", type=Path, action="append", default=[], help="Shared .so library to include")
-    parser.add_argument("--jni-abi", type=str, default="x86_64", help="ABI name for JNI libraries (default: x86_64)")
+    parser.add_argument("--jni-abi", type=str, default="armeabi-v7a", help="ABI name for JNI libraries (default: armeabi-v7a,armeabi)")
     parser.add_argument("--min-api", type=int, default=19, help="Minimum Android API level (default: 19 for Android 4.4.4 KitKat)")
     parser.add_argument("--android-jar", type=Path, default=None, help="Path to android.jar prebuilt")
     parser.add_argument("--aapt", type=Path, default=None, help="Path to aapt tool")
@@ -254,13 +255,13 @@ def main() -> int:
 
         # Step G: Add JNI shared libraries if present
         if args.jni_lib:
-            lib_abi_dir = tmp_dir / "lib" / args.jni_abi
-            lib_abi_dir.mkdir(parents=True, exist_ok=True)
-            for jni in args.jni_lib:
-                if jni.is_file():
-                    shutil.copy2(jni, lib_abi_dir / jni.name)
-                    rel_path = f"lib/{args.jni_abi}/{jni.name}"
-                    subprocess.run([str(aapt_bin), "add", "-k", str(temp_apk), rel_path], cwd=tmp_dir, check=True, stdout=subprocess.DEVNULL)
+            abis = [a.strip() for a in args.jni_abi.split(",") if a.strip()]
+            with zipfile.ZipFile(temp_apk, "a", compression=zipfile.ZIP_DEFLATED) as zf:
+                for abi in abis:
+                    for jni in args.jni_lib:
+                        if jni.is_file():
+                            arcname = f"lib/{abi}/{jni.name}"
+                            zf.write(jni, arcname)
 
         # Step H: Sign APK using platform SignApk tool or fallback to jarsigner
         signapk_jar = repo_root.parent / "prebuilts/sdk/tools/lib/signapk.jar"

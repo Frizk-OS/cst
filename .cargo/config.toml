@@ -1,5 +1,8 @@
 [target.x86_64-unknown-linux-gnu]
 linker = "clang"
 
-[build]
-rustflags = ["-C", "linker=clang"]
+[target.armv7-linux-androideabi]
+linker = "/home/vptr/Android/Sdk/ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang"
+
+[target.arm-linux-androideabi]
+linker = "/home/vptr/Android/Sdk/ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang"
