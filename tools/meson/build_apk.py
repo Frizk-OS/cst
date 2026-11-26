@@ -169,20 +169,7 @@ def main() -> int:
                 "-d", str(classes_dir),
                 f"@{sources_file}",
             ]
-            try:
-                subprocess.run(javac_cmd, check=True)
-            except subprocess.CalledProcessError:
-                # Fallback to source 8 if compatibility flags required
-                fallback_javac = [
-                    str(javac_bin),
-                    "-source", "8",
-                    "-target", "8",
-                    "-nowarn",
-                    "-cp", classpath,
-                    "-d", str(classes_dir),
-                    f"@{sources_file}",
-                ]
-                subprocess.run(fallback_javac, check=True)
+            subprocess.run(javac_cmd, check=True)
 
             # Step D: Convert compiled classes to Dalvik classes.dex (version 035) using D8
             compiled_classes = list(classes_dir.rglob("*.class"))
