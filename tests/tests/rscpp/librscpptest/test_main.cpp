@@ -19,18 +19,25 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
-#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 #include <vector>
+
+#if defined(__ANDROID__)
+extern "C" {
+__attribute__((visibility("default"))) void android_set_abort_message([[maybe_unused]] const char* msg) {}
+}
+#endif
 
 void test_init() {
     assert(rscpp::neon::init());
-    std::cout << "[PASS] init\n";
+    std::puts("[PASS] init");
 }
 
 void test_blend() {
     const int w = 4;
     const int h = 4;
-    const size_t total = w * h * 4;
+    const size_t total = static_cast<size_t>(w) * h * 4;
 
     std::vector<uint8_t> src(total, 50);
     std::vector<uint8_t> dst(total, 100);
@@ -60,13 +67,13 @@ void test_blend() {
         assert(dst[i] == 0);
     }
 
-    std::cout << "[PASS] blend\n";
+    std::puts("[PASS] blend");
 }
 
 void test_color_matrix() {
     const int w = 2;
     const int h = 2;
-    const size_t total = w * h * 4;
+    const size_t total = static_cast<size_t>(w) * h * 4;
 
     std::vector<uint8_t> src(total);
     for (size_t i = 0; i < total; i += 4) {
@@ -87,14 +94,14 @@ void test_color_matrix() {
         assert(dst[i + 3] == 255);
     }
 
-    std::cout << "[PASS] color_matrix\n";
+    std::puts("[PASS] color_matrix");
 }
 
 void test_convolve() {
     const int w = 4;
     const int h = 4;
-    std::vector<uint8_t> src(w * h, 10);
-    std::vector<uint8_t> dst(w * h, 0);
+    std::vector<uint8_t> src(static_cast<size_t>(w) * h, 10);
+    std::vector<uint8_t> dst(static_cast<size_t>(w) * h, 0);
 
     float coeffs3x3[9] = {
         0.0f, 0.0f, 0.0f,
@@ -102,17 +109,17 @@ void test_convolve() {
         0.0f, 0.0f, 0.0f
     };
     rscpp::neon::convolve(src.data(), dst.data(), w, h, coeffs3x3, true);
-    for (size_t i = 0; i < w * h; ++i) {
+    for (size_t i = 0; i < static_cast<size_t>(w) * h; ++i) {
         assert(dst[i] == 10);
     }
 
-    std::cout << "[PASS] convolve\n";
+    std::puts("[PASS] convolve");
 }
 
 void test_lut() {
     const int w = 4;
     const int h = 4;
-    const size_t total = w * h * 4;
+    const size_t total = static_cast<size_t>(w) * h * 4;
 
     std::vector<uint8_t> src(total);
     for (size_t i = 0; i < total; ++i) {
@@ -133,7 +140,7 @@ void test_lut() {
         assert(dst[i + 3] == src[i + 3]);
     }
 
-    std::cout << "[PASS] lut\n";
+    std::puts("[PASS] lut");
 }
 
 int main() {
@@ -142,6 +149,6 @@ int main() {
     test_color_matrix();
     test_convolve();
     test_lut();
-    std::cout << "All RenderScript C++23 NEON unit tests passed successfully!\n";
+    std::puts("All RenderScript C++23 NEON unit tests passed successfully!");
     return 0;
 }

@@ -59,7 +59,13 @@ def main():
 
     cmd = [cxx, "-std=c++23", "-O3", "-fPIC", "-shared"]
     if is_ndk:
-        cmd.extend(["-mfpu=neon", "-mfloat-abi=softfp", "-D__ARM_NEON__=1", "-D__ARM_NEON=1"])
+        cmd.extend([
+            "-static-libstdc++",
+            "-mfpu=neon",
+            "-mfloat-abi=softfp",
+            "-D__ARM_NEON__=1",
+            "-D__ARM_NEON=1",
+        ])
 
     for inc in args.include_dirs:
         cmd.extend(["-I", str(inc.resolve())])

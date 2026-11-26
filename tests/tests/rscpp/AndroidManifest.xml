@@ -22,8 +22,8 @@
         <uses-library android:name="android.test.runner" />
     </application>
 
-    <instrumentation android:name="android.test.InstrumentationCtsTestRunner"
-                     android:targetPackage="com.android.cts.stub"
+    <instrumentation android:name="android.test.InstrumentationTestRunner"
+                     android:targetPackage="com.android.cts.rscpp"
                      android:label="CTS tests of RenderScript C++ component"/>
 
 </manifest>

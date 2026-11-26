@@ -20,6 +20,10 @@
 
 extern "C" {
 
+#if defined(__ANDROID__)
+__attribute__((visibility("default"))) void android_set_abort_message([[maybe_unused]] const char* msg) {}
+#endif
+
 JNIEXPORT jboolean JNICALL Java_android_cts_rscpp_RSInitTest_initTest(
     [[maybe_unused]] JNIEnv* env,
     [[maybe_unused]] jclass clazz) {
