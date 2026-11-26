@@ -51,9 +51,6 @@
   <Entry uri="android.preference"/>
   <Entry uri="android.preference2"/>
   <Entry uri="android.provider" exclude="android.provider.cts.CalendarTest#testRemindersAlarm" />
-  <Entry uri="android.renderscript"/>
-  <Entry uri="android.rscpp"/>
-  <Entry uri="android.rsg"/>
   <Entry uri="android.sax"/>
   <Entry uri="android.security" exclude="android.security.cts.ListeningPortsTest#testNoRemotelyAccessibleListeningUdp6Ports;android.security.cts.ListeningPortsTest#testNoRemotelyAccessibleListeningUdpPorts;android.security.cts.BannedFilesTest#testNoSu;android.security.cts.BannedFilesTest#testNoSuInPath;android.security.cts.PackageSignatureTest#testPackageSignatures" />
   <Entry uri="android.speech"/>
