@@ -96,6 +96,7 @@ CTS_TEST_PACKAGES = [
     "CtsPermission2TestCases",
     "CtsPreferenceTestCases",
     "CtsPreference2TestCases",
+    "CtsRsCppTestCases",
     "CtsProviderTestCases",
     "CtsSampleDeviceTestCases",
     "CtsSaxTestCases",

@@ -27,6 +27,8 @@ subdir('speech')
 subdir('textureview')
 subdir('theme')
 
+subdir('rscpp')
+
 subdir('uidisolation')
 
 subdir('admin')

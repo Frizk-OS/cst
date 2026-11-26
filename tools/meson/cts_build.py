@@ -78,6 +78,7 @@ def main():
         build_dir / "tests/tests/openglperf/libctsopenglperf_jni.so",
         build_dir / "tests/tests/mediastress/libctsmediastress_jni.so",
         build_dir / "tests/tests/opengl/libopengltest_jni.so",
+        build_dir / "tests/tests/rscpp/librscpptest_jni.so",
     ]
 
     # Automatically collect all generated APKs across the build tree (excluding dest_dir)
