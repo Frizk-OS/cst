@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile Java source roots into a self-contained executable or library JAR."""
+"""Compile Java source roots into an executable or library JAR."""
 
 from __future__ import annotations
 
@@ -69,9 +69,11 @@ def main() -> int:
             if res_dir.is_dir():
                 shutil.copytree(res_dir, classes, dirs_exist_ok=True)
 
-        for dependency in args.dependency_jar:
-            if dependency.is_file():
-                subprocess.run([jar, 'xf', str(dependency.resolve())], cwd=classes, check=True)
+        # Only bundle dependency classes for executable host tools with a designated main-class
+        if args.main_class:
+            for dependency in args.dependency_jar:
+                if dependency.is_file() and not dependency.name.startswith('android'):
+                    subprocess.run([jar, 'xf', str(dependency.resolve())], cwd=classes, check=True)
 
         jar_command = [jar, '--create', '--file', str(args.output.resolve())]
         if args.main_class:

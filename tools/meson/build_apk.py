@@ -148,7 +148,7 @@ def main() -> int:
         dex_file = dex_dir / "classes.dex"
 
         if java_sources:
-                # Step C: Compile Java files with javac
+            # Step C: Compile Java files with javac
             classpath_elements = [str(android_jar)]
             for dep in args.dependency_jar:
                 if dep.is_file():
@@ -172,16 +172,49 @@ def main() -> int:
             subprocess.run(javac_cmd, check=True)
 
             # Step D: Unpack static dependency jars and compile to Dalvik classes.dex using D8
+            # Do NOT statically package platform/framework jars into the APK's classes.dex
+            # because the Android bootclasspath (/system/framework/core-junit.jar, android.test.runner.jar)
+            # already supplies junit.framework, junit.runner, and android.test.* classes.
+            # Statically embedding them causes Dalvik's DexOpt verification to reject classes
+            # with "Class resolved by unexpected DEX: ... had used a different ... during pre-verification".
             for dep in args.dependency_jar:
-                if dep.is_file() and dep.suffix == ".jar":
-                    with zipfile.ZipFile(dep) as zf:
-                        for member in zf.namelist():
-                            if member.endswith(".class") and not member.startswith("META-INF"):
-                                dest_file = classes_dir / member
-                                if not dest_file.exists():
-                                    dest_file.parent.mkdir(parents=True, exist_ok=True)
-                                    with zf.open(member) as src, open(dest_file, "wb") as dst:
-                                        dst.write(src.read())
+                if not dep.is_file() or dep.suffix != ".jar":
+                    continue
+                dep_name = dep.name.lower()
+                if "junit.jar" in dep_name or "android.jar" in dep_name:
+                    continue
+
+                with zipfile.ZipFile(dep) as zf:
+                    for member in zf.namelist():
+                        if not member.endswith(".class") or member.startswith("META-INF"):
+                            continue
+                        # Never package junit classes or android framework base classes
+                        if member.startswith("junit/"):
+                            continue
+                        if member.startswith("android/test/") and not member.startswith("android/test/InstrumentationCtsTestRunner"):
+                            continue
+                        dest_file = classes_dir / member
+                        if not dest_file.exists():
+                            dest_file.parent.mkdir(parents=True, exist_ok=True)
+                            with zf.open(member) as src, open(dest_file, "wb") as dst:
+                                dst.write(src.read())
+
+            # Step D.1: Check if InstrumentationCtsTestRunner is needed by manifest and inject if missing
+            manifest_text = args.manifest.read_text(encoding="utf-8", errors="ignore")
+            if "InstrumentationCtsTestRunner" in manifest_text:
+                runner_class = classes_dir / "android/test/InstrumentationCtsTestRunner.class"
+                if not runner_class.is_file():
+                    runner_src = repo_root / "libs/deviceutil/src/android/test/InstrumentationCtsTestRunner.java"
+                    if runner_src.is_file():
+                        junit_dep = repo_root / "tools/vm-tests-tf/lib/junit.jar"
+                        subprocess.run([
+                            str(javac_bin),
+                            "--release", "21",
+                            "-nowarn",
+                            "-cp", f"{android_jar}:{junit_dep}",
+                            "-d", str(classes_dir),
+                            str(runner_src),
+                        ], check=True)
 
             compiled_classes = list(classes_dir.rglob("*.class"))
             if not compiled_classes:
@@ -196,6 +229,14 @@ def main() -> int:
                 "--output", str(dex_dir),
                 "--lib", str(android_jar),
             ]
+            # Provide junit.jar and dependencies as external reference libraries (--lib) for D8
+            junit_jar = repo_root / "tools/vm-tests-tf/lib/junit.jar"
+            if junit_jar.is_file():
+                d8_cmd.extend(["--lib", str(junit_jar)])
+            for dep in args.dependency_jar:
+                if dep.is_file() and ("junit" in dep.name.lower() or "android" in dep.name.lower()):
+                    d8_cmd.extend(["--lib", str(dep)])
+
             d8_cmd.extend([str(cl) for cl in compiled_classes])
             subprocess.run(d8_cmd, check=True, stdout=subprocess.DEVNULL)
 
@@ -244,6 +285,8 @@ def main() -> int:
         # Step G: Add JNI shared libraries if present
         if args.jni_lib:
             abis = [a.strip() for a in args.jni_abi.split(",") if a.strip()]
+            if "armeabi-v7a" in abis and "armeabi" not in abis:
+                abis.append("armeabi")
             with zipfile.ZipFile(temp_apk, "a", compression=zipfile.ZIP_DEFLATED) as zf:
                 for abi in abis:
                     for jni in args.jni_lib:
