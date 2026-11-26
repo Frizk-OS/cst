@@ -41,6 +41,8 @@ def main() -> int:
         f'''cpp = '{bin_dir / (prefix + '-clang++')}'\n'''
         f'''ar = '{bin_dir / 'llvm-ar'}'\n'''
         f'''strip = '{bin_dir / 'llvm-strip'}'\n'''
+        f'''c_ld = 'lld'\n'''
+        f'''cpp_ld = 'lld'\n'''
         f'''[host_machine]\n'''
         f'''system = 'android'\n'''
         f'''cpu_family = '{cpu}'\n'''
@@ -52,6 +54,8 @@ def main() -> int:
         f'''[built-in options]\n'''
         f'''c_std = 'c23'\n'''
         f'''cpp_std = 'c++26'\n'''
+        f'''c_ld = 'lld'\n'''
+        f'''cpp_ld = 'lld'\n'''
     )
     print(f'Generated {args.output} for {args.abi}, API {args.api}')
     return 0

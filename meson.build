@@ -20,6 +20,8 @@ project(
   default_options: [
     'c_std=c23',
     'cpp_std=c++26',
+    'c_ld=lld',
+    'cpp_ld=lld',
     'warning_level=2',
     'buildtype=debugoptimized',
   ],
@@ -27,6 +29,14 @@ project(
 
 c_comp = meson.get_compiler('c')
 cpp_comp = meson.get_compiler('cpp')
+
+if c_comp.get_id() != 'clang'
+  error('Unsupported C compiler: ' + c_comp.get_id() + '. CTS strictly requires LLVM/Clang.')
+endif
+if cpp_comp.get_id() != 'clang'
+  error('Unsupported C++ compiler: ' + cpp_comp.get_id() + '. CTS strictly requires LLVM/Clang.')
+endif
+
 message('Selected C compiler: ' + c_comp.get_id() + ' (' + c_comp.version() + ')')
 message('Selected C++ compiler: ' + cpp_comp.get_id() + ' (' + cpp_comp.version() + ')')
 
