@@ -71,6 +71,7 @@ def main():
         build_dir / "apps/CtsVerifier/jni/libctsverifier_jni.so",
         build_dir / "suite/cts/deviceTests/dram/jni/libctsdram_jni.so",
         build_dir / "suite/cts/deviceTests/simplecpu/jni/libctscpu_jni.so",
+        build_dir / "suite/cts/deviceTests/opengl/libctsopengl_jni.so",
         build_dir / "tests/tests/drm/libctsdrm_jni.so",
         build_dir / "tests/tests/net/libnativedns_jni.so",
         build_dir / "tests/tests/permission/libctspermission_jni.so",

@@ -19,6 +19,7 @@
 #include <graphics/GLUtils.h>
 #include <graphics/ProgramNode.h>
 
+#include "Log.h"
 #include <Trace.h>
 
 ReferenceRenderer::ReferenceRenderer(ANativeWindow* window) :
@@ -68,7 +69,7 @@ bool ReferenceRenderer::tearDown() {
         mScenes[i]->tearDown();
         delete mScenes[i];
     }
-    mCurrentScene = NULL;
+    mCurrentScene = nullptr;
     if (!Renderer::tearDown()) {
         return false;
     }

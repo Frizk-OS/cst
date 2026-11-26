@@ -25,7 +25,7 @@
 #include <graphics/TransformationNode.h>
 
 GlowingScene::GlowingScene(int width, int height) :
-        Scene(width, height), mFboId(0), mMainProgram(NULL), mBlurProgram(NULL) {
+        Scene(width, height), mFboId(0), mMainProgram(nullptr), mBlurProgram(nullptr) {
     mFboWidth = GLUtils::roundUpToSmallestPowerOf2(width);
     mFboHeight = GLUtils::roundUpToSmallestPowerOf2(height);
     mFboRatio = mFboWidth / mFboHeight;
@@ -47,7 +47,7 @@ bool GlowingScene::setUpPrograms() {
     // Main Program
     const char* vertex = GLUtils::openTextFile("vertex/perspective");
     const char* fragment = GLUtils::openTextFile("fragment/perspective");
-    if (vertex == NULL || fragment == NULL) {
+    if (vertex == nullptr || fragment == nullptr) {
         return false;
     }
     GLuint programId = GLUtils::createProgram(&vertex, &fragment);
@@ -60,7 +60,7 @@ bool GlowingScene::setUpPrograms() {
     // Blur Program
     vertex = GLUtils::openTextFile("vertex/blur");
     fragment = GLUtils::openTextFile("fragment/blur");
-    if (vertex == NULL || fragment == NULL) {
+    if (vertex == nullptr || fragment == nullptr) {
         return false;
     }
     programId = GLUtils::createProgram(&vertex, &fragment);
@@ -113,60 +113,60 @@ Matrix* GlowingScene::setUpProjectionMatrix(float width, float height) {
 
 bool GlowingScene::setUpTextures() {
     SCOPED_TRACE();
-    mTextureIds.add(GLUtils::genTexture(mWidth, mHeight, 0)); // fbo
-    mTextureIds.add(GLUtils::genTexture(mWidth, mHeight, 0)); // tmp1
-    mTextureIds.add(GLUtils::genTexture(mWidth, mHeight, 0)); // tmp2
-    mTextureIds.add(GLUtils::loadTexture("texture/arc.png"));
+    mTextureIds.push_back(GLUtils::genTexture(mWidth, mHeight, 0)); // fbo
+    mTextureIds.push_back(GLUtils::genTexture(mWidth, mHeight, 0)); // tmp1
+    mTextureIds.push_back(GLUtils::genTexture(mWidth, mHeight, 0)); // tmp2
+    mTextureIds.push_back(GLUtils::loadTexture("texture/arc.png"));
     return true;
 }
 
 bool GlowingScene::setUpMeshes() {
     SCOPED_TRACE();
-    mMeshes.add(GLUtils::loadMesh("mesh/plane.cob"));
-    mMeshes.add(GLUtils::loadMesh("mesh/arc.cob"));
+    mMeshes.push_back(GLUtils::loadMesh("mesh/plane.cob"));
+    mMeshes.push_back(GLUtils::loadMesh("mesh/arc.cob"));
     return true;
 }
 
 bool GlowingScene::tearDown() {
     SCOPED_TRACE();
-    if (mMainProgram != NULL) {
+    if (mMainProgram != nullptr) {
         delete mMainProgram;
-        mMainProgram = NULL;
+        mMainProgram = nullptr;
     }
-    if (mBlurProgram != NULL) {
+    if (mBlurProgram != nullptr) {
         delete mBlurProgram;
-        mBlurProgram = NULL;
+        mBlurProgram = nullptr;
     }
     if (mFboId != 0) {
         glDeleteFramebuffers(1, &mFboId);
         mFboId = 0;
     }
     delete mFboModelMatrix;
-    mFboModelMatrix = NULL;
+    mFboModelMatrix = nullptr;
     delete mFboViewMatrix;
-    mFboViewMatrix = NULL;
+    mFboViewMatrix = nullptr;
     delete mFboProjectionMatrix;
-    mFboProjectionMatrix = NULL;
+    mFboProjectionMatrix = nullptr;
     return Scene::tearDown();
 }
 
 bool GlowingScene::updateSceneGraphs(int frame) {
     // To render the mesh to the FBO
     ProgramNode* lightSceneGraph = new ProgramNode(*mMainProgram);
-    mSceneGraphs.add(lightSceneGraph);
+    mSceneGraphs.push_back(lightSceneGraph);
     MeshNode* meshNode = new PerspectiveMeshNode(mMeshes[1], mTextureIds[3]);
     lightSceneGraph->addChild(meshNode);
 
     // To blur the image
     ProgramNode* blurSceneGraph = new ProgramNode(*mBlurProgram);
-    mSceneGraphs.add(blurSceneGraph);
+    mSceneGraphs.push_back(blurSceneGraph);
     meshNode = new BlurMeshNode(mMeshes[0], mTextureIds[0], mTextureIds[1], mTextureIds[2],
             mFboWidth, mFboHeight);
     blurSceneGraph->addChild(meshNode);
 
     // Blur To screen
     ProgramNode* glowSceneGraph = new ProgramNode(*mMainProgram);
-    mSceneGraphs.add(glowSceneGraph);
+    mSceneGraphs.push_back(glowSceneGraph);
     Matrix* transformMatrix = Matrix::newScale(mFboRatio, 1.0f, 1.0f);
     TransformationNode* transformNode = new TransformationNode(transformMatrix);
     glowSceneGraph->addChild(transformNode);

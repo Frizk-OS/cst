@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,7 +16,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <math.h>
+#include <cmath>
 
 #include "Matrix.h"
 
@@ -40,7 +41,7 @@ TEST(MatrixTest, matrixEqualityTest) {
     // Check they are the same.
     ASSERT_TRUE(m1.equals(m2));
     Matrix* clone = new Matrix(m1);
-    ASSERT_TRUE(clone != NULL);
+    ASSERT_TRUE(clone != nullptr);
     ASSERT_TRUE(m1.equals(*clone));
     delete clone;
 }
@@ -65,8 +66,8 @@ TEST(MatrixTest, matrixLoadWithTest) {
 
     // Fill with rubbish
     for (int i = 0; i < Matrix::MATRIX_SIZE; i++) {
-        d1[i] = i;
-        data[i] = i;
+        d1[i] = static_cast<float>(i);
+        data[i] = static_cast<float>(i);
     }
 
     // Create another matrix
@@ -83,7 +84,7 @@ TEST(MatrixTest, matrixTranslateTest) {
     Matrix m1;
     m1.translate(10, 5, 6);
     Matrix* m2 = Matrix::newTranslate(10, 5, 6);
-    ASSERT_TRUE(m2 != NULL);
+    ASSERT_TRUE(m2 != nullptr);
     ASSERT_TRUE(m1.equals(*m2));
     delete m2;
 }
@@ -92,7 +93,7 @@ TEST(MatrixTest, matrixScaleTest) {
     Matrix m1;
     m1.scale(10, 5, 6);
     Matrix* m2 = Matrix::newScale(10, 5, 6);
-    ASSERT_TRUE(m2 != NULL);
+    ASSERT_TRUE(m2 != nullptr);
     ASSERT_TRUE(m1.equals(*m2));
     delete m2;
 }
@@ -101,7 +102,7 @@ TEST(MatrixTest, matrixRotateTest) {
     Matrix m1;
     m1.rotate(180, 1, 0, 1);
     Matrix* m2 = Matrix::newRotate(180, 1, 0, 1);
-    ASSERT_TRUE(m2 != NULL);
+    ASSERT_TRUE(m2 != nullptr);
     ASSERT_TRUE(m1.equals(*m2));
     delete m2;
 }
@@ -120,8 +121,8 @@ TEST(MatrixTest, matrixMultiplyTest) {
 
     // Fill with ascending numbers
     for (int i = 0; i < Matrix::MATRIX_SIZE; i++) {
-        d1[i] = i;
-        d2[i] = i;
+        d1[i] = static_cast<float>(i);
+        d2[i] = static_cast<float>(i);
     }
     m3.multiply(m1, m2);
 
@@ -153,7 +154,7 @@ TEST(MatrixTest, matrixNewLookAtTest) {
     // Set the view matrix. This matrix can be said to represent the camera position.
     Matrix* m = Matrix::newLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ,
             upX, upY, upZ);
-    ASSERT_TRUE(m != NULL);
+    ASSERT_TRUE(m != nullptr);
     float expected[] = {
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
@@ -165,7 +166,7 @@ TEST(MatrixTest, matrixNewLookAtTest) {
 }
 
 TEST(MatrixTest, matrixNewFrustumTest) {
-    float ratio = (float) 800 / 600;
+    float ratio = 800.0f / 600.0f;
     float left = -ratio;
     float right = ratio;
     float bottom = -1.0f;
@@ -174,7 +175,7 @@ TEST(MatrixTest, matrixNewFrustumTest) {
     float far = 8.0f;
 
     Matrix* m = Matrix::newFrustum(left, right, bottom, top, near, far);
-    ASSERT_TRUE(m != NULL);
+    ASSERT_TRUE(m != nullptr);
     float expected[] = {
         0.75f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
@@ -187,7 +188,7 @@ TEST(MatrixTest, matrixNewFrustumTest) {
 
 TEST(MatrixTest, matrixNewTranslateTest) {
     Matrix* m = Matrix::newTranslate(5, 6, 8);
-    ASSERT_TRUE(m != NULL);
+    ASSERT_TRUE(m != nullptr);
     float expected[] = {
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
@@ -200,7 +201,7 @@ TEST(MatrixTest, matrixNewTranslateTest) {
 
 TEST(MatrixTest, matrixNewScaleTest) {
     Matrix* m = Matrix::newScale(3, 7, 2);
-    ASSERT_TRUE(m != NULL);
+    ASSERT_TRUE(m != nullptr);
     float expected[] = {
         3.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 7.0f, 0.0f, 0.0f,
@@ -212,11 +213,11 @@ TEST(MatrixTest, matrixNewScaleTest) {
 }
 
 TEST(MatrixTest, matrixNewRotateTest) {
-    Matrix* m = Matrix::newRotate(45.0f, 0.0f, 1.0f, 0.0f);
-    ASSERT_TRUE(m != NULL);
-    float radians = 45.0f * (M_PI / 180.0f);
-    float sin = sinf(radians);
-    float cos = cosf(radians);
+    float radians = 45.0f * (static_cast<float>(M_PI) / 180.0f);
+    Matrix* m = Matrix::newRotate(radians, 0.0f, 1.0f, 0.0f);
+    ASSERT_TRUE(m != nullptr);
+    float sin = std::sin(radians);
+    float cos = std::cos(radians);
     float expected[] = {
         cos, 0.0f, -sin, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
@@ -234,7 +235,7 @@ TEST(MatrixTest, matrixMultiplyVectorTest) {
     float* d = m.mData;
     // Fill with rubbish
     for (int i = 0; i < Matrix::MATRIX_SIZE; i++) {
-        d[i] = i;
+        d[i] = static_cast<float>(i);
     }
     float expected[] = {40, 120, 200, 280};
     Matrix::multiplyVector(out, m, in);

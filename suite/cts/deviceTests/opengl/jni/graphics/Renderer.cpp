@@ -16,7 +16,7 @@
 
 #define LOG_TAG "CTS_OPENGL"
 #define LOG_NDEBUG 0
-#include <utils/Log.h>
+#include "Log.h"
 
 #include <Trace.h>
 
@@ -102,7 +102,7 @@ bool Renderer::setUp() {
         return false;
     }
 
-    mEglSurface = eglCreateWindowSurface(mEglDisplay, mGlConfig, mWindow, NULL);
+    mEglSurface = eglCreateWindowSurface(mEglDisplay, mGlConfig, mWindow, nullptr);
     if (EGL_NO_SURFACE == mEglSurface || EGL_SUCCESS != eglGetError()) {
         return false;
     }

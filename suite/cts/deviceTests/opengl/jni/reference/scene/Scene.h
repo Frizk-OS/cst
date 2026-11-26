@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -19,12 +20,12 @@
 #include <graphics/Program.h>
 #include <graphics/ProgramNode.h>
 
-#include <utils/Vector.h>
+#include <vector>
 
 class Scene {
 public:
     Scene(int width, int height);
-    virtual ~Scene() {};
+    virtual ~Scene() = default;
     virtual bool setUpContext();
     virtual bool setUpTextures() = 0;
     virtual bool setUpMeshes() = 0;
@@ -40,12 +41,12 @@ protected:
     virtual bool updateSceneGraphs(int frame) = 0;
     int mWidth;
     int mHeight;
-    android::Vector<Mesh*> mMeshes;
-    android::Vector<GLuint> mTextureIds;
-    android::Vector<ProgramNode*> mSceneGraphs;
+    std::vector<Mesh*> mMeshes;
+    std::vector<GLuint> mTextureIds;
+    std::vector<ProgramNode*> mSceneGraphs;
 private:
-    Matrix* mModelMatrix;
-    Matrix* mViewMatrix;
-    Matrix* mProjectionMatrix;
+    Matrix* mModelMatrix{nullptr};
+    Matrix* mViewMatrix{nullptr};
+    Matrix* mProjectionMatrix{nullptr};
 };
 #endif

@@ -41,6 +41,6 @@ private:
     float mBoardHeight;
     Program* mMainProgram;
     Program* mWaterProgram;
-    static const float BOID_SCALE = 1.0f / 50.0f;
+    static constexpr float BOID_SCALE = 1.0f / 50.0f;
 };
 #endif

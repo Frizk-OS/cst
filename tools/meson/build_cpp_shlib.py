@@ -45,7 +45,9 @@ def main():
     parser.add_argument("--include-dirs", nargs="*", default=[], type=Path, help="Include directories")
     parser.add_argument("--compiler", default=None, help="Explicit C++ compiler to use")
     parser.add_argument("--cxxflags", nargs="*", default=[], help="Extra compiler flags")
+    parser.add_argument("--cxxflag", action="append", default=[], help="Single compiler flag")
     parser.add_argument("--ldflags", nargs="*", default=[], help="Extra linker flags")
+    parser.add_argument("--ldflag", action="append", default=[], help="Single linker flag")
     args = parser.parse_args()
 
     cxx = args.compiler
@@ -70,11 +72,19 @@ def main():
     for inc in args.include_dirs:
         cmd.extend(["-I", str(inc.resolve())])
 
-    cmd.extend(args.cxxflags)
+    all_cxxflags = []
+    for f in args.cxxflags + args.cxxflag:
+        all_cxxflags.extend(f.split())
+    cmd.extend(all_cxxflags)
+
     for src in args.sources:
         cmd.append(str(src.resolve()))
 
-    cmd.extend(args.ldflags)
+    all_ldflags = []
+    for f in args.ldflags + args.ldflag:
+        all_ldflags.extend(f.split())
+    cmd.extend(all_ldflags)
+
     if is_ndk:
         cmd.extend(["-llog", "-lm"])
 

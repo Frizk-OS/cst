@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -18,6 +19,8 @@
 
 #include <graphics/GLUtils.h>
 #include <graphics/Renderer.h>
+
+#include <vector>
 
 #include "ReferenceRenderer.h"
 
@@ -38,8 +41,8 @@ Java_com_android_cts_opengl_reference_GLGameActivity_startBenchmark(
     env->SetDoubleArrayRegion(
             setUpTimes, 0, ReferenceRenderer::NUM_SETUP_TIMES, renderer->mSetUpTimes);
 
-    double updates[numFrames];
-    double renders[numFrames];
+    std::vector<double> updates(static_cast<size_t>(numFrames));
+    std::vector<double> renders(static_cast<size_t>(numFrames));
     for (int i = 0; i < numFrames && success; i++) {
         double t0 = GLUtils::currentTimeMillis();
         success = renderer->update(i);
@@ -50,11 +53,11 @@ Java_com_android_cts_opengl_reference_GLGameActivity_startBenchmark(
         renders[i] = t2 - t1;
     }
 
-    env->SetDoubleArrayRegion(updateTimes, 0, numFrames, updates);
-    env->SetDoubleArrayRegion(renderTimes, 0, numFrames, renders);
+    env->SetDoubleArrayRegion(updateTimes, 0, numFrames, updates.data());
+    env->SetDoubleArrayRegion(renderTimes, 0, numFrames, renders.data());
 
     success = renderer->tearDown() && success;
     delete renderer;
-    renderer = NULL;
+    renderer = nullptr;
     return success;
 }

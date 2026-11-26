@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -20,7 +21,7 @@ SceneGraphNode::~SceneGraphNode() {
 }
 
 void SceneGraphNode::addChild(SceneGraphNode* child) {
-    mChildren.add(child);
+    mChildren.push_back(child);
 }
 
 void SceneGraphNode::draw(Program& program, Matrix& model, Matrix& view, Matrix& projection) {

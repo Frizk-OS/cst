@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -14,13 +15,13 @@
 #ifndef SCENEGRAPHNODE_H
 #define SCENEGRAPHNODE_H
 
-#include <utils/Vector.h>
+#include <vector>
 #include "Matrix.h"
 #include "Program.h"
 
 class SceneGraphNode {
 public:
-    SceneGraphNode() {};
+    SceneGraphNode() = default;
     virtual ~SceneGraphNode();
     void addChild(SceneGraphNode* child);
 protected:
@@ -28,7 +29,7 @@ protected:
     virtual void after(Program& program, Matrix& model, Matrix& view, Matrix& projection) = 0;
     void draw(Program& program, Matrix& model, Matrix& view, Matrix& projection);
 private:
-    android::Vector<SceneGraphNode*> mChildren;
+    std::vector<SceneGraphNode*> mChildren;
 };
 
 #endif

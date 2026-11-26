@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -17,7 +18,7 @@
 class Matrix {
 public:
     static const int MATRIX_SIZE = 16;
-    float mData[MATRIX_SIZE];
+    alignas(16) float mData[MATRIX_SIZE];
     Matrix();
     Matrix(const Matrix& src);
     // Returns true if the two matrices have the same values.

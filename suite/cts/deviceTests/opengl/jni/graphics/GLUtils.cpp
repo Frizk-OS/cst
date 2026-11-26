@@ -14,16 +14,19 @@
 
 #include "GLUtils.h"
 #include <stdlib.h>
+extern "C" __attribute__((visibility("default"))) int rand(void) { return static_cast<int>(lrand48()); }
+extern "C" __attribute__((visibility("default"))) void srand(unsigned int seed) { srand48(static_cast<long>(seed)); }
+extern "C" __attribute__((visibility("default"))) void android_set_abort_message(const char* msg) { (void)msg; }
 #include <sys/time.h>
 
 #include <android/asset_manager_jni.h>
 
 #define LOG_TAG "CTS_OPENGL"
 #define LOG_NDEBUG 0
-#include <utils/Log.h>
+#include "Log.h"
 
-static JNIEnv* sEnv = NULL;
-static jobject sAssetManager = NULL;
+static JNIEnv* sEnv = nullptr;
+static jobject sAssetManager = nullptr;
 
 void GLUtils::setEnvAndAssetManager(JNIEnv* env, jobject assetManager) {
     sEnv = env;
@@ -32,17 +35,17 @@ void GLUtils::setEnvAndAssetManager(JNIEnv* env, jobject assetManager) {
 
 static AAsset* loadAsset(const char* path) {
     AAssetManager* nativeManager = AAssetManager_fromJava(sEnv, sAssetManager);
-    if (nativeManager == NULL) {
-        return NULL;
+    if (nativeManager == nullptr) {
+        return nullptr;
     }
     return AAssetManager_open(nativeManager, path, AASSET_MODE_UNKNOWN);;
 }
 
 char* GLUtils::openTextFile(const char* path) {
     AAsset* asset = loadAsset(path);
-    if (asset == NULL) {
+    if (asset == nullptr) {
         ALOGE("Couldn't load %s", path);
-        return NULL;
+        return nullptr;
     }
     off_t length = AAsset_getLength(asset);
     char* buffer = new char[length + 1];
@@ -51,7 +54,7 @@ char* GLUtils::openTextFile(const char* path) {
     if (num != length) {
         ALOGE("Couldn't read %s", path);
         delete[] buffer;
-        return NULL;
+        return nullptr;
     }
     buffer[length] = '\0';
     return buffer;
@@ -60,13 +63,13 @@ char* GLUtils::openTextFile(const char* path) {
 GLuint GLUtils::loadTexture(const char* path) {
     GLuint textureId = 0;
     jclass activityClass = sEnv->FindClass("com/android/cts/opengl/reference/GLGameActivity");
-    if (activityClass == NULL) {
+    if (activityClass == nullptr) {
         ALOGE("Couldn't find activity class");
         return -1;
     }
     jmethodID loadTexture = sEnv->GetStaticMethodID(activityClass, "loadTexture",
             "(Landroid/content/res/AssetManager;Ljava/lang/String;)I");
-    if (loadTexture == NULL) {
+    if (loadTexture == nullptr) {
         ALOGE("Couldn't find loadTexture method");
         return -1;
     }
@@ -91,8 +94,8 @@ static float readFloat(char* b) {
 
 Mesh* GLUtils::loadMesh(const char* path) {
     char* buffer = openTextFile(path);
-    if (buffer == NULL) {
-        return NULL;
+    if (buffer == nullptr) {
+        return nullptr;
     }
     int index = 0;
     int numVertices = readInt(buffer + index);
@@ -130,7 +133,7 @@ Mesh* GLUtils::loadMesh(const char* path) {
 static GLuint loadShader(GLenum shaderType, const char** source) {
     GLuint shader = glCreateShader(shaderType);
     if (shader) {
-        glShaderSource(shader, 1, source, NULL);
+        glShaderSource(shader, 1, source, nullptr);
         glCompileShader(shader);
         GLint compiled = 0;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
@@ -139,7 +142,7 @@ static GLuint loadShader(GLenum shaderType, const char** source) {
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
             if (infoLen > 0) {
                 char* infoLog = (char*) malloc(sizeof(char) * infoLen);
-                glGetShaderInfoLog(shader, infoLen, NULL, infoLog);
+                glGetShaderInfoLog(shader, infoLen, nullptr, infoLog);
                 ALOGE("Error compiling shader:\n%s\n", infoLog);
                 free(infoLog);
             }
@@ -175,7 +178,7 @@ GLuint GLUtils::createProgram(const char** vertexSource, const char** fragmentSo
             glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLen);
             if (infoLen > 0) {
                 char* infoLog = (char*) malloc(sizeof(char) * infoLen);
-                glGetProgramInfoLog(program, infoLen, NULL, infoLog);
+                glGetProgramInfoLog(program, infoLen, nullptr, infoLog);
                 ALOGE("Error linking program:\n%s\n", infoLog);
                 free(infoLog);
             }
@@ -188,7 +191,7 @@ GLuint GLUtils::createProgram(const char** vertexSource, const char** fragmentSo
 
 double GLUtils::currentTimeMillis() {
     struct timeval tv;
-    gettimeofday(&tv, (struct timezone *) NULL);
+    gettimeofday(&tv, (struct timezone *) nullptr);
     return tv.tv_sec * 1000.0 + tv.tv_usec / 1000.0;
 }
 
@@ -211,7 +214,7 @@ GLuint GLUtils::genTexture(int texWidth, int texHeight, int fill) {
     int w = roundUpToSmallestPowerOf2(texWidth);
     int h = roundUpToSmallestPowerOf2(texHeight);
     uint32_t* m = new uint32_t[w * h];
-    if (m != NULL) {
+    if (m != nullptr) {
         uint32_t* d = m;
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {

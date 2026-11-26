@@ -26,7 +26,7 @@
 
 #define LOG_TAG "CTS_OPENGL"
 #define LOG_NDEBUG 0
-#include <utils/Log.h>
+#include "Log.h"
 #include <Trace.h>
 
 static const EGLint contextAttribs[] = {
@@ -75,7 +75,7 @@ static const char* CS_FRAGMENT =
         "}";
 
 ContextSwitchRenderer::ContextSwitchRenderer(ANativeWindow* window, bool offscreen, int workload) :
-        Renderer(window, offscreen, workload), mContexts(NULL) {
+        Renderer(window, offscreen, workload), mContexts(nullptr) {
 }
 
 bool ContextSwitchRenderer::setUp() {
@@ -171,7 +171,7 @@ void ContextSwitchRenderer::drawWorkload() {
     // No depth testing
     glDisable(GL_DEPTH_TEST);
 
-    EGLSyncKHR fence = eglCreateSyncKHR(mEglDisplay, EGL_SYNC_FENCE_KHR, NULL);
+    EGLSyncKHR fence = eglCreateSyncKHR(mEglDisplay, EGL_SYNC_FENCE_KHR, nullptr);
 
     const int TOTAL_NUM_CONTEXTS = NUM_WORKER_CONTEXTS + 1;
     const float TRANSLATION = 0.9f - (TOTAL_NUM_CONTEXTS * 0.2f);
@@ -194,7 +194,7 @@ void ContextSwitchRenderer::drawWorkload() {
         glVertexAttribPointer(mTexCoordHandle, 2, GL_FLOAT, false, 0, CS_TEX_COORDS);
 
         glDrawArrays(GL_TRIANGLES, 0, CS_NUM_VERTICES);
-        fence = eglCreateSyncKHR(mEglDisplay, EGL_SYNC_FENCE_KHR, NULL);
+        fence = eglCreateSyncKHR(mEglDisplay, EGL_SYNC_FENCE_KHR, nullptr);
 
         // Switch to next context.
         if (i < (mWorkload - 1)) {

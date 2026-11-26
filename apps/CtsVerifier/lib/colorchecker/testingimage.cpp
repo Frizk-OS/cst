@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2026 The AOSP and FrizkOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +19,24 @@
 #define LOG_TAG "TestingImage"
 #include <utils/Log.h>
 #include <utils/Timers.h>
-#include <string.h>
+#include <cstring>
 #include <cmath>
 #include <vector>
-#include <assert.h>
+#include <array>
+#include <cassert>
 #include "vec3.h"
 
 #include "testingimage.h"
 
 const float GAMMA_CORRECTION = 2.2f;
+
+static const auto sGammaLut = [] {
+    std::array<float, 256> lut{};
+    for (int i = 0; i < 256; ++i) {
+        lut[i] = std::pow(static_cast<float>(i), GAMMA_CORRECTION);
+    }
+    return lut;
+}();
 
 // Constructs an instance with the given image byte array.
 TestingImage::TestingImage(const unsigned char* inputImage,
@@ -41,12 +51,12 @@ TestingImage::TestingImage(const unsigned char* inputImage,
     mChannels = inputChannel;
     mRowSpan = mWidth * mChannels;
 
-    for (int i = 0; i < mHeight; ++i) {
-        for (int j = 0; j < mWidth; ++j) {
-            for (int k = 0; k < mChannels; ++k) {
-                mImage[i * mRowSpan + j* mChannels + k] =
-                        inputImage[i * inputRowSpan + j * inputChannel + k];
-            }
+    if (mRowSpan == inputRowSpan && inputChannel == mChannels) {
+        std::memcpy(mImage, inputImage, static_cast<size_t>(mHeight) * mRowSpan);
+    } else {
+        const size_t copyBytes = static_cast<size_t>(mWidth) * mChannels;
+        for (int i = 0; i < mHeight; ++i) {
+            std::memcpy(mImage + i * mRowSpan, inputImage + i * inputRowSpan, copyBytes);
         }
     }
     ALOGV("mImage converted!");
@@ -70,6 +80,7 @@ TestingImage::TestingImage(const unsigned char* inputImage,
     // in the new image.
     int heightScale = inputHeight / newHeight;
     int widthScale = inputWidth / newWidth;
+    int numScalePixels = heightScale * widthScale;
 
     // Average the corresponding pixels in the original image to compute the
     // pixel value of the new image.
@@ -85,7 +96,9 @@ TestingImage::TestingImage(const unsigned char* inputImage,
                                 + (j * widthScale + m) * inputChannel + k];
                     }
                 }
-                pixelValue = pixelValue / (heightScale * widthScale);
+                if (numScalePixels > 0) {
+                    pixelValue = pixelValue / numScalePixels;
+                }
                 mImage[i * mRowSpan + j * mChannels + k] =
                         (unsigned char) pixelValue;
             }
@@ -94,8 +107,9 @@ TestingImage::TestingImage(const unsigned char* inputImage,
 }
 
 TestingImage::~TestingImage() {
-    if (mImage!=NULL) {
+    if (mImage != nullptr) {
         delete[] mImage;
+        mImage = nullptr;
     }
 }
 
@@ -135,7 +149,7 @@ const std::vector<Vec3f>* TestingImage::getColorChecker(
     // given center position.
     for (int i = rowStart; i < rowEnd; ++i) {
         for (int j = columnStart; j < columnEnd; ++j) {
-            float radius = sqrt((*radiusAddress)[i][j]);
+            float radius = std::sqrt((*radiusAddress)[i][j]);
             Vec2f center((*centerAddress)[i][j].x(),
                                (*centerAddress)[i][j].y());
             Vec3f meanColor(0.f, 0.f, 0.f);
@@ -154,7 +168,9 @@ const std::vector<Vec3f>* TestingImage::getColorChecker(
                     }
                 }
             }
-            meanColor = meanColor / numPixels;
+            if (numPixels > 0) {
+                meanColor = meanColor / numPixels;
+            }
             checkerColors->push_back(meanColor);
         }
     }
@@ -164,27 +180,24 @@ const std::vector<Vec3f>* TestingImage::getColorChecker(
 
 bool TestingImage::rgbToGrayScale(unsigned char* grayLayer) const {
     if (mChannels == 4) {
-        for (int i = 0; i < mWidth; i++) {
-            for (int j = 0; j < mHeight; j++) {
-                float redLinear = pow(getPixelValue(j, i, 0),
-                                       GAMMA_CORRECTION);
-                float greenLinear = pow(getPixelValue(j,i,1),
-                                         GAMMA_CORRECTION);
-                float blueLinear = pow(getPixelValue(j,i,2),
-                                        GAMMA_CORRECTION);
+        const float invGamma = 1.0f / GAMMA_CORRECTION;
+        for (int j = 0; j < mHeight; ++j) {
+            const unsigned char* rowPtr = mImage + j * mRowSpan;
+            unsigned char* outRow = grayLayer + j * mWidth;
+            for (int i = 0; i < mWidth; ++i) {
+                const int px = i * mChannels;
+                float redLinear = sGammaLut[rowPtr[px + 0]];
+                float greenLinear = sGammaLut[rowPtr[px + 1]];
+                float blueLinear = sGammaLut[rowPtr[px + 2]];
 
                 // Computes the luminance value
-                grayLayer[j * mWidth + i] =
-                        (unsigned char)((int)pow((0.299f * redLinear
-                                                  + 0.587f * greenLinear
-                                                  + 0.114f * blueLinear),
-                                                  1/GAMMA_CORRECTION));
+                float lum = 0.299f * redLinear + 0.587f * greenLinear + 0.114f * blueLinear;
+                outRow[i] = static_cast<unsigned char>(static_cast<int>(std::pow(lum, invGamma)));
             }
         }
 
         return true;
     } else {
-
         return false;
     }
 }

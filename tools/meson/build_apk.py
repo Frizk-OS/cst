@@ -171,15 +171,21 @@ def main() -> int:
             ]
             subprocess.run(javac_cmd, check=True)
 
-            # Step D: Convert compiled classes to Dalvik classes.dex (version 035) using D8
+            # Step D: Unpack static dependency jars and compile to Dalvik classes.dex using D8
+            for dep in args.dependency_jar:
+                if dep.is_file() and dep.suffix == ".jar":
+                    with zipfile.ZipFile(dep) as zf:
+                        for member in zf.namelist():
+                            if member.endswith(".class") and not member.startswith("META-INF"):
+                                dest_file = classes_dir / member
+                                if not dest_file.exists():
+                                    dest_file.parent.mkdir(parents=True, exist_ok=True)
+                                    with zf.open(member) as src, open(dest_file, "wb") as dst:
+                                        dst.write(src.read())
+
             compiled_classes = list(classes_dir.rglob("*.class"))
             if not compiled_classes:
                 raise RuntimeError("Compilation produced no .class files!")
-
-            class_list_file = tmp_dir / "classes.txt"
-            with open(class_list_file, "w", encoding="utf-8") as f:
-                for c in compiled_classes:
-                    f.write(f"{c}\n")
 
             d8_cmd = [
                 "java",
@@ -190,12 +196,7 @@ def main() -> int:
                 "--output", str(dex_dir),
                 "--lib", str(android_jar),
             ]
-            for dep in args.dependency_jar:
-                if dep.is_file():
-                    d8_cmd.extend(["--lib", str(dep)])
-
-            # Read class arguments
-            d8_cmd.extend([str(c) for c in compiled_classes])
+            d8_cmd.extend([str(cl) for cl in compiled_classes])
             subprocess.run(d8_cmd, check=True, stdout=subprocess.DEVNULL)
 
             dex_file = dex_dir / "classes.dex"

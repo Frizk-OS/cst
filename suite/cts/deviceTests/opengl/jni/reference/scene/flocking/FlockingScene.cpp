@@ -29,7 +29,7 @@
 #include <graphics/TransformationNode.h>
 
 FlockingScene::FlockingScene(int width, int height) :
-        Scene(width, height), mMainProgram(NULL), mWaterProgram(NULL) {
+        Scene(width, height), mMainProgram(nullptr), mWaterProgram(nullptr) {
     for (int i = 0; i < NUM_BOIDS; i++) {
         // Generate a boid with a random position. (-50, 50)
         float x = (rand() % 101) - 50.0f;
@@ -42,7 +42,7 @@ bool FlockingScene::setUpPrograms() {
     // Main Program
     const char* vertex = GLUtils::openTextFile("vertex/perspective");
     const char* fragment = GLUtils::openTextFile("fragment/perspective");
-    if (vertex == NULL || fragment == NULL) {
+    if (vertex == nullptr || fragment == nullptr) {
         return false;
     }
     GLuint programId = GLUtils::createProgram(&vertex, &fragment);
@@ -55,7 +55,7 @@ bool FlockingScene::setUpPrograms() {
     // Water Program
     vertex = GLUtils::openTextFile("vertex/water");
     fragment = GLUtils::openTextFile("fragment/water");
-    if (vertex == NULL || fragment == NULL) {
+    if (vertex == nullptr || fragment == nullptr) {
         return false;
     }
     programId = GLUtils::createProgram(&vertex, &fragment);
@@ -111,17 +111,17 @@ Matrix* FlockingScene::setUpProjectionMatrix(float width, float height) {
 
 bool FlockingScene::setUpTextures() {
     SCOPED_TRACE();
-    mTextureIds.add(GLUtils::loadTexture("texture/fish_dark.png"));
-    mTextureIds.add(GLUtils::loadTexture("texture/background.png"));
-    mTextureIds.add(GLUtils::loadTexture("texture/water1.png"));
-    mTextureIds.add(GLUtils::loadTexture("texture/water2.png"));
+    mTextureIds.push_back(GLUtils::loadTexture("texture/fish_dark.png"));
+    mTextureIds.push_back(GLUtils::loadTexture("texture/background.png"));
+    mTextureIds.push_back(GLUtils::loadTexture("texture/water1.png"));
+    mTextureIds.push_back(GLUtils::loadTexture("texture/water2.png"));
     return true;
 }
 
 bool FlockingScene::setUpMeshes() {
     SCOPED_TRACE();
-    mMeshes.add(GLUtils::loadMesh("mesh/fish.cob"));
-    mMeshes.add(GLUtils::loadMesh("mesh/plane.cob"));
+    mMeshes.push_back(GLUtils::loadMesh("mesh/fish.cob"));
+    mMeshes.push_back(GLUtils::loadMesh("mesh/plane.cob"));
     return true;
 }
 
@@ -141,7 +141,7 @@ bool FlockingScene::updateSceneGraphs(int frame) {
     const float LIMIT_Y = mBoardHeight / 2.0f;
 
     ProgramNode* mainSceneGraph = new ProgramNode(*mMainProgram);
-    mSceneGraphs.add(mainSceneGraph);
+    mSceneGraphs.push_back(mainSceneGraph);
     // Bottom
     Matrix* transformMatrix = Matrix::newScale(MAIN_SCALE * mDisplayRatio, MAIN_SCALE, 0.0f);
     TransformationNode* transformNode = new TransformationNode(transformMatrix);
@@ -170,7 +170,7 @@ bool FlockingScene::updateSceneGraphs(int frame) {
         transformNode->addChild(meshNode);
     }
     ProgramNode* waterSceneGraph = new ProgramNode(*mWaterProgram);
-    mSceneGraphs.add(waterSceneGraph);
+    mSceneGraphs.push_back(waterSceneGraph);
     // Top
     transformMatrix = Matrix::newScale(MAIN_SCALE * mDisplayRatio, MAIN_SCALE, 1.0f);
     transformMatrix->translate(0, 0, 0.1f);
